@@ -2,8 +2,28 @@
 ini_set('display_errors', '1');
 error_reporting(E_ALL);
 
-if (!is_dir('/tmp/views')) {
-    mkdir('/tmp/views', 0777, true);
+use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
+
+define('LARAVEL_START', microtime(true));
+
+require __DIR__.'/../vendor/autoload.php';
+
+/** @var Application $app */
+$app = require_once __DIR__.'/../bootstrap/app.php';
+
+// Force Laravel to use the writable /tmp directory on Vercel Serverless Functions
+$app->useStoragePath('/tmp');
+
+$dirs = [
+    '/tmp/framework/views',
+    '/tmp/framework/cache/data',
+    '/tmp/framework/sessions',
+];
+foreach ($dirs as $dir) {
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0777, true);
+    }
 }
 
-require __DIR__ . '/../public/index.php';
+$app->handleRequest(Request::capture());
