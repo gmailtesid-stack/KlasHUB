@@ -60,10 +60,8 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                1009 => env('VERCEL') ? '/tmp/cacert.pem' : (env('MYSQL_ATTR_SSL_CA') ? base_path(env('MYSQL_ATTR_SSL_CA')) : null),
-            ]) + [
-                1014 => false, // PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT
-            ] : [],
+                1009 => env('MYSQL_ATTR_SSL_CA') ? base_path(env('MYSQL_ATTR_SSL_CA')) : null,
+            ]) : [],
         ],
 
         'mariadb' => [
