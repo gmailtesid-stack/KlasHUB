@@ -60,7 +60,7 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? [
-                1009 => base_path('cacert.pem'),
+                1009 => env('VERCEL') ? '/tmp/cacert.pem' : base_path('cacert.pem'),
             ] : [],
         ],
 
