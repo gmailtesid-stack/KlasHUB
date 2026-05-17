@@ -26,13 +26,4 @@ foreach ($dirs as $dir) {
     }
 }
 
-// Generate the specific Let's Encrypt root certificate required by TiDB Cloud
-// This avoids Vercel-PHP bundler exclusions and Amazon Linux system CA path issues
-if (!file_exists('/tmp/cacert.pem')) {
-    $caBundle = @file_get_contents('https://curl.se/ca/cacert.pem');
-    if ($caBundle) {
-        file_put_contents('/tmp/cacert.pem', $caBundle);
-    }
-}
-
 $app->handleRequest(Request::capture());
