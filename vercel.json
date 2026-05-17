@@ -16,6 +16,10 @@
             "dest": "/public/build/$1"
         },
         {
+            "src": "/(.*\\.(?:ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot|css|js|webp|mp4|webm))$",
+            "dest": "/public/$1"
+        },
+        {
             "src": "/(.*)",
             "dest": "/api/index.php"
         }
