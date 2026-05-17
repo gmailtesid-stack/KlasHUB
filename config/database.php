@@ -60,9 +60,7 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? [
-                1009 => isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL'])
-                    ? (@file_exists('/etc/pki/tls/certs/ca-bundle.crt') ? '/etc/pki/tls/certs/ca-bundle.crt' : '/etc/ssl/certs/ca-certificates.crt')
-                    : base_path('cacert.pem'),
+                1009 => base_path('cacert.pem'),
             ] : [],
         ],
 
