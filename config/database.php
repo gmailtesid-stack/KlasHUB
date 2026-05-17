@@ -60,7 +60,7 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                1009 => env('VERCEL') ? (file_exists('/etc/pki/tls/certs/ca-bundle.crt') ? '/etc/pki/tls/certs/ca-bundle.crt' : '/etc/ssl/certs/ca-certificates.crt') : (env('MYSQL_ATTR_SSL_CA') ? base_path(env('MYSQL_ATTR_SSL_CA')) : null),
+                1009 => env('VERCEL') ? '/tmp/isrgrootx1.pem' : (env('MYSQL_ATTR_SSL_CA') ? base_path(env('MYSQL_ATTR_SSL_CA')) : null),
             ]) + [
                 1014 => false, // PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT
             ] : [],
