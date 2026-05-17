@@ -59,9 +59,9 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                1009 => env('MYSQL_ATTR_SSL_CA') ? base_path(env('MYSQL_ATTR_SSL_CA')) : null,
-            ]) : [],
+            'options' => extension_loaded('pdo_mysql') ? [
+                1011 => 'HIGH', // PDO::MYSQL_ATTR_SSL_CIPHER
+            ] : [],
         ],
 
         'mariadb' => [
