@@ -28,7 +28,8 @@ class CustomMySqlConnector extends MySqlConnector
         // Isolate SSL options for the constructor to prevent mysqlnd bugs
         $constructorOptions = [];
         if (isset($options[1009])) $constructorOptions[1009] = $options[1009];
-        if (isset($options[1014])) $constructorOptions[1014] = $options[1014];
+        // CRITICAL: Do NOT pass 1014 (MYSQL_ATTR_SSL_VERIFY_SERVER_CERT). 
+        // Passing 1014 => false along with 1009 => $caPath causes OpenSSL to conflict and throw 'certificate verify failed'!
 
         // Return a raw PDO instance to bypass the PHP 8.4/8.5 PDO::connect() bug on Vercel
         $pdo = new PDO($dsn, $username, $password, $constructorOptions);
