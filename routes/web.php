@@ -37,8 +37,76 @@ Route::post('/logout', function (Request $request) {
     Auth::logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
-    return redirect('/login');
+    return redirect('/');
 })->name('logout');
+
+Route::get('/debug-db', function () {
+    $results = [];
+    $results['php_version'] = phpversion();
+    $results['openssl_version'] = OPENSSL_VERSION_TEXT;
+    
+    $caPath = base_path('cacert.pem');
+    $results['ca_base_exists'] = file_exists($caPath);
+    $results['ca_base_readable'] = is_readable($caPath);
+    $results['ca_base_size'] = file_exists($caPath) ? filesize($caPath) : 0;
+    
+    $tmpCaPath = '/tmp/cacert.pem';
+    $results['ca_tmp_exists'] = file_exists($tmpCaPath);
+    $results['ca_tmp_readable'] = is_readable($tmpCaPath);
+    $results['ca_tmp_size'] = file_exists($tmpCaPath) ? filesize($tmpCaPath) : 0;
+    
+    // Try PDO connection with base path
+    try {
+        $pdo = new PDO(
+            'mysql:host=gateway01.ap-southeast-1.prod.aws.tidbcloud.com;port=4000;dbname=kelashub',
+            'sBTXC6n9rnshkvy.root',
+            '2a3zK3oA9d75P3a!',
+            [
+                PDO::MYSQL_ATTR_SSL_CA => $caPath,
+            ]
+        );
+        $results['pdo_base_success'] = true;
+    } catch (\Exception $e) {
+        $results['pdo_base_success'] = false;
+        $results['pdo_base_error'] = $e->getMessage();
+    }
+    
+    // Try PDO connection with tmp path
+    try {
+        $pdo = new PDO(
+            'mysql:host=gateway01.ap-southeast-1.prod.aws.tidbcloud.com;port=4000;dbname=kelashub',
+            'sBTXC6n9rnshkvy.root',
+            '2a3zK3oA9d75P3a!',
+            [
+                PDO::MYSQL_ATTR_SSL_CA => $tmpCaPath,
+            ]
+        );
+        $results['pdo_tmp_success'] = true;
+    } catch (\Exception $e) {
+        $results['pdo_tmp_success'] = false;
+        $results['pdo_tmp_error'] = $e->getMessage();
+    }
+    
+    // Try PDO connection with Linux native path
+    try {
+        $nativePath = file_exists('/etc/pki/tls/certs/ca-bundle.crt') ? '/etc/pki/tls/certs/ca-bundle.crt' : '/etc/ssl/certs/ca-certificates.crt';
+        $results['native_path_used'] = $nativePath;
+        $pdo = new PDO(
+            'mysql:host=gateway01.ap-southeast-1.prod.aws.tidbcloud.com;port=4000;dbname=kelashub',
+            'sBTXC6n9rnshkvy.root',
+            '2a3zK3oA9d75P3a!',
+            [
+                PDO::MYSQL_ATTR_SSL_CA => $nativePath,
+            ]
+        );
+        $results['pdo_native_success'] = true;
+    } catch (\Exception $e) {
+        $results['pdo_native_success'] = false;
+        $results['pdo_native_error'] = $e->getMessage();
+    }
+    
+    return response()->json($results);
+});
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [KelasHubEngineController::class, 'getStudentDashboard'])->name('dashboard');
