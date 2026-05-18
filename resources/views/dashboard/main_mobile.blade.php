@@ -1087,16 +1087,6 @@
                     <h3 class="text-lg font-bold text-white mb-1">Tambah Jadwal Kuliah</h3>
                 </div>
                 <form class="space-y-3" x-data="{
-                    matkuls: {
-                        'Rekayasa Perangkat Lunak': 'ULIYATUNISA S.Kom., M.Kom.',
-                        'Kerja Praktek': 'SUTRIYONO S.KOM., M.KOM.',
-                        'Teknologi Internet of Things': 'JULI GUNAWAN S.T., M.Kom.',
-                        'Pemrograman II': 'DAWAM AGUNG PRIBADI',
-                        'Basis Data II': 'ACHMAD LUTFI FUADI S.Kom',
-                        'Mobile Programming': 'TIO ANDRIAN S.T., M.KOM.',
-                        'Sistem Pendukung Keputusan': 'ACHMAD SEHAN S.Kom',
-                        'Teknik Kompilasi': 'ANIS MIRZA S.Kom, M.Kom'
-                    },
                     selectedMatkul: '',
                     dosen: '',
                     hari: 'Sabtu',
@@ -1106,16 +1096,18 @@
                     jamMulai: '',
                     jamSelesai: '',
                     deliveryType: 'offline',
+                    submitting: false,
                     updateAutoFill() {
-                        this.dosen = this.matkuls[this.selectedMatkul] || '';
+                        const found = matkuls.find(m => m.name === this.selectedMatkul);
+                        this.dosen = found ? found.lecturer : '';
                     }
                 }">
                     <div>
                         <label class="block text-xs text-zinc-400 mb-1">Mata Kuliah</label>
                         <select x-model="selectedMatkul" @change="updateAutoFill()" class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-2.5 text-white text-sm focus:border-white focus:outline-none appearance-none">
                             <option value="" disabled selected>Pilih Mata Kuliah...</option>
-                            <template x-for="(dosenName, matkulName) in matkuls" :key="matkulName">
-                                <option :value="matkulName" x-text="matkulName"></option>
+                            <template x-for="m in matkuls" :key="m.id">
+                                <option :value="m.name" x-text="m.name"></option>
                             </template>
                         </select>
                     </div>
@@ -1164,8 +1156,11 @@
                     </div>
                     <div class="flex gap-3 pt-3">
                         <button type="button" @click="modalJadwal = false" class="flex-1 bg-zinc-800 text-zinc-300 py-2.5 rounded-xl text-sm font-semibold hover:bg-zinc-700">Batal</button>
-                        <button type="button" @click="
+                        <button type="button" :disabled="submitting" @click="
                             if(!selectedMatkul) return notify('Pilih matkul dulu!');
+                            if(submitting) return;
+                            submitting = true;
+                            let capturedSks = (matkuls.find(m => m.name === selectedMatkul) || {sks: 2}).sks;
                             let bodyData = {
                                 subject_name: selectedMatkul,
                                 subject_code: kodeMatkul,
@@ -1200,17 +1195,18 @@
                                         jamSelesai: jamSelesai,
                                         deliveryType: deliveryType,
                                         isValidated: false,
-                                        sks: (matkuls.find(m => m.name === selectedMatkul) || {sks: 2}).sks
+                                        sks: capturedSks
                                     });
-                                    modalJadwal = false; 
+                                    modalJadwal = false;
                                     notify('Jadwal ' + selectedMatkul + ' berhasil disimpan!');
                                     selectedMatkul = ''; jamMulai = ''; jamSelesai = ''; dosen = '';
                                 } else {
-                                    notify('Gagal menyimpan jadwal!');
+                                    notify('Gagal menyimpan jadwal: ' + (data.message || 'Server error'));
                                 }
                             })
-                            .catch(err => notify('Error server: ' + err));
-                        " class="flex-1 bg-white text-black py-2.5 rounded-xl text-sm font-bold hover:bg-zinc-200">Simpan Jadwal</button>
+                            .catch(err => notify('Error: ' + err))
+                            .finally(() => { submitting = false; });
+                        " :class="submitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-zinc-200'" class="flex-1 bg-white text-black py-2.5 rounded-xl text-sm font-bold transition" x-text="submitting ? 'Menyimpan...' : 'Simpan Jadwal'"></button>
                     </div>
                 </form>
             </div>
@@ -1223,7 +1219,7 @@
                 <div>
                     <h3 class="text-lg font-bold text-white mb-1">Entry Tugas Baru</h3>
                 </div>
-                <form class="space-y-3" x-data="{ tgsTitle: '', tgsMatkul: '', tgsDeadline: '', tgsMembers: '' }">
+                <form class="space-y-3" x-data="{ tgsTitle: '', tgsMatkul: '', tgsDeadline: '', tgsMembers: '', submitting: false }">
                     <div>
                         <label class="block text-xs text-zinc-400 mb-1">Judul Tugas</label>
                         <input type="text" x-model="tgsTitle" placeholder="Project Akhir" class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none">
@@ -1233,8 +1229,8 @@
                             <label class="block text-xs text-zinc-400 mb-1">Mata Kuliah</label>
                             <select x-model="tgsMatkul" class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none">
                                 <option value="">Pilih Matkul...</option>
-                                <template x-for="(sks, matkul) in matkuls_sks" :key="matkul">
-                                    <option x-text="matkul" :value="matkul"></option>
+                                <template x-for="m in matkuls" :key="m.id">
+                                    <option :value="m.name" x-text="m.name"></option>
                                 </template>
                             </select>
                         </div>
@@ -1258,41 +1254,31 @@
                     </div>
                     <div class="flex gap-3 pt-3">
                         <button type="button" @click="modalTugas = false" class="flex-1 bg-zinc-800 text-zinc-300 py-2.5 rounded-xl text-sm font-semibold hover:bg-zinc-700">Batal</button>
-                        <button type="button" @click="
+                        <button type="button" :disabled="submitting" @click="
                             if(!tgsTitle || !tgsMatkul || !tgsDeadline) return notify('Lengkapi data tugas!');
-                            let bodyData = {
-                                subject_name: tgsMatkul,
-                                title: tgsTitle,
-                                deadline: tgsDeadline,
-                                type: taskType,
-                                members: tgsMembers
-                            };
+                            if(submitting) return;
+                            submitting = true;
                             fetch('/kh/assignment', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
                                     'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
                                 },
-                                body: JSON.stringify(bodyData)
+                                body: JSON.stringify({ subject_name: tgsMatkul, title: tgsTitle, deadline: tgsDeadline, type: taskType, members: tgsMembers })
                             })
                             .then(res => res.json())
                             .then(data => {
                                 if(data.success) {
-                                    semuaTugas.push({
-                                        matkul: tgsMatkul,
-                                        title: tgsTitle,
-                                        deadline: tgsDeadline,
-                                        type: taskType.toUpperCase(),
-                                        tim: tgsMembers,
-                                        desc: ''
-                                    });
-                                    modalTugas = false;
-                                    notify('Tugas berhasil disimpan ke Database!');
+                                    semuaTugas.push({ id: data.assignment?.id, matkul: tgsMatkul, title: tgsTitle, deadline: tgsDeadline, type: taskType.toUpperCase(), tim: tgsMembers, desc: '', isValidated: false });
+                                    modalTugas = false; tgsTitle = ''; tgsMatkul = ''; tgsDeadline = ''; tgsMembers = '';
+                                    notify('Tugas berhasil disimpan!');
                                 } else {
                                     notify('Gagal menyimpan tugas!');
                                 }
-                            });
-                        " class="flex-1 bg-blue-600 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-blue-500">Simpan</button>
+                            })
+                            .catch(err => notify('Error: ' + err))
+                            .finally(() => { submitting = false; });
+                        " :class="submitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-500'" class="flex-1 bg-blue-600 text-white py-2.5 rounded-xl text-sm font-bold transition" x-text="submitting ? 'Menyimpan...' : 'Simpan'"></button>
                     </div>
                 </form>
             </div>
@@ -1305,13 +1291,13 @@
                 <div>
                     <h3 class="text-lg font-bold text-white mb-1">Upload Modul Pembelajaran</h3>
                 </div>
-                <form class="space-y-4" x-data="{ mdlMatkul: '', mdlTitle: '', mdlUrl: '', uploadType: 'file', fileName: '' }">
+                <form class="space-y-4" x-data="{ mdlMatkul: '', mdlTitle: '', mdlUrl: '', uploadType: 'file', fileName: '', submitting: false }">
                     <div>
                         <label class="block text-xs text-zinc-400 mb-1">Mata Kuliah</label>
                         <select x-model="mdlMatkul" class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-2.5 text-white text-sm focus:border-emerald-500 focus:outline-none appearance-none">
                             <option value="" disabled selected>Pilih Mata Kuliah...</option>
-                            <template x-for="(sks, matkul) in matkuls_sks" :key="matkul">
-                                <option x-text="matkul" :value="matkul"></option>
+                            <template x-for="m in matkuls" :key="m.id">
+                                <option :value="m.name" x-text="m.name"></option>
                             </template>
                         </select>
                     </div>
@@ -1353,44 +1339,40 @@
 
                     <div class="flex gap-3 pt-3">
                         <button type="button" @click="modalMateri = false" class="flex-1 bg-zinc-800 text-zinc-300 py-3 rounded-xl text-sm font-semibold hover:bg-zinc-700">Batal</button>
-                        <button type="button" @click="
+                        <button type="button" :disabled="submitting" @click="
                             if(!mdlMatkul) return notify('Pilih matkul dulu!');
+                            if(submitting) return;
+                            submitting = true;
                             let formData = new FormData();
                             formData.append('subject_name', mdlMatkul);
                             formData.append('type', uploadType);
                             if(uploadType === 'file') {
                                 let fileInput = document.getElementById('mdlFile');
-                                if(fileInput.files.length === 0) return notify('Pilih file dulu!');
+                                if(fileInput.files.length === 0) { submitting = false; return notify('Pilih file dulu!'); }
                                 formData.append('file', fileInput.files[0]);
                             } else {
-                                if(!mdlUrl) return notify('Isi link dulu!');
-                                formData.append('title', mdlTitle);
+                                if(!mdlUrl) { submitting = false; return notify('Isi link dulu!'); }
+                                formData.append('title', mdlTitle || mdlUrl);
                                 formData.append('link_url', mdlUrl);
                             }
                             fetch('/kh/module', {
                                 method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
-                                },
+                                headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content') },
                                 body: formData
                             })
                             .then(res => res.json())
                             .then(data => {
                                 if(data.success) {
-                                    semuaModul.unshift({
-                                        matkul: mdlMatkul,
-                                        title: data.module.title,
-                                        type: uploadType,
-                                        file_path: data.module.file_path,
-                                        link_url: data.module.link_url
-                                    });
-                                    modalMateri = false;
-                                    notify('Modul berhasil disimpan ke Database!');
+                                    semuaModul.unshift({ id: data.module?.id, matkul: mdlMatkul, title: data.module?.title || mdlTitle || mdlUrl, type: uploadType, file_path: data.module?.file_path, link_url: data.module?.link_url, isValidated: false });
+                                    modalMateri = false; mdlMatkul = ''; mdlTitle = ''; mdlUrl = ''; fileName = '';
+                                    notify('Modul berhasil disimpan!');
                                 } else {
-                                    notify('Gagal menyimpan modul!');
+                                    notify('Gagal: ' + (data.message || 'Server error'));
                                 }
-                            });
-                        " class="flex-1 bg-emerald-600 text-white py-3 rounded-xl text-sm font-bold hover:bg-emerald-500 shadow-lg shadow-emerald-500/20">Upload</button>
+                            })
+                            .catch(err => notify('Error: ' + err))
+                            .finally(() => { submitting = false; });
+                        " :class="submitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-emerald-500'" class="flex-1 bg-emerald-600 text-white py-3 rounded-xl text-sm font-bold transition shadow-lg shadow-emerald-500/20" x-text="submitting ? 'Mengunggah...' : 'Upload'"></button>
                     </div>
                 </form>
             </div>
