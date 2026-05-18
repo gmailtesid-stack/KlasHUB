@@ -26,7 +26,7 @@ class CustomMySqlConnector extends MySqlConnector
 
         $minimalOptions = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            1009 => $caPath, // PDO::MYSQL_ATTR_SSL_CA (Forces SSL)
+            1014 => false,   // PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT (Disables server certificate verification)
         ];
 
         return new PDO($dsn, $username, $password, $minimalOptions);
