@@ -18,10 +18,7 @@ class CustomMySqlConnector extends MySqlConnector
      */
     protected function createPdoConnection($dsn, $username, $password, $options)
     {
-        // Filter options to ONLY include error mode and SSL CA to isolate the bug
-        $cleanOptions = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        ];
+        $cleanOptions = [];
 
         if (isset($options[1009])) {
             $cleanOptions[1009] = $options[1009];
