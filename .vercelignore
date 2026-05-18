@@ -1,0 +1,7 @@
+android-webview
+generate_android.php
+.git
+.github
+node_modules
+vendor
+.vercel
