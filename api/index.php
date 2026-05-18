@@ -29,10 +29,9 @@ foreach ($dirs as $dir) {
 // Copy the full Mozilla CA bundle to /tmp so the mysqlnd C-extension can read it without permission errors
 if (!file_exists('/tmp/cacert.pem')) {
     $ca = @file_get_contents(__DIR__.'/../cacert.pem');
-    if (!$ca) {
-        $ca = @file_get_contents('https://curl.se/ca/cacert.pem');
+    if ($ca) {
+        @file_put_contents('/tmp/cacert.pem', $ca);
     }
-    @file_put_contents('/tmp/cacert.pem', $ca);
 }
 
 $app->handleRequest(Request::capture());
