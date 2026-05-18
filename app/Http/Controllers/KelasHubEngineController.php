@@ -190,13 +190,24 @@ class KelasHubEngineController extends Controller {
             'type' => 'required|in:file,link',
             'title' => 'required_if:type,link',
             'link_url' => 'required_if:type,link',
-            'file' => 'required_if:type,file|file|mimes:pdf,doc,docx,txt|max:10240',
+            'file' => 'required_if:type,file|file|mimes:pdf,doc,docx,txt|max:4096',
         ]);
 
         if ($request->hasFile('file')) {
-            $path = $request->file('file')->store('modules', 'public');
-            $data['file_path'] = $path;
-            $data['title'] = $request->file('file')->getClientOriginalName();
+            $file = $request->file('file');
+            $filename = $file->getClientOriginalName();
+            $data['title'] = $filename;
+            $data['type'] = 'file';
+            
+            // Try storing to /tmp (only writable path on Vercel serverless)
+            try {
+                $tmpPath = '/tmp/' . uniqid() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $filename);
+                $file->move('/tmp', basename($tmpPath));
+                $data['file_path'] = 'tmp/' . basename($tmpPath);
+            } catch (\Exception $e) {
+                // On Vercel, file storage is ephemeral. Save filename only.
+                $data['file_path'] = null;
+            }
         }
 
         $data['is_validated'] = Auth::user()->role === 'ketua_kelas';

@@ -454,15 +454,7 @@
                                             </div>
                                         </template>
 
-                                        <template x-for="(jdwl, index) in jadwalHarian.filter(item => {
-                                            if (item.dosen === 'Belum Diatur') return false; // Filter out placeholders
-                                            const now = new Date();
-                                            const [h, m] = item.jamSelesai.split(':');
-                                            const endTime = new Date();
-                                            endTime.setHours(parseInt(h), parseInt(m), 0);
-                                            // Tampilkan jika belum selesai ATAU jika sekarang bukan hari Sabtu (sebagai preview)
-                                            return endTime > now || now.getDay() !== 6; 
-                                        }).slice(0, 3)" :key="index">
+                                        <template x-for="(jdwl, index) in jadwalHarian.filter(item => item.dosen && item.dosen !== 'Belum Diatur').slice(0, 5)" :key="index">
                                             <div class="flex gap-4 p-4 rounded-xl bg-black/40 border border-zinc-800/50 group hover:bg-black/60 transition relative">
                                                 <div class="text-center shrink-0 flex flex-col justify-center items-center min-w-[2.5rem]">
                                                     <p class="text-lg text-emerald-400 font-black leading-none" x-text="jdwl.sks"></p>
@@ -1349,6 +1341,8 @@
                             if(uploadType === 'file') {
                                 let fileInput = document.getElementById('mdlFile');
                                 if(fileInput.files.length === 0) { submitting = false; return notify('Pilih file dulu!'); }
+                                const maxSize = 3 * 1024 * 1024; // 3MB limit for Vercel
+                                if(fileInput.files[0].size > maxSize) { submitting = false; return notify('File terlalu besar! Maks 3MB. Gunakan Google Drive untuk file lebih besar.'); }
                                 formData.append('file', fileInput.files[0]);
                             } else {
                                 if(!mdlUrl) { submitting = false; return notify('Isi link dulu!'); }
