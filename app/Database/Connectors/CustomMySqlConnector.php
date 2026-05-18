@@ -25,7 +25,21 @@ class CustomMySqlConnector extends MySqlConnector
             }
         }
 
+        // Isolate SSL options for the constructor to prevent mysqlnd bugs
+        $constructorOptions = [];
+        if (isset($options[1009])) $constructorOptions[1009] = $options[1009];
+        if (isset($options[1014])) $constructorOptions[1014] = $options[1014];
+
         // Return a raw PDO instance to bypass the PHP 8.4/8.5 PDO::connect() bug on Vercel
-        return new PDO($dsn, $username, $password, $options);
+        $pdo = new PDO($dsn, $username, $password, $constructorOptions);
+
+        // Apply all other options (like ERRMODE, EMULATE_PREPARES) after connection
+        foreach ($options as $key => $value) {
+            if ($key !== 1009 && $key !== 1014) {
+                $pdo->setAttribute($key, $value);
+            }
+        }
+
+        return $pdo;
     }
 }
