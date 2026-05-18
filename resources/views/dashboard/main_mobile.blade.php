@@ -224,8 +224,10 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    if(current) {
-                        current.deliveryType = nextType;
+                    let idx = this.jadwalHarian.findIndex(j => j.matkul === matkul);
+                    if(idx !== -1) {
+                        this.jadwalHarian[idx].deliveryType = nextType;
+                        this.jadwalHarian = [...this.jadwalHarian]; // Force Alpine reactivity
                     } else {
                         this.jadwalHarian.push({
                             id: data.schedule.id,
@@ -239,8 +241,9 @@
                             sks: this.matkuls_sks[matkul] || 2,
                             isValidated: true
                         });
+                        this.jadwalHarian = [...this.jadwalHarian]; // Force Alpine reactivity
                     }
-                    this.notify(matkul + ' set to ' + nextType.toUpperCase());
+                    this.notify(matkul + ' diubah menjadi ' + nextType.toUpperCase());
                 }
             });
         },
@@ -897,8 +900,10 @@
                                         @if(in_array($student->role ?? '', ['ketua_kelas', 'sekretaris', 'bendahara']))
                                         <div @click.stop="toggleDelivery(m.name)" class="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-white/5 transition">
                                             <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-tighter" x-text="(jadwalHarian.find(j => j.matkul === m.name)?.deliveryType || 'offline') === 'offline' ? 'Offline' : 'Online'"></span>
-                                            <div class="w-6 h-6 rounded-md border flex items-center justify-center transition" :class="(jadwalHarian.find(j => j.matkul === m.name)?.deliveryType || 'offline') === 'offline' ? 'bg-emerald-500 border-emerald-400 text-white' : 'border-zinc-700 text-zinc-700'">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            <div class="w-6 h-6 rounded-md border flex items-center justify-center transition" :class="(jadwalHarian.find(j => j.matkul === m.name)?.deliveryType || 'offline') === 'offline' ? 'bg-emerald-500 border-emerald-400 text-white' : 'border-zinc-700 text-zinc-700 bg-black'">
+                                                <template x-if="(jadwalHarian.find(j => j.matkul === m.name)?.deliveryType || 'offline') === 'offline'">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                </template>
                                             </div>
                                         </div>
                                         <button @click.stop="deleteSubject(m.id)" class="p-2 text-zinc-500 hover:text-red-400 transition">
@@ -908,7 +913,9 @@
                                         <div class="flex items-center gap-2">
                                             <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-tighter" x-text="(jadwalHarian.find(j => j.matkul === m.name)?.deliveryType || 'offline') === 'offline' ? 'Offline' : 'Online'"></span>
                                             <div class="w-5 h-5 rounded-md border flex items-center justify-center" :class="(jadwalHarian.find(j => j.matkul === m.name)?.deliveryType || 'offline') === 'offline' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-500' : 'border-zinc-800 text-zinc-800'">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                <template x-if="(jadwalHarian.find(j => j.matkul === m.name)?.deliveryType || 'offline') === 'offline'">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                </template>
                                             </div>
                                         </div>
                                         @endif
