@@ -8,27 +8,21 @@ use PDO;
 class CustomMySqlConnector extends MySqlConnector
 {
     /**
-     * Create a new PDO connection.
+     * Create a new PDO connection instance.
      *
      * @param  string  $dsn
-     * @param  array  $config
+     * @param  string  $username
+     * @param  string  $password
      * @param  array  $options
      * @return \PDO
      */
-    public function createConnection($dsn, array $config, array $options)
+    protected function createPdoConnection($dsn, $username, $password, $options)
     {
-        $username = $config['username'] ?? null;
-        $password = $config['password'] ?? null;
-        
-        $caPath = file_exists('/etc/pki/tls/certs/ca-bundle.crt') 
-            ? '/etc/pki/tls/certs/ca-bundle.crt' 
-            : (file_exists('/etc/ssl/certs/ca-certificates.crt') ? '/etc/ssl/certs/ca-certificates.crt' : base_path('cacert.pem'));
-
-        $minimalOptions = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            1014 => false,   // PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT (Disables server certificate verification)
-        ];
-
-        return new PDO($dsn, $username, $password, $minimalOptions);
+        if (isset($options[1009]) && $options[1009] === '/tmp/cacert.pem') {
+            if (!file_exists('/tmp/cacert.pem') || @filesize('/tmp/cacert.pem') < 150000) {
+                @copy(base_path('cacert.pem'), '/tmp/cacert.pem');
+            }
+        }
+        return new PDO($dsn, $username, $password, $options);
     }
 }
