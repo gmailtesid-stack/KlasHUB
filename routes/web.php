@@ -40,6 +40,14 @@ Route::post('/logout', function (Request $request) {
     return redirect('/');
 })->name('logout');
 
+Route::get('/debug-config', function () {
+    $config = config('database.connections.mysql');
+    if (isset($config['password'])) {
+        $config['password'] = 'REDACTED';
+    }
+    return response()->json($config);
+});
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [KelasHubEngineController::class, 'getStudentDashboard'])->name('dashboard');
     Route::post('/api/schedule/toggle-delivery', [KelasHubEngineController::class, 'toggleDeliveryType']);
