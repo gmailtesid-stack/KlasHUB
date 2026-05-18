@@ -59,11 +59,12 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => [
-                1009 => (isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || strpos(base_path(), '/var/task') !== false) 
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => (isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || strpos(base_path(), '/var/task') !== false) 
                     ? '/tmp/cacert.pem' 
-                    : base_path('cacert.pem'),
-            ],
+                    : base_path(env('MYSQL_ATTR_SSL_CA', 'cacert.pem')),
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+            ]) : [],
         ],
 
         'mariadb' => [
