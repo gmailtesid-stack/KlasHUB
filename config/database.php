@@ -59,11 +59,11 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? [
+            'options' => [
                 1009 => (isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || strpos(base_path(), '/var/task') !== false) 
                     ? '/tmp/cacert.pem' 
                     : base_path('cacert.pem'),
-            ] : [],
+            ],
         ],
 
         'mariadb' => [
