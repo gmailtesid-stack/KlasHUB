@@ -207,7 +207,8 @@
         },
         toggleDelivery(matkul) {
             let current = this.jadwalHarian.find(j => j.matkul === matkul);
-            let nextType = (current && current.deliveryType === 'offline') ? 'online' : 'offline';
+            let currentType = current ? current.deliveryType : 'offline';
+            let nextType = currentType === 'offline' ? 'online' : 'offline';
             
             fetch('/api/schedule/toggle-delivery', {
                 method: 'POST',
@@ -895,8 +896,8 @@
                                     <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-3 z-10">
                                         @if(in_array($student->role ?? '', ['ketua_kelas', 'sekretaris', 'bendahara']))
                                         <div @click.stop="toggleDelivery(m.name)" class="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-white/5 transition">
-                                            <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-tighter" x-text="jadwalHarian.find(j => j.matkul === m.name)?.deliveryType === 'offline' ? 'Offline' : 'Online'"></span>
-                                            <div class="w-6 h-6 rounded-md border flex items-center justify-center transition" :class="jadwalHarian.find(j => j.matkul === m.name)?.deliveryType === 'offline' ? 'bg-emerald-500 border-emerald-400 text-white' : 'border-zinc-700 text-zinc-700'">
+                                            <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-tighter" x-text="(jadwalHarian.find(j => j.matkul === m.name)?.deliveryType || 'offline') === 'offline' ? 'Offline' : 'Online'"></span>
+                                            <div class="w-6 h-6 rounded-md border flex items-center justify-center transition" :class="(jadwalHarian.find(j => j.matkul === m.name)?.deliveryType || 'offline') === 'offline' ? 'bg-emerald-500 border-emerald-400 text-white' : 'border-zinc-700 text-zinc-700'">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                             </div>
                                         </div>
@@ -905,8 +906,8 @@
                                         </button>
                                         @else
                                         <div class="flex items-center gap-2">
-                                            <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-tighter" x-text="jadwalHarian.find(j => j.matkul === m.name)?.deliveryType === 'offline' ? 'Offline' : 'Online'"></span>
-                                            <div class="w-5 h-5 rounded-md border flex items-center justify-center" :class="jadwalHarian.find(j => j.matkul === m.name)?.deliveryType === 'offline' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-500' : 'border-zinc-800 text-zinc-800'">
+                                            <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-tighter" x-text="(jadwalHarian.find(j => j.matkul === m.name)?.deliveryType || 'offline') === 'offline' ? 'Offline' : 'Online'"></span>
+                                            <div class="w-5 h-5 rounded-md border flex items-center justify-center" :class="(jadwalHarian.find(j => j.matkul === m.name)?.deliveryType || 'offline') === 'offline' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-500' : 'border-zinc-800 text-zinc-800'">
                                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                             </div>
                                         </div>

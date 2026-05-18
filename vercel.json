@@ -39,5 +39,11 @@
         "APP_EVENTS_CACHE": "/tmp/events.php",
         "APP_PACKAGES_CACHE": "/tmp/packages.php",
         "APP_SERVICES_CACHE": "/tmp/services.php"
-    }
+    },
+    "crons": [
+        {
+            "path": "/api/cron/reset-schedule",
+            "schedule": "59 16 * * *"
+        }
+    ]
 }

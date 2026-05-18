@@ -108,6 +108,12 @@ Route::post('/logout', function (Request $request) {
     return redirect('/');
 })->name('logout');
 
+Route::get('/api/cron/reset-schedule', function (Request $request) {
+    // Truncate the academic_schedules table
+    \App\Models\AcademicSchedule::truncate();
+    return response()->json(['success' => true, 'message' => 'Academic schedule reset successfully']);
+});
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [KelasHubEngineController::class, 'getStudentDashboard'])->name('dashboard');
     Route::post('/api/schedule/toggle-delivery', [KelasHubEngineController::class, 'toggleDeliveryType']);

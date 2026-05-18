@@ -129,10 +129,9 @@ class KelasHubEngineController extends Controller {
             'delivery_type' => 'required|string|in:offline,online'
         ]);
 
-        $schedule = AcademicSchedule::updateOrCreate(
+        $schedule = AcademicSchedule::firstOrCreate(
             ['subject_name' => $request->subject_name],
             [
-                'delivery_type' => $request->delivery_type,
                 'day' => 'Sabtu', // Default to Saturday as per user request
                 'lecturer_name' => 'Belum Diatur',
                 'time_start' => '07:30',
@@ -141,6 +140,9 @@ class KelasHubEngineController extends Controller {
                 'is_validated' => true
             ]
         );
+        
+        $schedule->delivery_type = $request->delivery_type;
+        $schedule->save();
 
         return response()->json(['success' => true, 'schedule' => $schedule]);
     }
