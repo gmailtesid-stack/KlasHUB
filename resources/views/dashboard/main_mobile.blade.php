@@ -454,7 +454,7 @@
                                             </div>
                                         </template>
 
-                                        <template x-for="(jdwl, index) in jadwalHarian.filter(item => item.dosen && item.dosen !== 'Belum Diatur').slice(0, 5)" :key="index">
+                                        <template x-for="(jdwl, index) in jadwalHarian.filter(item => item.dosen && item.dosen !== 'Belum Diatur')" :key="index">
                                             <div class="flex gap-4 p-4 rounded-xl bg-black/40 border border-zinc-800/50 group hover:bg-black/60 transition relative">
                                                 <div class="text-center shrink-0 flex flex-col justify-center items-center min-w-[2.5rem]">
                                                     <p class="text-lg text-emerald-400 font-black leading-none" x-text="jdwl.sks"></p>
