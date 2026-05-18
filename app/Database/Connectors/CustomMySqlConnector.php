@@ -18,37 +18,60 @@ class CustomMySqlConnector extends MySqlConnector
      */
     protected function createPdoConnection($dsn, $username, $password, $options)
     {
+        $sslCa = defined('Pdo\Mysql::ATTR_SSL_CA') ? \Pdo\Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA;
+        
+        $nativePath = '/etc/pki/tls/certs/ca-bundle.crt';
+        $fallbackNativePath = '/etc/ssl/certs/ca-certificates.crt';
         $tmpCa = '/tmp/cacert.pem';
-        $baseCa = base_path('cacert.pem');
 
         if (!file_exists($tmpCa) || @filesize($tmpCa) < 150000) {
-            @copy($baseCa, $tmpCa);
+            @copy(base_path('cacert.pem'), $tmpCa);
         }
 
+        $pdo = null;
+
+        // Attempt 1: Native Amazon Linux path (Proven to work in debug-db)
         try {
-            // Attempt 1: Exactly like pdo_tmp_success
-            $pdo = new PDO($dsn, $username, $password, [
-                1009 => $tmpCa
-            ]);
+            if (file_exists($nativePath)) {
+                $pdo = new PDO($dsn, $username, $password, [$sslCa => $nativePath]);
+            } else {
+                throw new \PDOException("Native path $nativePath not found.");
+            }
         } catch (\PDOException $e) {
+            error_log("Attempt 1 failed: " . $e->getMessage());
+            
+            // Attempt 2: Fallback Native path
             try {
-                // Attempt 2: Exactly like pdo_base_success
-                $pdo = new PDO($dsn, $username, $password, [
-                    1009 => $baseCa
-                ]);
+                if (file_exists($fallbackNativePath)) {
+                    $pdo = new PDO($dsn, $username, $password, [$sslCa => $fallbackNativePath]);
+                } else {
+                    throw new \PDOException("Fallback native path not found.");
+                }
             } catch (\PDOException $e2) {
-                // Attempt 3: Try with both
-                $pdo = new PDO($dsn, $username, $password, [
-                    1009 => $tmpCa,
-                    1014 => false
-                ]);
+                error_log("Attempt 2 failed: " . $e2->getMessage());
+                
+                // Attempt 3: Tmp CA
+                try {
+                    $pdo = new PDO($dsn, $username, $password, [$sslCa => $tmpCa]);
+                } catch (\PDOException $e3) {
+                    error_log("Attempt 3 failed: " . $e3->getMessage());
+                    
+                    // Attempt 4: Base CA
+                    $pdo = new PDO($dsn, $username, $password, [$sslCa => base_path('cacert.pem')]);
+                }
             }
         }
 
         // Apply remaining options
-        foreach ($options as $key => $value) {
-            if ($key !== 1009 && $key !== 1014) {
-                $pdo->setAttribute($key, $value);
+        if ($pdo) {
+            foreach ($options as $key => $value) {
+                if ($key !== $sslCa && $key !== 1014) {
+                    try {
+                        $pdo->setAttribute($key, $value);
+                    } catch (\Exception $e) {
+                        // ignore setAttribute errors for incompatible options
+                    }
+                }
             }
         }
 
