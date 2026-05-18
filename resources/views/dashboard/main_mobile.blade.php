@@ -802,60 +802,28 @@
                                 </div>
                             </div>
                             <div class="bg-zinc-900/50 border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl">
-                                <!-- Mobile Responsive Card List (block md:hidden) -->
-                                <div class="block md:hidden divide-y divide-zinc-800/50">
-                                    <template x-for="mhs in semuaMahasiswa" :key="mhs.id">
-                                        <div class="p-4 flex flex-col gap-3 hover:bg-white/5 transition">
-                                            <div class="flex items-center justify-between">
-                                                <div class="flex items-center gap-3">
-                                                    <div class="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400" x-text="mhs.name.charAt(0)"></div>
-                                                    <div>
-                                                        <span class="text-sm font-bold text-zinc-200" x-text="mhs.name"></span>
-                                                        <p class="text-[10px] text-zinc-500 font-mono mt-0.5" x-text="'NIM: ' + mhs.nim"></p>
-                                                    </div>
-                                                </div>
-                                                <button @click="deleteStudent(mhs.id)" class="p-2 text-zinc-500 hover:text-red-400 transition">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                                </button>
-                                            </div>
-                                            <div class="flex justify-between items-center bg-black/20 p-2 rounded-lg border border-zinc-800/40">
-                                                <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Jabatan</span>
-                                                <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-tighter" 
-                                                      :class="{
-                                                          'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
-                                                          'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
-                                                          'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
-                                                          'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
-                                                      }" x-text="mhs.role.replace('_', ' ')"></span>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </div>
-
-                                <!-- Desktop Table (hidden md:table) -->
-                                <table class="hidden md:table w-full text-left">
+                                <table class="w-full text-left table-fixed">
                                     <thead>
                                         <tr class="bg-black/40 border-b border-zinc-800">
-                                            <th class="px-6 py-4 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Nama Mahasiswa</th>
-                                            <th class="px-6 py-4 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">NIM</th>
-                                            <th class="px-6 py-4 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Jabatan</th>
-                                            <th class="px-6 py-4 text-[10px] font-bold text-zinc-500 uppercase tracking-widest text-right">Aksi</th>
+                                            <th class="w-[50%] px-4 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Mahasiswa</th>
+                                            <th class="w-[33%] px-4 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Jabatan</th>
+                                            <th class="w-[17%] px-4 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-widest text-right">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-zinc-800/50">
                                         <template x-for="mhs in semuaMahasiswa" :key="mhs.id">
                                             <tr class="hover:bg-white/5 transition group">
-                                                <td class="px-6 py-4">
+                                                <td class="px-4 py-3">
                                                     <div class="flex items-center gap-3">
-                                                        <div class="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400" x-text="mhs.name.charAt(0)"></div>
-                                                        <span class="text-sm font-bold text-zinc-200 group-hover:text-white transition" x-text="mhs.name"></span>
+                                                        <div class="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400 shrink-0" x-text="mhs.name.charAt(0)"></div>
+                                                        <div class="flex flex-col min-w-0">
+                                                            <span class="text-sm font-bold text-zinc-200 group-hover:text-white transition truncate" x-text="mhs.name"></span>
+                                                            <span class="text-[9px] text-zinc-500 font-mono mt-0.5" x-text="mhs.nim"></span>
+                                                        </div>
                                                     </div>
                                                 </td>
-                                                <td class="px-6 py-4">
-                                                    <span class="text-xs text-zinc-500 font-mono" x-text="mhs.nim"></span>
-                                                </td>
-                                                <td class="px-6 py-4">
-                                                    <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-tighter" 
+                                                <td class="px-4 py-3">
+                                                    <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-tighter inline-block" 
                                                           :class="{
                                                               'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
                                                               'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
@@ -863,8 +831,8 @@
                                                               'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
                                                           }" x-text="mhs.role.replace('_', ' ')"></span>
                                                 </td>
-                                                <td class="px-6 py-4 text-right">
-                                                    <button @click="deleteStudent(mhs.id)" class="p-2 text-zinc-500 hover:text-red-400 transition">
+                                                <td class="px-4 py-3 text-right">
+                                                    <button @click="deleteStudent(mhs.id)" class="p-2 text-zinc-500 hover:text-red-400 transition inline-flex items-center justify-center">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                                     </button>
                                                 </td>
