@@ -18,23 +18,34 @@ class CustomMySqlConnector extends MySqlConnector
      */
     protected function createPdoConnection($dsn, $username, $password, $options)
     {
-        // Ensure the CA file exists on Vercel
-        if (isset($options[1009]) && $options[1009] === '/tmp/cacert.pem') {
-            if (!file_exists('/tmp/cacert.pem') || @filesize('/tmp/cacert.pem') < 150000) {
-                @copy(base_path('cacert.pem'), '/tmp/cacert.pem');
+        $tmpCa = '/tmp/cacert.pem';
+        $baseCa = base_path('cacert.pem');
+
+        if (!file_exists($tmpCa) || @filesize($tmpCa) < 150000) {
+            @copy($baseCa, $tmpCa);
+        }
+
+        try {
+            // Attempt 1: Exactly like pdo_tmp_success
+            $pdo = new PDO($dsn, $username, $password, [
+                1009 => $tmpCa
+            ]);
+        } catch (\PDOException $e) {
+            try {
+                // Attempt 2: Exactly like pdo_base_success
+                $pdo = new PDO($dsn, $username, $password, [
+                    1009 => $baseCa
+                ]);
+            } catch (\PDOException $e2) {
+                // Attempt 3: Try with both
+                $pdo = new PDO($dsn, $username, $password, [
+                    1009 => $tmpCa,
+                    1014 => false
+                ]);
             }
         }
 
-        // Isolate SSL options for the constructor to prevent mysqlnd bugs
-        $constructorOptions = [];
-        if (isset($options[1009])) $constructorOptions[1009] = $options[1009];
-        // CRITICAL: Do NOT pass 1014 (MYSQL_ATTR_SSL_VERIFY_SERVER_CERT). 
-        // Passing 1014 => false along with 1009 => $caPath causes OpenSSL to conflict and throw 'certificate verify failed'!
-
-        // Return a raw PDO instance to bypass the PHP 8.4/8.5 PDO::connect() bug on Vercel
-        $pdo = new PDO($dsn, $username, $password, $constructorOptions);
-
-        // Apply all other options (like ERRMODE, EMULATE_PREPARES) after connection
+        // Apply remaining options
         foreach ($options as $key => $value) {
             if ($key !== 1009 && $key !== 1014) {
                 $pdo->setAttribute($key, $value);
