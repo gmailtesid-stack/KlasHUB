@@ -27,3 +27,13 @@ Homestead.yaml
 Thumbs.db
 
 .vercel
+/bootstrap/cache/*.php
+
+# Android WebView Build & IDE files
+/android-webview/.gradle/
+/android-webview/.idea/
+/android-webview/*/build/
+/android-webview/build/
+/android-webview/local.properties
+
+
