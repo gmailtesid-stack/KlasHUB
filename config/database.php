@@ -60,10 +60,10 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                1009 => (isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || strpos(base_path(), '/var/task') !== false) 
+                (defined('Pdo\Mysql::ATTR_SSL_CA') ? \Pdo\Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => (isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || strpos(base_path(), '/var/task') !== false) 
                     ? '/tmp/cacert.pem' 
                     : base_path(env('MYSQL_ATTR_SSL_CA', 'cacert.pem')),
-                1014 => false,
+                (defined('Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT') ? \Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT : PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT) => false,
             ]) : [],
         ],
 
