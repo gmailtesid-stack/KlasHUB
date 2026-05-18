@@ -108,7 +108,7 @@ Route::post('/logout', function (Request $request) {
     return redirect('/');
 })->name('logout');
 
-Route::get('/api/cron/reset-schedule', function (Request $request) {
+Route::get('/kh/cron/reset-schedule', function (Request $request) {
     // Truncate the academic_schedules table
     \App\Models\AcademicSchedule::truncate();
     return response()->json(['success' => true, 'message' => 'Academic schedule reset successfully']);
@@ -116,16 +116,16 @@ Route::get('/api/cron/reset-schedule', function (Request $request) {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [KelasHubEngineController::class, 'getStudentDashboard'])->name('dashboard');
-    Route::post('/api/schedule/toggle-delivery', [KelasHubEngineController::class, 'toggleDeliveryType']);
-    Route::post('/api/schedule', [KelasHubEngineController::class, 'storeSchedule']);
-    Route::post('/api/master-subject', [KelasHubEngineController::class, 'storeMasterSubject']);
-    Route::post('/api/assignment', [KelasHubEngineController::class, 'storeAssignment']);
-    Route::post('/api/module', [KelasHubEngineController::class, 'storeModule']);
-    Route::post('/api/cash', [KelasHubEngineController::class, 'storeCashLedger']);
-    Route::post('/api/student', [KelasHubEngineController::class, 'storeStudent']);
-    Route::post('/api/attendance', [KelasHubEngineController::class, 'storeAttendance']);
-    Route::post('/api/password', [KelasHubEngineController::class, 'updatePassword']);
-    Route::post('/api/validate', [KelasHubEngineController::class, 'validateData']);
-    Route::delete('/api/subject/{id}', [KelasHubEngineController::class, 'deleteSubject']);
-    Route::delete('/api/student/{id}', [KelasHubEngineController::class, 'deleteStudent']);
+    Route::post('/kh/schedule/toggle-delivery', [KelasHubEngineController::class, 'toggleDeliveryType']);
+    Route::post('/kh/schedule', [KelasHubEngineController::class, 'storeSchedule']);
+    Route::post('/kh/master-subject', [KelasHubEngineController::class, 'storeMasterSubject']);
+    Route::post('/kh/assignment', [KelasHubEngineController::class, 'storeAssignment']);
+    Route::post('/kh/module', [KelasHubEngineController::class, 'storeModule']);
+    Route::post('/kh/cash', [KelasHubEngineController::class, 'storeCashLedger']);
+    Route::post('/kh/student', [KelasHubEngineController::class, 'storeStudent']);
+    Route::post('/kh/attendance', [KelasHubEngineController::class, 'storeAttendance']);
+    Route::post('/kh/password', [KelasHubEngineController::class, 'updatePassword']);
+    Route::post('/kh/validate', [KelasHubEngineController::class, 'validateData']);
+    Route::delete('/kh/subject/{id}', [KelasHubEngineController::class, 'deleteSubject']);
+    Route::delete('/kh/student/{id}', [KelasHubEngineController::class, 'deleteStudent']);
 });

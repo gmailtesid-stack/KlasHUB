@@ -173,7 +173,7 @@
             setTimeout(() => { this.showToast = false }, 3000);
         },
         validateEntry(id, type, arrayName) {
-            fetch('/api/validate', {
+            fetch('/kh/validate', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -210,7 +210,7 @@
             let currentType = current ? current.deliveryType : 'offline';
             let nextType = currentType === 'offline' ? 'online' : 'offline';
             
-            fetch('/api/schedule/toggle-delivery', {
+            fetch('/kh/schedule/toggle-delivery', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -252,7 +252,7 @@
                 title: 'Hapus Mahasiswa',
                 message: 'Apakah Anda yakin ingin menghapus mahasiswa ini dari kelas?',
                 action: () => {
-                    fetch('/api/student/' + id, {
+                    fetch('/kh/student/' + id, {
                         method: 'DELETE',
                         headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content') }
                     })
@@ -276,7 +276,7 @@
                 title: 'Hapus Mata Kuliah',
                 message: 'Menghapus mata kuliah ini akan menghilangkan akses ke riwayat tugas & modul terkait. Lanjutkan?',
                 action: () => {
-                    fetch('/api/subject/' + id, {
+                    fetch('/kh/subject/' + id, {
                         method: 'DELETE',
                         headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content') }
                     })
@@ -756,7 +756,7 @@
                                         status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
                                     });
                                 });
-                                fetch('/api/attendance', {
+                                fetch('/kh/attendance', {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',
@@ -1177,7 +1177,7 @@
                                 time_end: jamSelesai,
                                 delivery_type: deliveryType
                             };
-                            fetch('/api/schedule', {
+                            fetch('/kh/schedule', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -1265,7 +1265,7 @@
                                 type: taskType,
                                 members: tgsMembers
                             };
-                            fetch('/api/assignment', {
+                            fetch('/kh/assignment', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -1365,7 +1365,7 @@
                                 formData.append('title', mdlTitle);
                                 formData.append('link_url', mdlUrl);
                             }
-                            fetch('/api/module', {
+                            fetch('/kh/module', {
                                 method: 'POST',
                                 headers: {
                                     'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
@@ -1450,7 +1450,7 @@
                                 student_id: trxType === 'income' ? trxStudent : null,
                                 transaction_date: trxDate
                             };
-                            fetch('/api/cash', {
+                            fetch('/kh/cash', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -1516,7 +1516,7 @@
                         <button type="button" @click="
                             if(!absSubject) return notify('Pilih matkul!');
                             if(!absNotes) return notify('Deskripsi wajib diisi!');
-                            fetch('/api/attendance', {
+                            fetch('/kh/attendance', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -1578,7 +1578,7 @@
                     </div>
                     <button type="button" @click="
                         if(!stdName || !stdNim) return notify('Lengkapi data!');
-                        fetch('/api/student', {
+                        fetch('/kh/student', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -1651,7 +1651,7 @@
                         <button type="button" @click="modalAddSubject = false" class="flex-1 bg-zinc-800 text-zinc-300 py-3.5 rounded-xl text-sm font-bold hover:bg-zinc-700 transition">Batal</button>
                         <button type="button" @click="
                             if(!msName || !msSks) return notify('Lengkapi data matkul!');
-                            fetch('/api/master-subject', {
+                            fetch('/kh/master-subject', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -1694,7 +1694,7 @@
                         <button type="button" @click="modalPassword = false" class="flex-1 bg-zinc-800 text-zinc-300 py-3 rounded-xl text-sm font-semibold hover:bg-zinc-700 transition">Batal</button>
                         <button type="button" @click="
                             if(!oldP || !newP) return notify('Lengkapi data!');
-                            fetch('/api/password', {
+                            fetch('/kh/password', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -1752,3 +1752,4 @@
 </div>
 </body>
 </html>
+

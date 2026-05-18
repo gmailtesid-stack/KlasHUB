@@ -42,7 +42,7 @@
     },
     "crons": [
         {
-            "path": "/api/cron/reset-schedule",
+            "path": "/kh/cron/reset-schedule",
             "schedule": "59 16 * * *"
         }
     ]
