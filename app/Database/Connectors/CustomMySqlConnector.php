@@ -19,7 +19,7 @@ class CustomMySqlConnector extends MySqlConnector
     protected function createPdoConnection($dsn, $username, $password, $options)
     {
         // Ensure the CA file exists on Vercel
-        if (isset($options[PDO::MYSQL_ATTR_SSL_CA]) && $options[PDO::MYSQL_ATTR_SSL_CA] === '/tmp/cacert.pem') {
+        if (isset($options[1009]) && $options[1009] === '/tmp/cacert.pem') {
             if (!file_exists('/tmp/cacert.pem') || @filesize('/tmp/cacert.pem') < 150000) {
                 @copy(base_path('cacert.pem'), '/tmp/cacert.pem');
             }
