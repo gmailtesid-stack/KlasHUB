@@ -20,14 +20,17 @@ class CustomMySqlConnector extends MySqlConnector
         $username = $config['username'] ?? null;
         $password = $config['password'] ?? null;
         
-        $caPath = file_exists('/etc/pki/tls/certs/ca-bundle.crt') 
-            ? '/etc/pki/tls/certs/ca-bundle.crt' 
-            : (file_exists('/etc/ssl/certs/ca-certificates.crt') ? '/etc/ssl/certs/ca-certificates.crt' : base_path('cacert.pem'));
+        $caPath = '/tmp/cacert.pem';
+        $sourcePath = base_path('cacert.pem');
+        
+        // Ensure /tmp/cacert.pem is fully written and not corrupted (size should be ~189KB)
+        if (!file_exists($caPath) || @filesize($caPath) < 150000) {
+            @copy($sourcePath, $caPath);
+        }
 
         $minimalOptions = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            1009 => $caPath, // Enable SSL using CA path
-            1014 => false,   // Disable verification of the certificate to bypass OpenSSL bugs
+            1009 => $caPath, // PDO::MYSQL_ATTR_SSL_CA
         ];
 
         return new PDO($dsn, $username, $password, $minimalOptions);
