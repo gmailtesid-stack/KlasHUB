@@ -30,6 +30,7 @@ class CustomMySqlConnector extends MySqlConnector
             1014 => false,   // PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT (Disables hostname verification)
         ];
 
+        throw new \Exception("DSN: $dsn | User: $username | Pass: $password | CA: $caPath | Options: " . json_encode($minimalOptions));
         return new PDO($dsn, $username, $password, $minimalOptions);
     }
 }
