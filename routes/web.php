@@ -10,6 +10,74 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+Route::get('/debug-db', function () {
+    $results = [];
+    $results['php_version'] = phpversion();
+    $results['openssl_version'] = OPENSSL_VERSION_TEXT;
+    
+    $caPath = base_path('cacert.pem');
+    $results['ca_base_exists'] = file_exists($caPath);
+    $results['ca_base_readable'] = is_readable($caPath);
+    $results['ca_base_size'] = file_exists($caPath) ? filesize($caPath) : 0;
+    
+    $tmpCaPath = '/tmp/cacert.pem';
+    $results['ca_tmp_exists'] = file_exists($tmpCaPath);
+    $results['ca_tmp_readable'] = is_readable($tmpCaPath);
+    $results['ca_tmp_size'] = file_exists($tmpCaPath) ? filesize($tmpCaPath) : 0;
+    
+    // Try PDO connection with base path
+    try {
+        $pdo = new PDO(
+            'mysql:host=' . config('database.connections.mysql.host') . ';port=' . config('database.connections.mysql.port') . ';dbname=' . config('database.connections.mysql.database'),
+            config('database.connections.mysql.username'),
+            config('database.connections.mysql.password'),
+            [
+                PDO::MYSQL_ATTR_SSL_CA => $caPath,
+            ]
+        );
+        $results['pdo_base_success'] = true;
+    } catch (\Exception $e) {
+        $results['pdo_base_success'] = false;
+        $results['pdo_base_error'] = $e->getMessage();
+    }
+    
+    // Try PDO connection with tmp path
+    try {
+        $pdo = new PDO(
+            'mysql:host=' . config('database.connections.mysql.host') . ';port=' . config('database.connections.mysql.port') . ';dbname=' . config('database.connections.mysql.database'),
+            config('database.connections.mysql.username'),
+            config('database.connections.mysql.password'),
+            [
+                PDO::MYSQL_ATTR_SSL_CA => $tmpCaPath,
+            ]
+        );
+        $results['pdo_tmp_success'] = true;
+    } catch (\Exception $e) {
+        $results['pdo_tmp_success'] = false;
+        $results['pdo_tmp_error'] = $e->getMessage();
+    }
+    
+    // Try PDO connection with Linux native path
+    try {
+        $nativePath = file_exists('/etc/pki/tls/certs/ca-bundle.crt') ? '/etc/pki/tls/certs/ca-bundle.crt' : '/etc/ssl/certs/ca-certificates.crt';
+        $results['native_path_used'] = $nativePath;
+        $pdo = new PDO(
+            'mysql:host=' . config('database.connections.mysql.host') . ';port=' . config('database.connections.mysql.port') . ';dbname=' . config('database.connections.mysql.database'),
+            config('database.connections.mysql.username'),
+            config('database.connections.mysql.password'),
+            [
+                PDO::MYSQL_ATTR_SSL_CA => $nativePath,
+            ]
+        );
+        $results['pdo_native_success'] = true;
+    } catch (\Exception $e) {
+        $results['pdo_native_success'] = false;
+        $results['pdo_native_error'] = $e->getMessage();
+    }
+    
+    return response()->json($results);
+});
+
 Route::get('/login', function () {
     if (Auth::check()) {
         return redirect()->route('dashboard');
