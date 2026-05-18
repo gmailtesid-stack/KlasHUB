@@ -11,7 +11,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind('db.connector.mysql', function () {
+            return new \App\Database\Connectors\CustomMySqlConnector;
+        });
     }
 
     /**
