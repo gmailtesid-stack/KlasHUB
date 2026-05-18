@@ -18,11 +18,22 @@ class CustomMySqlConnector extends MySqlConnector
      */
     protected function createPdoConnection($dsn, $username, $password, $options)
     {
-        if (isset($options[1009]) && $options[1009] === '/tmp/cacert.pem') {
+        // Filter options to ONLY include error mode and SSL CA to isolate the bug
+        $cleanOptions = [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        ];
+
+        if (isset($options[1009])) {
+            $cleanOptions[1009] = $options[1009];
+        }
+
+        // Ensure the CA file exists
+        if (isset($cleanOptions[1009]) && $cleanOptions[1009] === '/tmp/cacert.pem') {
             if (!file_exists('/tmp/cacert.pem') || @filesize('/tmp/cacert.pem') < 150000) {
                 @copy(base_path('cacert.pem'), '/tmp/cacert.pem');
             }
         }
-        return new PDO($dsn, $username, $password, $options);
+
+        return new PDO($dsn, $username, $password, $cleanOptions);
     }
 }
