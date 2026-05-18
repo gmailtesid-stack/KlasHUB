@@ -19,9 +19,7 @@ class CustomMySqlConnector extends MySqlConnector
     {
         $username = $config['username'] ?? null;
         $password = $config['password'] ?? null;
-
-        // Force raw 'new PDO' connection instead of PHP 8.4+ 'PDO::connect()' 
-        // to bypass the SSL verification bug in the PHP 8.5/8.4 connect function on Vercel.
-        return new PDO($dsn, $username, $password, $options);
+        
+        throw new \Exception("DIAGNOSTIC - DSN: {$dsn} | Username: {$username} | Options: " . json_encode($options));
     }
 }
