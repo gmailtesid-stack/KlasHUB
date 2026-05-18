@@ -58,9 +58,9 @@ Route::get('/debug-db', function () {
     // Try PDO connection with base path
     try {
         $pdo = new PDO(
-            'mysql:host=gateway01.ap-southeast-1.prod.aws.tidbcloud.com;port=4000;dbname=kelashub',
-            'sBTXC6n9rnshkvy.root',
-            '2a3zK3oA9d75P3a!',
+            'mysql:host=' . config('database.connections.mysql.host') . ';port=' . config('database.connections.mysql.port') . ';dbname=' . config('database.connections.mysql.database'),
+            config('database.connections.mysql.username'),
+            config('database.connections.mysql.password'),
             [
                 PDO::MYSQL_ATTR_SSL_CA => $caPath,
             ]
@@ -74,9 +74,9 @@ Route::get('/debug-db', function () {
     // Try PDO connection with tmp path
     try {
         $pdo = new PDO(
-            'mysql:host=gateway01.ap-southeast-1.prod.aws.tidbcloud.com;port=4000;dbname=kelashub',
-            'sBTXC6n9rnshkvy.root',
-            '2a3zK3oA9d75P3a!',
+            'mysql:host=' . config('database.connections.mysql.host') . ';port=' . config('database.connections.mysql.port') . ';dbname=' . config('database.connections.mysql.database'),
+            config('database.connections.mysql.username'),
+            config('database.connections.mysql.password'),
             [
                 PDO::MYSQL_ATTR_SSL_CA => $tmpCaPath,
             ]
@@ -92,9 +92,9 @@ Route::get('/debug-db', function () {
         $nativePath = file_exists('/etc/pki/tls/certs/ca-bundle.crt') ? '/etc/pki/tls/certs/ca-bundle.crt' : '/etc/ssl/certs/ca-certificates.crt';
         $results['native_path_used'] = $nativePath;
         $pdo = new PDO(
-            'mysql:host=gateway01.ap-southeast-1.prod.aws.tidbcloud.com;port=4000;dbname=kelashub',
-            'sBTXC6n9rnshkvy.root',
-            '2a3zK3oA9d75P3a!',
+            'mysql:host=' . config('database.connections.mysql.host') . ';port=' . config('database.connections.mysql.port') . ';dbname=' . config('database.connections.mysql.database'),
+            config('database.connections.mysql.username'),
+            config('database.connections.mysql.password'),
             [
                 PDO::MYSQL_ATTR_SSL_CA => $nativePath,
             ]
