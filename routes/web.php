@@ -121,6 +121,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/kh/master-subject', [KelasHubEngineController::class, 'storeMasterSubject']);
     Route::post('/kh/assignment', [KelasHubEngineController::class, 'storeAssignment']);
     Route::post('/kh/module', [KelasHubEngineController::class, 'storeModule']);
+    Route::get('/kh/module/{id}/download', [KelasHubEngineController::class, 'downloadModule']);
+
     Route::post('/kh/cash', [KelasHubEngineController::class, 'storeCashLedger']);
     Route::post('/kh/student', [KelasHubEngineController::class, 'storeStudent']);
     Route::post('/kh/attendance', [KelasHubEngineController::class, 'storeAttendance']);

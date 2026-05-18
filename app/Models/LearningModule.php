@@ -9,8 +9,13 @@ class LearningModule extends Model {
         'subject_name',
         'title',
         'file_path',
+        'file_content',
+        'mime_type',
         'link_url',
         'type',
         'is_validated',
     ];
+
+    // Don't return file_content in JSON by default (too large)
+    protected $hidden = ['file_content'];
 }

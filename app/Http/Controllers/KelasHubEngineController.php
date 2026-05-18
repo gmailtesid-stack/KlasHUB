@@ -195,24 +195,36 @@ class KelasHubEngineController extends Controller {
 
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $filename = $file->getClientOriginalName();
-            $data['title'] = $filename;
+            // Store file content as base64 directly in TiDB - no filesystem needed
+            $data['title'] = $file->getClientOriginalName();
+            $data['mime_type'] = $file->getMimeType();
+            $data['file_content'] = base64_encode(file_get_contents($file->getRealPath()));
+            $data['file_path'] = null;
             $data['type'] = 'file';
-            
-            // Try storing to /tmp (only writable path on Vercel serverless)
-            try {
-                $tmpPath = '/tmp/' . uniqid() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $filename);
-                $file->move('/tmp', basename($tmpPath));
-                $data['file_path'] = 'tmp/' . basename($tmpPath);
-            } catch (\Exception $e) {
-                // On Vercel, file storage is ephemeral. Save filename only.
-                $data['file_path'] = null;
-            }
         }
 
         $data['is_validated'] = Auth::user()->role === 'ketua_kelas';
         $module = LearningModule::create($data);
         return response()->json(['success' => true, 'module' => $module]);
+    }
+
+    public function downloadModule(Request $request, $id) {
+        $module = LearningModule::findOrFail($id);
+        if (!$module->file_content) {
+            abort(404, 'File tidak tersedia');
+        }
+        $fileContent = base64_decode($module->file_content);
+        $mimeType = $module->mime_type ?? 'application/octet-stream';
+        // Guess extension from mime type
+        $ext = 'bin';
+        $mimeMap = ['application/pdf' => 'pdf', 'application/msword' => 'doc', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx', 'text/plain' => 'txt'];
+        if (isset($mimeMap[$mimeType])) $ext = $mimeMap[$mimeType];
+        $filename = pathinfo($module->title, PATHINFO_FILENAME) . '.' . $ext;
+        return response($fileContent, 200, [
+            'Content-Type' => $mimeType,
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Length' => strlen($fileContent),
+        ]);
     }
 
     public function storeCashLedger(Request $request) {

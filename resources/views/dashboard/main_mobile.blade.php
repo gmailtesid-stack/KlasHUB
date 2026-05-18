@@ -586,7 +586,7 @@
                                                 </div>
                                                 <div class="space-y-2">
                                                     <template x-for="modul in semuaModul.filter(m => m.matkul === matkul).slice(0, 2)" :key="modul.id">
-                                                        <div class="flex items-center justify-between p-2.5 rounded-xl bg-black/40 border border-zinc-800/50 hover:bg-zinc-800 transition group cursor-pointer" @click="modul.link_url ? window.open(modul.link_url, '_blank') : notify('Mengunduh ' + modul.title + '...')">
+                                                        <div class="flex items-center justify-between p-2.5 rounded-xl bg-black/40 border border-zinc-800/50 hover:bg-zinc-800 transition group cursor-pointer" @click="modul.type === 'link' ? window.open(modul.link_url, '_blank') : window.open('/kh/module/' + modul.id + '/download', '_self')">
                                                             <div class="flex-1 flex items-center gap-3">
                                                                 <div class="w-7 h-7 rounded bg-blue-500/10 text-blue-400 flex items-center justify-center">
                                                                     <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.5 3h-15C3.12 3 2 4.12 2 5.5v13C2 19.88 3.12 21 4.5 21h15c1.38 0 2.5-1.12 2.5-2.5v-13C22 4.12 20.88 3 19.5 3zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-8v-2h8v2zm0-4h-8v-2h8v2zm0-4h-8V7h8v2z"/></svg>
@@ -1025,7 +1025,7 @@
                         </h4>
                         <div class="space-y-2">
                             <template x-for="modul in semuaModul.filter(m => m.matkul === selectedMatkul)" :key="modul.id || Math.random()">
-                                <div class="bg-black/50 p-3 rounded-xl border border-zinc-800 flex justify-between items-center group cursor-pointer hover:bg-zinc-800 transition" @click="modul.link_url ? window.open(modul.link_url, '_blank') : notify('Mengunduh ' + modul.title + '...')">
+                                <div class="bg-black/50 p-3 rounded-xl border border-zinc-800 flex justify-between items-center group cursor-pointer hover:bg-zinc-800 transition" @click="modul.type === 'link' ? window.open(modul.link_url, '_blank') : window.open('/kh/module/' + modul.id + '/download', '_self')">
                                     <div>
                                         <p class="text-sm text-zinc-200 font-medium group-hover:text-white" x-text="modul.title"></p>
                                         <p class="text-[10px] text-zinc-500" x-text="modul.type === 'link' ? 'Tautan Eksternal' : 'Dokumen Terlampir'"></p>
