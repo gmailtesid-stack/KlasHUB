@@ -1189,6 +1189,7 @@
                             .then(data => {
                                 if(data.success) {
                                     jadwalHarian.push({
+                                        id: data.schedule ? data.schedule.id : null,
                                         matkul: selectedMatkul,
                                         dosen: dosen,
                                         hari: hari,
@@ -1198,7 +1199,8 @@
                                         jamMulai: jamMulai,
                                         jamSelesai: jamSelesai,
                                         deliveryType: deliveryType,
-                                        sks: matkuls_sks[selectedMatkul] || 2
+                                        isValidated: false,
+                                        sks: (matkuls.find(m => m.name === selectedMatkul) || {sks: 2}).sks
                                     });
                                     modalJadwal = false; 
                                     notify('Jadwal ' + selectedMatkul + ' berhasil disimpan!');
