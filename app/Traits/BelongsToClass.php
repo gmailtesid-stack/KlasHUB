@@ -17,10 +17,12 @@ trait BelongsToClass
         });
 
         static::addGlobalScope('class_isolation', function (Builder $builder) {
-            if (Auth::check()) {
+            // Avoid recursion: Only apply scope if Auth is already resolved 
+            // and we are not in the middle of resolving it.
+            if (Auth::hasUser()) {
                 $user = Auth::user();
                 if ($user->role !== 'super_admin') {
-                    $builder->where('class_id', $user->class_id);
+                    $builder->where($builder->getQuery()->from . '.class_id', $user->class_id);
                 }
             }
         });
