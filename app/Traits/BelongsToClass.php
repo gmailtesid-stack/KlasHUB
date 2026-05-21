@@ -18,7 +18,10 @@ trait BelongsToClass
 
         static::addGlobalScope('class_isolation', function (Builder $builder) {
             if (Auth::check()) {
-                $builder->where('class_id', Auth::user()->class_id);
+                $user = Auth::user();
+                if ($user->role !== 'super_admin') {
+                    $builder->where('class_id', $user->class_id);
+                }
             }
         });
     }

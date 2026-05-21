@@ -25,7 +25,7 @@ class KelasHubAdminSeeder extends Seeder
 
         // 2. Seed Students for Class 06TPLE013
         $students13 = [
-            ['nim' => '231011403268', 'name' => 'ARIYAS PRATAMA RAMADHAN', 'role' => 'ketua_kelas', 'pw' => '231011403268KK'],
+            ['nim' => '231011403268', 'name' => 'ARIYAS PRATAMA RAMADHAN', 'role' => 'super_admin', 'pw' => '231011403268KK'],
             ['nim' => '231011403269', 'name' => 'SEKRETARIS KELAS', 'role' => 'sekretaris', 'pw' => '231011403269SK'],
             ['nim' => '231011403270', 'name' => 'BENDAHARA KELAS', 'role' => 'bendahara', 'pw' => '231011403270BD'],
             ['nim' => '231011403271', 'name' => 'MAHASISWA BIASA', 'role' => 'mahasiswa', 'pw' => '231011403271'],

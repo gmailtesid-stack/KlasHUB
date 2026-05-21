@@ -6,13 +6,21 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class CheckRoleKelasHub {
-    public function handle(Request $request, Closure $next, ...$roles) {
+class CheckRoleKelasHub
+{
+    public function handle(Request $request, Closure $next, ...$roles)
+    {
         if (!Auth::check()) {
             return redirect('/login');
         }
 
         $student = Auth::user();
+
+        // Super Admin bypass
+        if ($student->role === 'super_admin') {
+            return $next($request);
+        }
+
         if (in_array($student->role, $roles)) {
             return $next($request);
         }

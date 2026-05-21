@@ -12,12 +12,14 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class KelasHubEngineController extends Controller {
-    public function getStudentDashboard() {
+class KelasHubEngineController extends Controller
+{
+    public function getStudentDashboard()
+    {
         $student = Auth::user(); // Mengambil data mahasiswa yang sedang login di APK
-        
+
         $masterSubjects = \App\Models\MasterSubject::orderBy('name')->get();
-        
+
         // Query kalkulasi sisa nyawa absensi per matakuliah (Hanya yang VALID)
         $absensi = $masterSubjects->map(function ($ms) use ($student) {
             $total_alfa = ClassAttendance::where('student_id', $student->id)
@@ -25,7 +27,7 @@ class KelasHubEngineController extends Controller {
                 ->where('status', 'Alfa')
                 ->where('is_validated', true)
                 ->count();
-            
+
             $sisa_nyawa = 3 - $total_alfa;
             return [
                 'subject' => $ms->name,
@@ -39,35 +41,35 @@ class KelasHubEngineController extends Controller {
         $startOfWeek = Carbon::now()->startOfWeek();
         $isAdmin = in_array($student->role, ['ketua_kelas', 'sekretaris', 'bendahara']);
 
-        $saldoKasSaatIni = CashLedger::when(!$isAdmin, function($q) {
+        $saldoKasSaatIni = CashLedger::when(!$isAdmin, function ($q) {
             return $q->where('is_validated', true);
-        })->where('type', 'income')->sum('amount') - CashLedger::when(!$isAdmin, function($q) {
+        })->where('type', 'income')->sum('amount') - CashLedger::when(!$isAdmin, function ($q) {
             return $q->where('is_validated', true);
         })->where('type', 'expense')->sum('amount');
 
-        $pemasukanMingguan = CashLedger::when(!$isAdmin, function($q) {
+        $pemasukanMingguan = CashLedger::when(!$isAdmin, function ($q) {
             return $q->where('is_validated', true);
         })->where('type', 'income')->where('transaction_date', '>=', $startOfWeek)->sum('amount');
 
-        $pengeluaranMingguan = CashLedger::when(!$isAdmin, function($q) {
+        $pengeluaranMingguan = CashLedger::when(!$isAdmin, function ($q) {
             return $q->where('is_validated', true);
         })->where('type', 'expense')->where('transaction_date', '>=', $startOfWeek)->sum('amount');
-        
+
         $semua_mahasiswa = Student::orderBy('name', 'asc')->get();
         $masterSubjects = \App\Models\MasterSubject::orderBy('name')->get();
 
-        $schedules = AcademicSchedule::when(!$isAdmin, function($q) {
+        $schedules = AcademicSchedule::when(!$isAdmin, function ($q) {
             return $q->where('is_validated', true);
         })->get();
 
-        $semuaTugas = Assignment::when(!$isAdmin, function($q) {
+        $semuaTugas = Assignment::when(!$isAdmin, function ($q) {
             return $q->where('is_validated', true);
         })->orderBy('deadline', 'asc')->get();
 
-        $semuaModul = LearningModule::when(!$isAdmin, function($q) {
+        $semuaModul = LearningModule::when(!$isAdmin, function ($q) {
             return $q->where('is_validated', true);
         })->latest()->get();
-        
+
         $transaksiKas = CashLedger::with('student')->latest()->get();
 
         $pendingCount = 0;
@@ -91,11 +93,13 @@ class KelasHubEngineController extends Controller {
             'semua_tugas' => $semuaTugas,
             'semua_modul' => $semuaModul,
             'transaksi_kas' => $transaksiKas,
-            'pending_count' => $pendingCount
+            'pending_count' => $pendingCount,
+            'academic_classes' => \App\Models\AcademicClass::all()
         ]);
     }
 
-    public function storeMasterSubject(Request $request) {
+    public function storeMasterSubject(Request $request)
+    {
         $this->authorizeAdmin();
         $data = $request->validate([
             'name' => 'required|string|unique:master_subjects,name',
@@ -108,21 +112,25 @@ class KelasHubEngineController extends Controller {
         return response()->json(['success' => true, 'subject' => $subject]);
     }
 
-    public function deleteSubject($id) {
+    public function deleteSubject($id)
+    {
         $this->authorizeAdmin();
         \App\Models\MasterSubject::destroy($id);
         return response()->json(['success' => true]);
     }
 
-    public function deleteStudent($id) {
+    public function deleteStudent($id)
+    {
         $this->authorizeAdmin();
         $user = Auth::user();
-        if($user->id == $id) return response()->json(['success' => false, 'message' => 'Anda tidak bisa menghapus diri sendiri!'], 400);
+        if ($user->id == $id)
+            return response()->json(['success' => false, 'message' => 'Anda tidak bisa menghapus diri sendiri!'], 400);
         Student::destroy($id);
         return response()->json(['success' => true]);
     }
 
-    public function toggleDeliveryType(Request $request) {
+    public function toggleDeliveryType(Request $request)
+    {
         $this->authorizeAdmin();
         $request->validate([
             'subject_name' => 'required|string',
@@ -140,14 +148,15 @@ class KelasHubEngineController extends Controller {
                 'is_validated' => true
             ]
         );
-        
+
         $schedule->delivery_type = $request->delivery_type;
         $schedule->save();
 
         return response()->json(['success' => true, 'schedule' => $schedule]);
     }
 
-    public function storeSchedule(Request $request) {
+    public function storeSchedule(Request $request)
+    {
         $this->authorizeAdmin();
         $data = $request->validate([
             'subject_name' => 'required|string',
@@ -166,7 +175,8 @@ class KelasHubEngineController extends Controller {
         return response()->json(['success' => true, 'schedule' => $schedule]);
     }
 
-    public function storeAssignment(Request $request) {
+    public function storeAssignment(Request $request)
+    {
         $this->authorizeAdmin();
         $data = $request->validate([
             'subject_name' => 'required|string',
@@ -183,7 +193,8 @@ class KelasHubEngineController extends Controller {
         return response()->json(['success' => true, 'assignment' => $assignment]);
     }
 
-    public function storeModule(Request $request) {
+    public function storeModule(Request $request)
+    {
         $this->authorizeAdmin();
         $data = $request->validate([
             'subject_name' => 'required|string',
@@ -208,7 +219,8 @@ class KelasHubEngineController extends Controller {
         return response()->json(['success' => true, 'module' => $module]);
     }
 
-    public function downloadModule(Request $request, $id) {
+    public function downloadModule(Request $request, $id)
+    {
         $module = LearningModule::findOrFail($id);
         if (!$module->file_content) {
             abort(404, 'File tidak tersedia');
@@ -218,7 +230,8 @@ class KelasHubEngineController extends Controller {
         // Guess extension from mime type
         $ext = 'bin';
         $mimeMap = ['application/pdf' => 'pdf', 'application/msword' => 'doc', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx', 'text/plain' => 'txt'];
-        if (isset($mimeMap[$mimeType])) $ext = $mimeMap[$mimeType];
+        if (isset($mimeMap[$mimeType]))
+            $ext = $mimeMap[$mimeType];
         $filename = pathinfo($module->title, PATHINFO_FILENAME) . '.' . $ext;
         return response($fileContent, 200, [
             'Content-Type' => $mimeType,
@@ -227,7 +240,8 @@ class KelasHubEngineController extends Controller {
         ]);
     }
 
-    public function storeCashLedger(Request $request) {
+    public function storeCashLedger(Request $request)
+    {
         $this->authorizeAdmin();
         $data = $request->validate([
             'student_id' => 'nullable|exists:students,id',
@@ -242,35 +256,52 @@ class KelasHubEngineController extends Controller {
         return response()->json(['success' => true, 'ledger' => $ledger]);
     }
 
-    private function authorizeAdmin() {
+    private function authorizeAdmin()
+    {
         $role = Auth::user()->role;
         if (!in_array($role, ['ketua_kelas', 'sekretaris', 'bendahara'])) {
             abort(403, 'Unauthorized action.');
         }
     }
 
-    public function storeStudent(Request $request) {
+    public function storeStudent(Request $request)
+    {
         $this->authorizeAdmin();
         $data = $request->validate([
             'nim' => 'required|string|unique:students,nim',
             'name' => 'required|string',
-            'role' => 'required|string|in:mahasiswa,ketua_kelas,sekretaris,bendahara',
+            'role' => 'required|string|in:mahasiswa,ketua_kelas,sekretaris,bendahara,super_admin',
+            'class_id' => 'nullable|exists:academic_classes,id'
         ]);
+
+        // Default to current user's class if not specified
+        if (!isset($data['class_id'])) {
+            $data['class_id'] = Auth::user()->class_id;
+        }
 
         // Password convention: NIM + Code (KK, SK, BD)
         $code = '';
-        if ($data['role'] === 'ketua_kelas') $code = 'KK';
-        elseif ($data['role'] === 'sekretaris') $code = 'SK';
-        elseif ($data['role'] === 'bendahara') $code = 'BD';
-        
+        if ($data['role'] === 'ketua_kelas')
+            $code = 'KK';
+        elseif ($data['role'] === 'sekretaris')
+            $code = 'SK';
+        elseif ($data['role'] === 'bendahara')
+            $code = 'BD';
+
         $password = $data['nim'] . $code;
         $data['password'] = bcrypt($password);
 
         $student = Student::create($data);
-        return response()->json(['success' => true, 'student' => $student]);
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'student' => $student]);
+        }
+
+        return back()->with('success', 'Mahasiswa berhasil didaftarkan: ' . $student->name);
     }
 
-    public function validateData(Request $request) {
+    public function validateData(Request $request)
+    {
         if (Auth::user()->role !== 'ketua_kelas') {
             abort(403, 'Hanya Ketua Kelas yang bisa memvalidasi data!');
         }
@@ -283,16 +314,22 @@ class KelasHubEngineController extends Controller {
         $id = $request->id;
         $type = $request->type;
 
-        if ($type === 'schedule') AcademicSchedule::where('id', $id)->update(['is_validated' => true]);
-        elseif ($type === 'assignment') Assignment::where('id', $id)->update(['is_validated' => true]);
-        elseif ($type === 'module') LearningModule::where('id', $id)->update(['is_validated' => true]);
-        elseif ($type === 'cash') CashLedger::where('id', $id)->update(['is_validated' => true]);
-        elseif ($type === 'attendance') ClassAttendance::where('id', $id)->update(['is_validated' => true]);
+        if ($type === 'schedule')
+            AcademicSchedule::where('id', $id)->update(['is_validated' => true]);
+        elseif ($type === 'assignment')
+            Assignment::where('id', $id)->update(['is_validated' => true]);
+        elseif ($type === 'module')
+            LearningModule::where('id', $id)->update(['is_validated' => true]);
+        elseif ($type === 'cash')
+            CashLedger::where('id', $id)->update(['is_validated' => true]);
+        elseif ($type === 'attendance')
+            ClassAttendance::where('id', $id)->update(['is_validated' => true]);
 
         return response()->json(['success' => true]);
     }
 
-    public function storeAttendance(Request $request) {
+    public function storeAttendance(Request $request)
+    {
         $request->validate([
             'attendances' => 'required|array',
             'attendances.*.student_id' => 'required|exists:students,id',
@@ -304,7 +341,7 @@ class KelasHubEngineController extends Controller {
 
         $user = Auth::user();
         $isAdmin = in_array($user->role, ['ketua_kelas', 'sekretaris', 'bendahara']);
-        
+
         // If not admin, they can only record their OWN attendance (Rekap Mandiri)
         if (!$isAdmin) {
             foreach ($request->attendances as $att) {
@@ -331,7 +368,8 @@ class KelasHubEngineController extends Controller {
         return response()->json(['success' => true]);
     }
 
-    public function updatePassword(Request $request) {
+    public function updatePassword(Request $request)
+    {
         $request->validate([
             'old_password' => 'required',
             'new_password' => 'required|min:6'
