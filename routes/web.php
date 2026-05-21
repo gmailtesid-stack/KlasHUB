@@ -10,73 +10,7 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::get('/debug-db', function () {
-    $results = [];
-    $results['php_version'] = phpversion();
-    $results['openssl_version'] = OPENSSL_VERSION_TEXT;
-    
-    $caPath = base_path('cacert.pem');
-    $results['ca_base_exists'] = file_exists($caPath);
-    $results['ca_base_readable'] = is_readable($caPath);
-    $results['ca_base_size'] = file_exists($caPath) ? filesize($caPath) : 0;
-    
-    $tmpCaPath = '/tmp/cacert.pem';
-    $results['ca_tmp_exists'] = file_exists($tmpCaPath);
-    $results['ca_tmp_readable'] = is_readable($tmpCaPath);
-    $results['ca_tmp_size'] = file_exists($tmpCaPath) ? filesize($tmpCaPath) : 0;
-    
-    // Try PDO connection with base path
-    try {
-        $pdo = new PDO(
-            'mysql:host=' . config('database.connections.mysql.host') . ';port=' . config('database.connections.mysql.port') . ';dbname=' . config('database.connections.mysql.database'),
-            config('database.connections.mysql.username'),
-            config('database.connections.mysql.password'),
-            [
-                PDO::MYSQL_ATTR_SSL_CA => $caPath,
-            ]
-        );
-        $results['pdo_base_success'] = true;
-    } catch (\Exception $e) {
-        $results['pdo_base_success'] = false;
-        $results['pdo_base_error'] = $e->getMessage();
-    }
-    
-    // Try PDO connection with tmp path
-    try {
-        $pdo = new PDO(
-            'mysql:host=' . config('database.connections.mysql.host') . ';port=' . config('database.connections.mysql.port') . ';dbname=' . config('database.connections.mysql.database'),
-            config('database.connections.mysql.username'),
-            config('database.connections.mysql.password'),
-            [
-                PDO::MYSQL_ATTR_SSL_CA => $tmpCaPath,
-            ]
-        );
-        $results['pdo_tmp_success'] = true;
-    } catch (\Exception $e) {
-        $results['pdo_tmp_success'] = false;
-        $results['pdo_tmp_error'] = $e->getMessage();
-    }
-    
-    // Try PDO connection with Linux native path
-    try {
-        $nativePath = file_exists('/etc/pki/tls/certs/ca-bundle.crt') ? '/etc/pki/tls/certs/ca-bundle.crt' : '/etc/ssl/certs/ca-certificates.crt';
-        $results['native_path_used'] = $nativePath;
-        $pdo = new PDO(
-            'mysql:host=' . config('database.connections.mysql.host') . ';port=' . config('database.connections.mysql.port') . ';dbname=' . config('database.connections.mysql.database'),
-            config('database.connections.mysql.username'),
-            config('database.connections.mysql.password'),
-            [
-                PDO::MYSQL_ATTR_SSL_CA => $nativePath,
-            ]
-        );
-        $results['pdo_native_success'] = true;
-    } catch (\Exception $e) {
-        $results['pdo_native_success'] = false;
-        $results['pdo_native_error'] = $e->getMessage();
-    }
-    
-    return response()->json($results);
-});
+// Route debug-db dihapus untuk keamanan produksi
 
 Route::get('/login', function () {
     if (Auth::check()) {
@@ -108,26 +42,40 @@ Route::post('/logout', function (Request $request) {
     return redirect('/');
 })->name('logout');
 
-Route::get('/kh/cron/reset-schedule', function (Request $request) {
-    // Truncate the academic_schedules table
-    \App\Models\AcademicSchedule::truncate();
-    return response()->json(['success' => true, 'message' => 'Academic schedule reset successfully']);
-});
+// Dipindahkan ke grup auth untuk keamanan
+// Route::get('/kh/cron/reset-schedule', function (Request $request) { ... });
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [KelasHubEngineController::class, 'getStudentDashboard'])->name('dashboard');
-    Route::post('/kh/schedule/toggle-delivery', [KelasHubEngineController::class, 'toggleDeliveryType']);
-    Route::post('/kh/schedule', [KelasHubEngineController::class, 'storeSchedule']);
-    Route::post('/kh/master-subject', [KelasHubEngineController::class, 'storeMasterSubject']);
-    Route::post('/kh/assignment', [KelasHubEngineController::class, 'storeAssignment']);
-    Route::post('/kh/module', [KelasHubEngineController::class, 'storeModule']);
-    Route::get('/kh/module/{id}/download', [KelasHubEngineController::class, 'downloadModule']);
-
-    Route::post('/kh/cash', [KelasHubEngineController::class, 'storeCashLedger']);
-    Route::post('/kh/student', [KelasHubEngineController::class, 'storeStudent']);
-    Route::post('/kh/attendance', [KelasHubEngineController::class, 'storeAttendance']);
     Route::post('/kh/password', [KelasHubEngineController::class, 'updatePassword']);
-    Route::post('/kh/validate', [KelasHubEngineController::class, 'validateData']);
-    Route::delete('/kh/subject/{id}', [KelasHubEngineController::class, 'deleteSubject']);
-    Route::delete('/kh/student/{id}', [KelasHubEngineController::class, 'deleteStudent']);
+    Route::post('/kh/attendance', [KelasHubEngineController::class, 'storeAttendance']);
+
+    // Routes khusus Pengurus (Ketua Kelas, Sekretaris, Bendahara)
+    Route::middleware(['role:ketua_kelas,sekretaris,bendahara'])->group(function () {
+        Route::post('/kh/schedule/toggle-delivery', [KelasHubEngineController::class, 'toggleDeliveryType']);
+        Route::post('/kh/schedule', [KelasHubEngineController::class, 'storeSchedule']);
+        Route::post('/kh/master-subject', [KelasHubEngineController::class, 'storeMasterSubject']);
+        Route::post('/kh/assignment', [KelasHubEngineController::class, 'storeAssignment']);
+        Route::post('/kh/module', [KelasHubEngineController::class, 'storeModule']);
+        Route::get('/kh/module/{id}/download', [KelasHubEngineController::class, 'downloadModule']);
+        Route::post('/kh/cash', [KelasHubEngineController::class, 'storeCashLedger']);
+        Route::post('/kh/student', [KelasHubEngineController::class, 'storeStudent']);
+        Route::delete('/kh/subject/{id}', [KelasHubEngineController::class, 'deleteSubject']);
+        Route::delete('/kh/student/{id}', [KelasHubEngineController::class, 'deleteStudent']);
+    });
+
+    // Routes khusus Ketua Kelas
+    Route::middleware(['role:ketua_kelas'])->group(function () {
+        Route::post('/kh/validate', [KelasHubEngineController::class, 'validateData']);
+        Route::get('/kh/cron/reset-schedule', function (Request $request) {
+            \App\Models\AcademicSchedule::truncate();
+            return response()->json(['success' => true, 'message' => 'Academic schedule reset successfully']);
+        });
+    });
+
+    // Fitur Pelaporan (Baru)
+    Route::get('/kh/reports/attendance/pdf', [\App\Http\Controllers\ReportController::class, 'exportAttendancePdf'])->name('reports.attendance.pdf');
+    Route::get('/kh/reports/attendance/excel', [\App\Http\Controllers\ReportController::class, 'exportAttendanceExcel'])->name('reports.attendance.excel');
+    Route::get('/kh/reports/cash/pdf', [\App\Http\Controllers\ReportController::class, 'exportCashPdf'])->name('reports.cash.pdf');
+    Route::get('/kh/reports/cash/excel', [\App\Http\Controllers\ReportController::class, 'exportCashExcel'])->name('reports.cash.excel');
 });

@@ -12,61 +12,65 @@ class KelasHubAdminSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Ketua Kelas
-        \App\Models\Student::updateOrCreate(
-            ['nim' => '231011403268'],
-            [
-                'name' => 'ARIYAS PRATAMA RAMADHAN',
-                'role' => 'ketua_kelas',
-                'password' => bcrypt('231011403268KK')
-            ]
+        // 1. Create Academic Classes
+        $class13 = \App\Models\AcademicClass::updateOrCreate(
+            ['code' => '06TPLE013'],
+            ['name' => 'Teknik Informatika - 06TPLE013', 'academic_year' => '2023/2024']
         );
 
-        // 2. Sekretaris
-        \App\Models\Student::updateOrCreate(
-            ['nim' => '231011403269'],
-            [
-                'name' => 'SEKRETARIS KELAS',
-                'role' => 'sekretaris',
-                'password' => bcrypt('231011403269SK')
-            ]
+        $class14 = \App\Models\AcademicClass::updateOrCreate(
+            ['code' => '06TPLE014'],
+            ['name' => 'Teknik Informatika - 06TPLE014', 'academic_year' => '2023/2024']
         );
 
-        // 3. Bendahara
-        \App\Models\Student::updateOrCreate(
-            ['nim' => '231011403270'],
-            [
-                'name' => 'BENDAHARA KELAS',
-                'role' => 'bendahara',
-                'password' => bcrypt('231011403270BD')
-            ]
-        );
+        // 2. Seed Students for Class 06TPLE013
+        $students13 = [
+            ['nim' => '231011403268', 'name' => 'ARIYAS PRATAMA RAMADHAN', 'role' => 'ketua_kelas', 'pw' => '231011403268KK'],
+            ['nim' => '231011403269', 'name' => 'SEKRETARIS KELAS', 'role' => 'sekretaris', 'pw' => '231011403269SK'],
+            ['nim' => '231011403270', 'name' => 'BENDAHARA KELAS', 'role' => 'bendahara', 'pw' => '231011403270BD'],
+            ['nim' => '231011403271', 'name' => 'MAHASISWA BIASA', 'role' => 'mahasiswa', 'pw' => '231011403271'],
+        ];
 
-        // 4. Regular Student
-        \App\Models\Student::updateOrCreate(
-            ['nim' => '231011403271'],
-            [
-                'name' => 'MAHASISWA BIASA',
-                'role' => 'mahasiswa',
-                'password' => bcrypt('231011403271')
-            ]
-        );
+        foreach ($students13 as $s) {
+            \App\Models\Student::updateOrCreate(
+                ['nim' => $s['nim']],
+                [
+                    'name' => $s['name'],
+                    'role' => $s['role'],
+                    'password' => bcrypt($s['pw']),
+                    'class_id' => $class13->id
+                ]
+            );
+        }
 
-        // 5. Seed all 8 Matkuls into Schedules
+        // 3. Seed Students for Class 06TPLE014 (Testing Isolation)
+        $students14 = [
+            ['nim' => '241011400001', 'name' => 'KETUA KELAS 14', 'role' => 'ketua_kelas', 'pw' => '241011400001KK'],
+            ['nim' => '241011400002', 'name' => 'SISWA KELAS 14', 'role' => 'mahasiswa', 'pw' => '241011400002'],
+        ];
+
+        foreach ($students14 as $s) {
+            \App\Models\Student::updateOrCreate(
+                ['nim' => $s['nim']],
+                [
+                    'name' => $s['name'],
+                    'role' => $s['role'],
+                    'password' => bcrypt($s['pw']),
+                    'class_id' => $class14->id
+                ]
+            );
+        }
+
+        // 4. Seed Schedules for Class 06TPLE013
         $matkuls = [
             ['nama' => 'Rekayasa Perangkat Lunak', 'dosen' => 'ULIYATUNISA S.Kom., M.Kom.', 'jam' => '07:30', 'ruang' => 'V.401', 'type' => 'offline'],
             ['nama' => 'Kerja Praktek', 'dosen' => 'SUTRIYONO S.KOM., M.KOM.', 'jam' => '10:00', 'ruang' => 'V.402', 'type' => 'offline'],
             ['nama' => 'Teknologi Internet of Things', 'dosen' => 'DR. AHMAD FUADI', 'jam' => '13:00', 'ruang' => 'L.201', 'type' => 'offline'],
-            ['nama' => 'Pemrograman II', 'dosen' => 'HENDRA SURYA', 'jam' => '08:00', 'ruang' => 'V.305', 'type' => 'offline'],
-            ['nama' => 'Basis Data II', 'dosen' => 'SITI NURJANAH', 'jam' => '10:30', 'ruang' => 'V.306', 'type' => 'online'],
-            ['nama' => 'Mobile Programming', 'dosen' => 'PAK DIKA', 'jam' => '13:30', 'ruang' => 'LAB. KOMP', 'type' => 'online'],
-            ['nama' => 'Sistem Pendukung Keputusan', 'dosen' => 'BU RINA', 'jam' => '15:30', 'ruang' => 'V.201', 'type' => 'online'],
-            ['nama' => 'Teknik Kompilasi', 'dosen' => 'DR. IRWAN', 'jam' => '18:30', 'ruang' => 'V.202', 'type' => 'online'],
         ];
 
         foreach ($matkuls as $m) {
             \App\Models\AcademicSchedule::updateOrCreate(
-                ['subject_name' => $m['nama']],
+                ['subject_name' => $m['nama'], 'class_id' => $class13->id],
                 [
                     'lecturer_name' => $m['dosen'],
                     'day' => 'Sabtu',

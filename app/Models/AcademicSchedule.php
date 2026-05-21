@@ -3,9 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\BelongsToClass;
 
-class AcademicSchedule extends Model {
+class AcademicSchedule extends Model
+{
+    use BelongsToClass;
+
     protected $fillable = [
+        'class_id',
         'subject_name',
         'subject_code',
         'lecturer_name',

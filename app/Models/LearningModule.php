@@ -3,9 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\BelongsToClass;
 
-class LearningModule extends Model {
+class LearningModule extends Model
+{
+    use BelongsToClass;
+
     protected $fillable = [
+        'class_id',
         'subject_name',
         'title',
         'file_path',

@@ -3,9 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\BelongsToClass;
 
-class CashLedger extends Model {
+class CashLedger extends Model
+{
+    use BelongsToClass;
+
     protected $fillable = [
+        'class_id',
         'student_id',
         'type',
         'amount',
@@ -18,7 +23,8 @@ class CashLedger extends Model {
         'transaction_date' => 'date',
     ];
 
-    public function student() {
+    public function student()
+    {
         return $this->belongsTo(Student::class);
     }
 }

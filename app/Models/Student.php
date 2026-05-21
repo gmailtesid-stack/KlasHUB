@@ -5,10 +5,14 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class Student extends Authenticatable {
-    use Notifiable;
+use App\Traits\BelongsToClass;
+
+class Student extends Authenticatable
+{
+    use Notifiable, BelongsToClass;
 
     protected $fillable = [
+        'class_id',
         'nim',
         'name',
         'password',
@@ -20,11 +24,13 @@ class Student extends Authenticatable {
         'password',
     ];
 
-    public function attendances() {
+    public function attendances()
+    {
         return $this->hasMany(ClassAttendance::class);
     }
 
-    public function cashLedgers() {
+    public function cashLedgers()
+    {
         return $this->hasMany(CashLedger::class);
     }
 }
