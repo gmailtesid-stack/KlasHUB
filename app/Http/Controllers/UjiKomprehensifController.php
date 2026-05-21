@@ -25,7 +25,7 @@ class UjiKomprehensifController extends Controller
             // 1. Uji Upload Tugas
             $tugasId = DB::table('assignments')->insertGetId([
                 'class_id' => $classId,
-                'subject_name' => 'Uji Sistem Komprehensif',
+                'subject_name' => 'Rekayasa Perangkat Lunak',
                 'title' => 'Tugas Uji Vercel ' . now()->timestamp,
                 'description' => 'Materi pengujian fungsionalitas upload tugas.',
                 'deadline' => now()->addDays(7),
@@ -38,7 +38,7 @@ class UjiKomprehensifController extends Controller
             // 2. Uji Upload Modul
             $modulId = DB::table('learning_modules')->insertGetId([
                 'class_id' => $classId,
-                'subject_name' => 'Uji Sistem Komprehensif',
+                'subject_name' => 'Rekayasa Perangkat Lunak',
                 'title' => 'Modul Uji Vercel ' . now()->timestamp,
                 'type' => 'link',
                 'link_url' => 'https://github.com/gmailtesid-stack/KlasHUB',
@@ -49,13 +49,13 @@ class UjiKomprehensifController extends Controller
 
             // 3. Uji Absensi & Notif 3x Alfa
             // Hapus absensi lama agar pas 3 kali
-            DB::table('class_attendances')->where('student_id', $studentId)->where('subject_name', 'Uji Sistem Komprehensif')->delete();
+            DB::table('class_attendances')->where('student_id', $studentId)->where('subject_name', 'Rekayasa Perangkat Lunak')->delete();
 
             for ($i = 0; $i < 3; $i++) {
                 DB::table('class_attendances')->insert([
                     'student_id' => $studentId,
                     'class_id' => $classId,
-                    'subject_name' => 'Uji Sistem Komprehensif',
+                    'subject_name' => 'Rekayasa Perangkat Lunak',
                     'attendance_date' => now()->subDays($i),
                     'status' => 'Alfa',
                     'is_validated' => true,
