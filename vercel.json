@@ -5,7 +5,9 @@
             "src": "api/index.php",
             "use": "vercel-php@0.9.0",
             "config": {
-                "includeFiles": ["cacert.pem"]
+                "includeFiles": [
+                    "cacert.pem"
+                ]
             }
         },
         {
@@ -29,8 +31,8 @@
     ],
     "env": {
         "APP_ENV": "production",
-        "APP_DEBUG": "true",
-        "CACHE_STORE": "database",
+        "APP_DEBUG": "false",
+        "CACHE_STORE": "file",
         "SESSION_DRIVER": "cookie",
         "QUEUE_CONNECTION": "sync",
         "LOG_CHANNEL": "stderr",
