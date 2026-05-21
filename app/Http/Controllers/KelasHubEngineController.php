@@ -256,10 +256,10 @@ class KelasHubEngineController extends Controller
         return response()->json(['success' => true, 'ledger' => $ledger]);
     }
 
-    private function authorizeAdmin()
+    protected function authorizeAdmin()
     {
         $role = Auth::user()->role;
-        if (!in_array($role, ['ketua_kelas', 'sekretaris', 'bendahara'])) {
+        if (!in_array($role, ['ketua_kelas', 'sekretaris', 'bendahara', 'super_admin'])) {
             abort(403, 'Unauthorized action.');
         }
     }
