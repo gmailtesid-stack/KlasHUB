@@ -30,17 +30,13 @@
             border-color: #27272a;
         }
 
-        .text-zinc-400 {
-            color: #a1a1aa;
-        }
-
-        .text-zinc-300 {
-            color: #d4d4d8;
-        }
-
-        .text-zinc-600 {
-            color: #52525b;
-        }
+        .text-zinc-500 { color: #71717a; }
+        .text-zinc-400 { color: #a1a1aa; }
+        .text-zinc-300 { color: #d4d4d8; }
+        .text-zinc-600 { color: #52525b; }
+        .bg-red-950 { background-color: #450a0a; }
+        .border-red-900 { border-color: #7f1d1d; }
+        .text-red-500 { color: #ef4444; }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
