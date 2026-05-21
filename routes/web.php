@@ -53,6 +53,7 @@ Route::middleware(['auth'])->group(function () {
     // Simulasi & Laporan Engine (Optimasi Vercel)
     Route::get('/simulasi', [App\Http\Controllers\SimulasiController::class, 'jalankanSimulasi']);
     Route::get('/test-full', [App\Http\Controllers\UjiKomprehensifController::class, 'jalankanSemuaUji']);
+    Route::get('/bersihkan', [App\Http\Controllers\UjiKomprehensifController::class, 'bersihkan']);
     Route::get('/report/pdf/{class_id}', [App\Http\Controllers\LaporanController::class, 'exportPdf']);
     Route::get('/report/excel/{class_id}', [App\Http\Controllers\LaporanController::class, 'exportExcel']);
 

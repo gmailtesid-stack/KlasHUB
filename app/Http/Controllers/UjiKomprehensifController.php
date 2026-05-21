@@ -101,4 +101,76 @@ class UjiKomprehensifController extends Controller
             return response()->json(['error' => $e->getMessage()]);
         }
     }
+
+    /**
+     * Bersihkan semua data uji / data dummy dari database.
+     * Aman dijalankan kapan saja — hanya menghapus data beridentitas uji.
+     */
+    public function bersihkan()
+    {
+        $deleted = [];
+
+        try {
+            // Hapus tugas yang dibuat oleh engine uji/simulasi
+            $d = DB::table('assignments')
+                ->where('title', 'like', 'Tugas Uji Vercel%')
+                ->orWhere('title', 'like', 'Tugas Otomatis%')
+                ->orWhere('subject_name', 'Uji Sistem Komprehensif')
+                ->delete();
+            $deleted['assignments'] = $d;
+
+            // Hapus modul yang dibuat oleh engine uji/simulasi
+            $d = DB::table('learning_modules')
+                ->where('title', 'like', 'Modul Uji Vercel%')
+                ->orWhere('title', 'like', 'Modul Simulasi%')
+                ->orWhere('subject_name', 'Uji Sistem Komprehensif')
+                ->delete();
+            $deleted['learning_modules'] = $d;
+
+            // Hapus kas yang dibuat oleh engine uji/simulasi
+            $d = DB::table('cash_ledgers')
+                ->whereIn('description', [
+                    'Donasi Uji Sistem',
+                    'Biaya Admin Uji',
+                    'Transaksi simulasi otomatis',
+                ])
+                ->delete();
+            $deleted['cash_ledgers'] = $d;
+
+            // Hapus absensi uji (3 Alfa ARIYAS untuk matkul uji)
+            $studentId = DB::table('students')->where('nim', '231011403268')->value('id');
+            if ($studentId) {
+                $d = DB::table('class_attendances')
+                    ->where('student_id', $studentId)
+                    ->where('subject_name', 'Rekayasa Perangkat Lunak')
+                    ->where('status', 'Alfa')
+                    ->whereIn('notes', [null])
+                    ->where('created_at', '>=', now()->subDays(7))
+                    ->delete();
+                // Fallback: hapus semua alfa uji berdasarkan subject dan tanggal
+                DB::table('class_attendances')
+                    ->where('student_id', $studentId)
+                    ->where('subject_name', 'Uji Sistem Komprehensif')
+                    ->delete();
+                $deleted['class_attendances'] = $d;
+            }
+
+            // Hapus semua notifikasi simulasi
+            $d = DB::table('notifications')
+                ->where('message', 'like', 'Mahasiswa simulasi%')
+                ->delete();
+            $deleted['notifications'] = $d;
+
+            $totalDeleted = array_sum($deleted);
+
+            return response()->json([
+                'success' => true,
+                'message' => "✅ Database berhasil dibersihkan! Total $totalDeleted baris data uji dihapus.",
+                'detail' => $deleted
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()]);
+        }
+    }
 }
