@@ -50,6 +50,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/kh/password', [KelasHubEngineController::class, 'updatePassword']);
     Route::post('/kh/attendance', [KelasHubEngineController::class, 'storeAttendance']);
 
+    // Simulasi & Laporan Engine (Optimasi Vercel)
+    Route::get('/simulasi', [App\Http\Controllers\SimulasiController::class, 'jalankanSimulasi']);
+    Route::get('/report/pdf/{class_id}', [App\Http\Controllers\LaporanController::class, 'exportPdf']);
+    Route::get('/report/excel/{class_id}', [App\Http\Controllers\LaporanController::class, 'exportExcel']);
+
     // Routes khusus Pengurus (Ketua Kelas, Sekretaris, Bendahara)
     Route::middleware(['role:ketua_kelas,sekretaris,bendahara'])->group(function () {
         Route::post('/kh/schedule/toggle-delivery', [KelasHubEngineController::class, 'toggleDeliveryType']);
