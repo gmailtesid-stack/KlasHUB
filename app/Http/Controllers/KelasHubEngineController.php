@@ -16,18 +16,19 @@ class KelasHubEngineController extends Controller
 {
     public function getStudentDashboard()
     {
-        $student = Auth::user(); // Mengambil data mahasiswa yang sedang login di APK
+        $student = Auth::user();
 
         $masterSubjects = \App\Models\MasterSubject::orderBy('name')->get();
 
-        // Query kalkulasi sisa nyawa absensi per matakuliah (Hanya yang VALID)
-        $absensi = $masterSubjects->map(function ($ms) use ($student) {
-            $total_alfa = ClassAttendance::where('student_id', $student->id)
-                ->where('subject_name', $ms->name)
-                ->where('status', 'Alfa')
-                ->where('is_validated', true)
-                ->count();
+        // Optimized Attendance Calculation
+        $attendances = ClassAttendance::where('student_id', $student->id)
+            ->where('status', 'Alfa')
+            ->where('is_validated', true)
+            ->get()
+            ->groupBy('subject_name');
 
+        $absensi = $masterSubjects->map(function ($ms) use ($attendances) {
+            $total_alfa = isset($attendances[$ms->name]) ? $attendances[$ms->name]->count() : 0;
             $sisa_nyawa = 3 - $total_alfa;
             return [
                 'subject' => $ms->name,
@@ -41,6 +42,7 @@ class KelasHubEngineController extends Controller
         $startOfWeek = Carbon::now()->startOfWeek();
         $isAdmin = in_array($student->role, ['ketua_kelas', 'sekretaris', 'bendahara']);
 
+        // Quick sums remain on first load
         $saldoKasSaatIni = CashLedger::when(!$isAdmin, function ($q) {
             return $q->where('is_validated', true);
         })->where('type', 'income')->sum('amount') - CashLedger::when(!$isAdmin, function ($q) {
@@ -55,22 +57,10 @@ class KelasHubEngineController extends Controller
             return $q->where('is_validated', true);
         })->where('type', 'expense')->where('transaction_date', '>=', $startOfWeek)->sum('amount');
 
-        $semua_mahasiswa = Student::orderBy('name', 'asc')->get();
-        $masterSubjects = \App\Models\MasterSubject::orderBy('name')->get();
-
+        // Other heavy lists will be loaded via AJAX
         $schedules = AcademicSchedule::when(!$isAdmin, function ($q) {
             return $q->where('is_validated', true);
         })->get();
-
-        $semuaTugas = Assignment::when(!$isAdmin, function ($q) {
-            return $q->where('is_validated', true);
-        })->orderBy('deadline', 'asc')->get();
-
-        $semuaModul = LearningModule::when(!$isAdmin, function ($q) {
-            return $q->where('is_validated', true);
-        })->latest()->get();
-
-        $transaksiKas = CashLedger::with('student')->latest()->get();
 
         $pendingCount = 0;
         if ($student->role === 'ketua_kelas') {
@@ -87,14 +77,27 @@ class KelasHubEngineController extends Controller
             'saldo_kas' => $saldoKasSaatIni,
             'pemasukan_mingguan' => $pemasukanMingguan,
             'pengeluaran_mingguan' => $pengeluaranMingguan,
-            'semua_mahasiswa' => $semua_mahasiswa,
             'master_subjects' => $masterSubjects,
             'jadwal_harian' => $schedules,
-            'semua_tugas' => $semuaTugas,
-            'semua_modul' => $semuaModul,
-            'transaksi_kas' => $transaksiKas,
             'pending_count' => $pendingCount,
-            'academic_classes' => \App\Models\AcademicClass::all()
+            'academic_classes' => $student->role === 'super_admin' ? \App\Models\AcademicClass::withCount('students')->with('ketuaKelas')->get() : []
+        ]);
+    }
+
+    public function getDashboardData()
+    {
+        $student = Auth::user();
+        $isAdmin = in_array($student->role, ['ketua_kelas', 'sekretaris', 'bendahara']);
+
+        return response()->json([
+            'semua_mahasiswa' => Student::orderBy('name', 'asc')->get(),
+            'semua_tugas' => Assignment::when(!$isAdmin, function ($q) {
+                return $q->where('is_validated', true);
+            })->orderBy('deadline', 'asc')->get(),
+            'semua_modul' => LearningModule::when(!$isAdmin, function ($q) {
+                return $q->where('is_validated', true);
+            })->latest()->get(),
+            'transaksi_kas' => CashLedger::with('student')->latest()->get()
         ]);
     }
 

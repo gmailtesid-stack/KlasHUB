@@ -122,56 +122,10 @@
                 },
             @endforeach
         ],
-        semuaTugas: [
-            @foreach($semua_tugas as $tgs)
-                {
-                    id: {{ $tgs->id }},
-                    matkul: '{!! addslashes($tgs->subject_name) !!}',
-                    title: '{!! addslashes($tgs->title) !!}',
-                    desc: '{!! addslashes($tgs->description) !!}',
-                    deadline: '{{ \Carbon\Carbon::parse($tgs->deadline)->format("Y-m-d\TH:i") }}',
-                    type: '{{ strtoupper($tgs->type) }}',
-                    tim: '{!! addslashes($tgs->members) !!}',
-                    isValidated: {{ $tgs->is_validated ? 'true' : 'false' }}
-                },
-            @endforeach
-        ],
-        semuaModul: [
-            @foreach($semua_modul as $mdl)
-                {
-                    id: {{ $mdl->id }},
-                    matkul: '{!! addslashes($mdl->subject_name) !!}',
-                    title: '{!! addslashes($mdl->title) !!}',
-                    type: '{{ $mdl->type }}',
-                    file_path: '{{ $mdl->file_path }}',
-                    link_url: '{{ $mdl->link_url }}',
-                    isValidated: {{ $mdl->is_validated ? 'true' : 'false' }}
-                },
-            @endforeach
-        ],
-        semuaTransaksi: [
-            @foreach($transaksi_kas as $trx)
-                {
-                    id: {{ $trx->id }},
-                    type: '{{ $trx->type }}',
-                    amount: {{ $trx->amount }},
-                    desc: '{{ $trx->description }}',
-                    student: '{{ $trx->student ? $trx->student->name : "Umum" }}',
-                    date: '{{ $trx->transaction_date->format("d M Y") }}',
-                    isValidated: {{ $trx->is_validated ? 'true' : 'false' }}
-                },
-            @endforeach
-        ],
-        semuaMahasiswa: [
-            @foreach($semua_mahasiswa as $mhs)
-                {
-                    id: {{ $mhs->id }},
-                    nim: '{{ $mhs->nim }}',
-                    name: '{{ $mhs->name }}',
-                    role: '{{ $mhs->role }}'
-                },
-            @endforeach
-        ],
+        semuaTugas: [],
+        semuaModul: [],
+        semuaTransaksi: [],
+        semuaMahasiswa: [],
         absensi: [
             @foreach($absensi as $abs)
                 {
@@ -310,8 +264,29 @@
                 }
             };
             this.modalConfirm = true;
+        },
+        init() {
+            this.loadingHeavyData = true;
+            fetch('/kh/api/dashboard-data')
+                .then(res => res.json())
+                .then(data => {
+                    this.semuaMahasiswa = data.semua_mahasiswa;
+                    this.semuaTugas = data.semua_tugas;
+                    this.semuaModul = data.semua_modul;
+                    this.semuaTransaksi = data.transaksi_kas.map(t => ({
+                        ...t,
+                        date: new Date(t.transaction_date).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'}),
+                        student: t.student ? t.student.name : 'Umum'
+                    }));
+                    this.loadingHeavyData = false;
+                    this.initCalendar();
+                })
+                .catch(err => {
+                    console.error('Failed to load dashboard data:', err);
+                    this.loadingHeavyData = false;
+                });
         }
-    }" x-init="initCalendar()" @notify-toast.window="notify($event.detail)" class="flex w-full h-full relative">
+    }" x-init="init()" @notify-toast.window="notify($event.detail)" class="flex w-full h-full relative">
 
         <!-- Sidebar Desktop -->
         <aside class="hidden md:flex flex-col w-72 h-full border-r border-zinc-900 bg-zinc-950 shrink-0">
@@ -1027,33 +1002,33 @@
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8" x-data="{ 
-                                            currentAttendance: {},
-                                            saveAttendance(matkul) {
-                                                let data = [];
-                                                semuaMahasiswa.forEach(m => {
-                                                    data.push({
-                                                        student_id: m.id,
-                                                        status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
-                                                    });
-                                                });
-                                                fetch('/kh/attendance', {
-                                                    method: 'POST',
-                                                    headers: {
-                                                        'Content-Type': 'application/json',
-                                                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
-                                                    },
-                                                    body: JSON.stringify({
-                                                        subject_name: matkul,
-                                                        date: new Date().toISOString().split('T')[0],
-                                                        attendances: data
-                                                    })
-                                                })
-                                                .then(res => res.json())
-                                                .then(res => {
-                                                    if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
-                                                });
-                                            }
-                                        }">
+                                                    currentAttendance: {},
+                                                    saveAttendance(matkul) {
+                                                        let data = [];
+                                                        semuaMahasiswa.forEach(m => {
+                                                            data.push({
+                                                                student_id: m.id,
+                                                                status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
+                                                            });
+                                                        });
+                                                        fetch('/kh/attendance', {
+                                                            method: 'POST',
+                                                            headers: {
+                                                                'Content-Type': 'application/json',
+                                                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                                                            },
+                                                            body: JSON.stringify({
+                                                                subject_name: matkul,
+                                                                date: new Date().toISOString().split('T')[0],
+                                                                attendances: data
+                                                            })
+                                                        })
+                                                        .then(res => res.json())
+                                                        .then(res => {
+                                                            if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
+                                                        });
+                                                    }
+                                                }">
                                 <template x-for="(sks, matkulName) in matkuls_sks" :key="matkulName">
                                     <div
                                         class="bg-zinc-900/50 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col shadow-xl">
@@ -1135,11 +1110,11 @@
                                                             <span
                                                                 class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-tighter inline-block"
                                                                 :class="{
-                                                                                              'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
-                                                                                              'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
-                                                                                              'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
-                                                                                              'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
-                                                                                          }"
+                                                                                                              'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
+                                                                                                              'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
+                                                                                                              'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
+                                                                                                              'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
+                                                                                                          }"
                                                                 x-text="mhs.role.replace('_', ' ')"></span>
                                                         </td>
                                                         <td class="px-4 py-3 text-right">
@@ -1304,93 +1279,149 @@
                         </div>
                     </div>
 
-                <!-- TAB: SUPER ADMIN -->
+                    <!-- TAB: SUPER ADMIN -->
                     @if (($student->role ?? '') === 'super_admin')
                         <div x-show="tab === 'super'" x-transition:enter="transition ease-out duration-300"
                             x-transition:enter-start="opacity-0 translate-y-4"
                             x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
-                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 px-4 md:px-0">
+                            <div
+                                class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 px-4 md:px-0">
                                 <div class="pt-4">
-                                    <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight mb-1">Super Admin Panel</h2>
-                                    <p class="text-sm text-zinc-500 font-medium">Manajemen Kelas dan Otoritas Lintas Sektor.</p>
+                                    <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight mb-1">Super Admin
+                                        Panel</h2>
+                                    <p class="text-sm text-zinc-500 font-medium">Manajemen Kelas dan Otoritas Lintas Sektor.
+                                    </p>
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-32 px-4 md:px-0">
                                 <!-- Create Class Form -->
                                 <div class="lg:col-span-1 space-y-6">
-                                    <div class="bg-zinc-900/40 border border-zinc-800 rounded-[2rem] p-8 shadow-2xl relative overflow-hidden group">
-                                        <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.4)]"></div>
-                                        <h3 class="text-sm font-black text-white uppercase tracking-[0.2em] mb-8">Registrasi Kelas Baru</h3>
+                                    <div
+                                        class="bg-zinc-900/40 border border-zinc-800 rounded-[2rem] p-8 shadow-2xl relative overflow-hidden group">
+                                        <div
+                                            class="absolute top-0 left-0 w-1.5 h-full bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.4)]">
+                                        </div>
+                                        <h3 class="text-sm font-black text-white uppercase tracking-[0.2em] mb-8">Registrasi
+                                            Kelas Baru</h3>
                                         <form action="/kh/class" method="POST" class="space-y-5">
                                             @csrf
                                             <div class="space-y-2">
-                                                <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Nama Visual Kelas</label>
-                                                <input type="text" name="name" placeholder="Teknik Informatika - 06TPLE015" class="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-4 text-sm text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition-all outline-none placeholder:text-zinc-700" required>
+                                                <label
+                                                    class="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Nama
+                                                    Visual Kelas</label>
+                                                <input type="text" name="name" placeholder="Teknik Informatika - 06TPLE015"
+                                                    class="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-4 text-sm text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition-all outline-none placeholder:text-zinc-700"
+                                                    required>
                                             </div>
                                             <div class="space-y-2">
-                                                <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Identifier / Kode</label>
-                                                <input type="text" name="code" placeholder="06TPLE015" class="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-4 text-sm text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition-all outline-none placeholder:text-zinc-700" required>
+                                                <label
+                                                    class="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Identifier
+                                                    / Kode</label>
+                                                <input type="text" name="code" placeholder="06TPLE015"
+                                                    class="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-4 text-sm text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition-all outline-none placeholder:text-zinc-700"
+                                                    required>
                                             </div>
                                             <div class="space-y-2">
-                                                <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Periode Akademik</label>
-                                                <input type="text" name="academic_year" placeholder="2023/2024" class="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-4 text-sm text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition-all outline-none placeholder:text-zinc-700" required>
+                                                <label
+                                                    class="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Periode
+                                                    Akademik</label>
+                                                <input type="text" name="academic_year" placeholder="2023/2024"
+                                                    class="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-4 text-sm text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition-all outline-none placeholder:text-zinc-700"
+                                                    required>
                                             </div>
-                                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl transition-all shadow-xl shadow-blue-600/10 active:scale-95 uppercase tracking-widest text-xs mt-4">Simpan Entitas Kelas</button>
+                                            <button type="submit"
+                                                class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl transition-all shadow-xl shadow-blue-600/10 active:scale-95 uppercase tracking-widest text-xs mt-4">Simpan
+                                                Entitas Kelas</button>
                                         </form>
                                     </div>
 
-                                    <div class="bg-zinc-900/40 border border-zinc-800 rounded-[2rem] p-8 shadow-2xl relative overflow-hidden group">
-                                        <div class="absolute top-0 left-0 w-1.5 h-full bg-emerald-600 shadow-[0_0_20px_rgba(5,150,105,0.4)]"></div>
-                                        <h3 class="text-sm font-black text-white uppercase tracking-[0.2em] mb-8">Pendaftaran Ketua Kelas</h3>
+                                    <div
+                                        class="bg-zinc-900/40 border border-zinc-800 rounded-[2rem] p-8 shadow-2xl relative overflow-hidden group">
+                                        <div
+                                            class="absolute top-0 left-0 w-1.5 h-full bg-emerald-600 shadow-[0_0_20px_rgba(5,150,105,0.4)]">
+                                        </div>
+                                        <h3 class="text-sm font-black text-white uppercase tracking-[0.2em] mb-8">
+                                            Pendaftaran Ketua Kelas</h3>
                                         <form action="/kh/student" method="POST" class="space-y-5">
                                             @csrf
                                             <input type="hidden" name="role" value="ketua_kelas">
                                             <div class="space-y-2">
-                                                <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Target Kelas</label>
+                                                <label
+                                                    class="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Target
+                                                    Kelas</label>
                                                 <div class="relative">
-                                                    <select name="class_id" class="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-4 text-sm text-white focus:border-emerald-500 transition-all outline-none appearance-none cursor-pointer" required>
+                                                    <select name="class_id"
+                                                        class="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-4 text-sm text-white focus:border-emerald-500 transition-all outline-none appearance-none cursor-pointer"
+                                                        required>
                                                         @foreach($academic_classes as $ac)
-                                                            <option value="{{ $ac->id }}">{{ $ac->code }} - {{ $ac->name }}</option>
+                                                            <option value="{{ $ac->id }}">{{ $ac->code }} - {{ $ac->name }}
+                                                            </option>
                                                         @endforeach
                                                     </select>
-                                                    <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                                    <div
+                                                        class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                        </svg>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="space-y-2">
-                                                <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Nama Lengkap Ketua</label>
-                                                <input type="text" name="name" placeholder="Contoh: ARIYAS PRATAMA" class="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-4 text-sm text-white focus:border-emerald-500 transition-all outline-none placeholder:text-zinc-700" required>
+                                                <label
+                                                    class="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Nama
+                                                    Lengkap Ketua</label>
+                                                <input type="text" name="name" placeholder="Contoh: ARIYAS PRATAMA"
+                                                    class="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-4 text-sm text-white focus:border-emerald-500 transition-all outline-none placeholder:text-zinc-700"
+                                                    required>
                                             </div>
                                             <div class="space-y-2">
-                                                <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Nomor Induk (NIM)</label>
-                                                <input type="text" name="nim" placeholder="23101140xxxx" class="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-4 text-sm text-white focus:border-emerald-500 transition-all outline-none placeholder:text-zinc-700" required>
+                                                <label
+                                                    class="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Nomor
+                                                    Induk (NIM)</label>
+                                                <input type="text" name="nim" placeholder="23101140xxxx"
+                                                    class="w-full bg-black/40 border border-zinc-800 rounded-2xl px-5 py-4 text-sm text-white focus:border-emerald-500 transition-all outline-none placeholder:text-zinc-700"
+                                                    required>
                                             </div>
                                             <div class="p-4 bg-zinc-800/20 rounded-xl border border-zinc-800/50">
-                                                <p class="text-[9px] text-zinc-500 font-bold italic text-center leading-relaxed">System Identity Protection: Password otomatis disetel pola NIM + "KK".</p>
+                                                <p
+                                                    class="text-[9px] text-zinc-500 font-bold italic text-center leading-relaxed">
+                                                    System Identity Protection: Password otomatis disetel pola NIM + "KK".
+                                                </p>
                                             </div>
-                                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-2xl transition-all shadow-xl shadow-emerald-600/10 active:scale-95 uppercase tracking-widest text-xs">Aktifkan Ketua Kelas</button>
+                                            <button type="submit"
+                                                class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-2xl transition-all shadow-xl shadow-emerald-600/10 active:scale-95 uppercase tracking-widest text-xs">Aktifkan
+                                                Ketua Kelas</button>
                                         </form>
                                     </div>
                                 </div>
 
                                 <!-- Class List -->
                                 <div class="lg:col-span-2">
-                                    <div class="bg-zinc-900/20 border border-zinc-800/80 rounded-[2.5rem] overflow-hidden shadow-2xl backdrop-blur-md">
-                                        <div class="p-8 border-b border-zinc-800 bg-white/[0.02] flex justify-between items-center">
+                                    <div
+                                        class="bg-zinc-900/20 border border-zinc-800/80 rounded-[2.5rem] overflow-hidden shadow-2xl backdrop-blur-md">
+                                        <div
+                                            class="p-8 border-b border-zinc-800 bg-white/[0.02] flex justify-between items-center">
                                             <div>
-                                                <h3 class="text-base font-black text-white uppercase tracking-[0.2em]">Data Sektor Kelas</h3>
-                                                <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">Status Operasional Perangkat Lunak</p>
+                                                <h3 class="text-base font-black text-white uppercase tracking-[0.2em]">Data
+                                                    Sektor Kelas</h3>
+                                                <p
+                                                    class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">
+                                                    Status Operasional Perangkat Lunak</p>
                                             </div>
                                             <div class="flex items-center gap-4">
-                                                <span class="bg-blue-500/10 text-blue-400 text-[9px] px-4 py-1.5 rounded-full font-black border border-blue-500/20 tracking-tighter">{{ count($academic_classes) }} KELAS AKTIF</span>
+                                                <span
+                                                    class="bg-blue-500/10 text-blue-400 text-[9px] px-4 py-1.5 rounded-full font-black border border-blue-500/20 tracking-tighter">{{ count($academic_classes) }}
+                                                    KELAS AKTIF</span>
                                             </div>
                                         </div>
                                         <div class="overflow-x-auto px-2">
                                             <table class="w-full text-left">
                                                 <thead>
-                                                    <tr class="text-zinc-600 text-[10px] font-black uppercase tracking-[0.3em] border-b border-zinc-800/50">
+                                                    <tr
+                                                        class="text-zinc-600 text-[10px] font-black uppercase tracking-[0.3em] border-b border-zinc-800/50">
                                                         <th class="px-8 py-6">Identity</th>
                                                         <th class="px-8 py-6">Infrastructure</th>
                                                         <th class="px-8 py-6 text-center">Density</th>
@@ -1402,31 +1433,40 @@
                                                         <tr class="hover:bg-white/[0.03] transition-all group">
                                                             <td class="px-8 py-7">
                                                                 <div class="flex items-center gap-5">
-                                                                    <div class="w-12 h-12 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-600 font-black text-xs shadow-inner group-hover:border-blue-500/30 group-hover:text-blue-400 transition-all">
+                                                                    <div
+                                                                        class="w-12 h-12 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-600 font-black text-xs shadow-inner group-hover:border-blue-500/30 group-hover:text-blue-400 transition-all">
                                                                         {{ substr($ac->code, 0, 2) }}
                                                                     </div>
                                                                     <div>
-                                                                        <span class="text-zinc-200 font-black text-sm block group-hover:text-white transition-all tracking-tight">{{ $ac->name }}</span>
-                                                                        <span class="text-[10px] font-mono text-zinc-600 uppercase mt-1 block">CODE_REF: {{ $ac->code }}</span>
+                                                                        <span
+                                                                            class="text-zinc-200 font-black text-sm block group-hover:text-white transition-all tracking-tight">{{ $ac->name }}</span>
+                                                                        <span
+                                                                            class="text-[10px] font-mono text-zinc-600 uppercase mt-1 block">CODE_REF:
+                                                                            {{ $ac->code }}</span>
                                                                     </div>
                                                                 </div>
                                                             </td>
                                                             <td class="px-8 py-7">
                                                                 <div class="flex flex-col gap-1.5">
-                                                                    <span class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Administrator</span>
-                                                                    <span class="text-xs text-zinc-400 font-bold group-hover:text-zinc-200 transition-all">
-                                                                        {{ \App\Models\Student::where('class_id', $ac->id)->where('role', 'ketua_kelas')->first()->name ?? 'UNAUTHORIZED' }}
+                                                                    <span
+                                                                        class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Administrator</span>
+                                                                    <span
+                                                                        class="text-xs text-zinc-400 font-bold group-hover:text-zinc-200 transition-all">
+                                                                        {{ $ac->ketuaKelas->name ?? 'UNAUTHORIZED' }}
                                                                     </span>
                                                                 </div>
                                                             </td>
                                                             <td class="px-8 py-7 text-center">
                                                                 <div class="inline-flex flex-col items-center">
-                                                                    <span class="text-lg font-black text-white leading-none">{{ \App\Models\Student::where('class_id', $ac->id)->count() }}</span>
-                                                                    <span class="text-[8px] font-black text-zinc-600 uppercase tracking-widest mt-1">Users</span>
+                                                                    <span
+                                                                        class="text-lg font-black text-white leading-none">{{ $ac->students_count }}</span>
+                                                                    <span
+                                                                        class="text-[8px] font-black text-zinc-600 uppercase tracking-widest mt-1">Users</span>
                                                                 </div>
                                                             </td>
                                                             <td class="px-8 py-7 text-right">
-                                                                <span class="px-3 py-1 bg-emerald-500/10 text-emerald-500 text-[9px] font-black rounded-lg border border-emerald-500/20">OPERATIONAL</span>
+                                                                <span
+                                                                    class="px-3 py-1 bg-emerald-500/10 text-emerald-500 text-[9px] font-black rounded-lg border border-emerald-500/20">OPERATIONAL</span>
                                                             </td>
                                                         </tr>
                                                     @endforeach

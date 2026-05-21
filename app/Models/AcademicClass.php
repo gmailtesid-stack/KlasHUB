@@ -12,4 +12,9 @@ class AcademicClass extends Model
     {
         return $this->hasMany(Student::class, 'class_id');
     }
+
+    public function ketuaKelas()
+    {
+        return $this->hasOne(Student::class, 'class_id')->where('role', 'ketua_kelas');
+    }
 }

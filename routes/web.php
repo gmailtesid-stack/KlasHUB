@@ -82,6 +82,8 @@ Route::middleware(['auth'])->group(function () {
             \App\Models\AcademicClass::create($data);
             return back()->with('success', 'Kelas berhasil didaftarkan.');
         });
+
+        Route::get('/kh/api/dashboard-data', [KelasHubEngineController::class, 'getDashboardData']);
     });
 
     // Fitur Pelaporan (Baru)
