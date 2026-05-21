@@ -7,30 +7,33 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 /** @var Application $app */
-$app = require_once __DIR__.'/../bootstrap/app.php';
+$app = require_once __DIR__ . '/../bootstrap/app.php';
 
 // Force Laravel to use the writable /tmp directory on Vercel Serverless Functions
 $app->useStoragePath('/tmp');
 
+// Matches VIEW_COMPILED_PATH in vercel.json
 $dirs = [
     '/tmp/framework/views',
     '/tmp/framework/cache/data',
     '/tmp/framework/sessions',
 ];
+
 foreach ($dirs as $dir) {
     if (!is_dir($dir)) {
-        @mkdir($dir, 0777, true);
+        mkdir($dir, 0777, true);
     }
 }
 
-// Copy the full Mozilla CA bundle to /tmp so the mysqlnd C-extension can read it without permission errors
-if (!file_exists('/tmp/cacert.pem')) {
-    $ca = @file_get_contents(__DIR__.'/../cacert.pem');
-    if ($ca) {
-        @file_put_contents('/tmp/cacert.pem', $ca);
+// Ensure the CA bundle is present for SSL database connections
+$cacertPath = '/tmp/cacert.pem';
+if (!file_exists($cacertPath)) {
+    $source = __DIR__ . '/../cacert.pem';
+    if (file_exists($source)) {
+        copy($source, $cacertPath);
     }
 }
 
