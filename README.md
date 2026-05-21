@@ -1,286 +1,607 @@
-# 🌌 KelasHub: Stealth-Theme All-in-One Class Operations Suite
+# 🌌 KelasHUB — Stealth-Theme All-in-One Class Operations Suite
 
-KelasHub adalah platform operasional kelas kelas-hybrid (*All-in-One Class Operations*) yang dirancang khusus untuk manajemen perkuliahan secara modern, responsif, dan terpusat. Dikembangkan di bawah payung **Wave Project.ID**, platform ini mengintegrasikan **Laravel backend (serverless di Vercel)** dengan database transaksional performa tinggi (**TiDB Cloud / MySQL / SQLite**) dan dibungkus menggunakan **Native Android WebView Wrapper** untuk menyajikan pengalaman aplikasi mobile yang premium, cepat, dan *seamless*.
+<div align="center">
 
-Sistem ini didesain menggunakan **Stealth Zinc-900 Aesthetic Theme** dengan sentuhan *glassmorphism*, gradasi warna yang halus (*smooth gradients*), serta mikro-animasi dinamis yang memanjakan mata pengguna sekaligus menjamin keterbacaan data yang optimal pada layar HP.
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed-Vercel-black?logo=vercel)](https://klas-hub.vercel.app)
+[![Laravel](https://img.shields.io/badge/Laravel-13.x-FF2D20?logo=laravel)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.3+-777BB4?logo=php)](https://php.net)
+[![TiDB Cloud](https://img.shields.io/badge/Database-TiDB%20Cloud-orange)](https://tidbcloud.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+**Platform manajemen kelas kuliah modern, cepat, dan terpusat.**
+Dibangun di atas Laravel Serverless (Vercel) · TiDB Cloud · Tailwind CSS v4 · Alpine.js
+
+[🚀 Live Demo](https://klas-hub.vercel.app) · [📋 Changelog](CHANGELOG.md) · [🤝 Contributing](CONTRIBUTING.md) · [📖 API Docs](docs/API.md)
+
+</div>
 
 ---
 
-## 📸 Tampilan Utama KelasHub
+## 📖 Daftar Isi
+
+- [Tentang Proyek](#-tentang-proyek)
+- [Fitur Utama](#-fitur-utama)
+- [Arsitektur & Stack Teknologi](#-arsitektur--stack-teknologi)
+- [Struktur Database](#-struktur-database)
+- [Instalasi Lokal](#-instalasi-lokal)
+- [Deployment ke Vercel](#-deployment-ke-vercel)
+- [Referensi Route & API](#-referensi-route--api)
+- [Role-Based Access Control](#-role-based-access-control-rbac)
+- [Engine Simulasi & Laporan](#-engine-simulasi--laporan)
+- [Optimasi Vercel Serverless](#-optimasi-vercel-serverless)
+- [Aplikasi Android WebView](#-aplikasi-android-webview)
+- [Filosofi Desain UI](#-filosofi-desain-ui)
+- [Kontribusi](#-kontribusi)
+
+---
+
+## 🎯 Tentang Proyek
+
+**KelasHUB** adalah platform operasional kelas perkuliahan *All-in-One* yang dirancang untuk menggantikan proses administrasi manual yang rumit — mulai dari presensi, manajemen keuangan kas, repositori modul pembelajaran, hingga pengumuman kelas — ke dalam satu aplikasi terpadu yang bisa diakses dari ponsel.
+
+Platform ini dikembangkan dengan filosofi **"Stealth Operations"**: tampilannya ramping dan gelap (dark-mode), tapi di baliknya menyimpan kekuatan penuh untuk mengelola seluruh operasional kelas secara real-time.
+
+**Dikembangkan oleh**: Wave Project.ID  
+**Stack**: Laravel 13 (Serverless) + TiDB Cloud + Tailwind CSS v4 + Alpine.js  
+**Target Platform**: Vercel Free Tier (Serverless) + Android WebView
+
+---
+
+## ✨ Fitur Utama
+
+### 1. 🎯 Smart Attendance & "Sisa Nyawa" Engine
+Sistem kehadiran cerdas berbasis **penalty point**:
+- Setiap mahasiswa mendapatkan **3 Nyawa** per mata kuliah per semester.
+- Setiap absen (**Alfa**) yang tervalidasi mengurangi 1 nyawa.
+- Jika nyawa = **0**, status otomatis berubah menjadi `DICEKAL` (Nilai E) dengan peringatan berkedip merah di dashboard.
+- Mahasiswa juga bisa submit **Rekap Mandiri** (Sakit/Izin) yang memerlukan validasi Sekretaris.
+
+### 2. 🔐 Role-Based Access Control (RBAC)
+| Role | Hak Akses |
+|:---|:---|
+| `super_admin` | Registrasi kelas baru & Ketua Kelas, kelola semua data |
+| `ketua_kelas` | Validasi semua data, tambah/hapus anggota, kelola jadwal, laporan |
+| `sekretaris` | Input absensi, tampilkan daftar hadir, kelola jadwal |
+| `bendahara` | Input & kelola kas kelas, laporan keuangan |
+| `mahasiswa` | Lihat data pribadi, unduh modul, rekap mandiri |
+
+### 3. 📚 Academic Hub & Repositori File
+- Upload modul pembelajaran (PDF, DOC, TXT) langsung disimpan ke database sebagai `base64` — tanpa butuh storage filesystem Vercel.
+- Download modul bisa dilakukan langsung dari dashboard.
+- Manajemen tugas (individual & kelompok) dengan deadline otomatis.
+
+### 4. 💰 Financial Ledger (Buku Kas)
+- Catat pemasukan dan pengeluaran kelas dengan deskripsi lengkap.
+- Saldo berjalan otomatis dihitung dan ditampilkan di dashboard.
+- Export laporan keuangan ke **PDF** (format formal monokrom) dan **Excel/CSV** (streaming, RAM ~0 MB).
+
+### 5. 📅 Jadwal & Mode Pembelajaran
+- Jadwal perkuliahan harian per mata kuliah.
+- Toggle mode **Online ↔ Offline** secara real-time oleh Ketua Kelas/Sekretaris.
+- Cron job otomatis reset jadwal setiap hari pukul 23:59 WIB.
+
+### 6. 🏛️ Super Admin Panel
+- Panel khusus untuk mendaftarkan kelas baru **sekaligus** akunnya dalam satu form terpadu (Unified Class Registration).
+- Password Ketua Kelas dibuat otomatis: `NIM + "KK"`.
+- Isolasi penuh antar kelas berbasis `class_id`.
+
+### 7. 🤖 Simulasi Engine (Vercel-Optimized)
+- Endpoint `/simulasi` yang mensimulasikan aktivitas nyata 5 kelas secara otomatis.
+- Berjalan dalam **< 5 detik** — aman dari timeout 10 detik Vercel Free.
+- Menggunakan `DB::table()` murni (tanpa Eloquent) untuk efisiensi RAM.
+
+---
+
+## 🛠️ Arsitektur & Stack Teknologi
 
 ```
-+-------------------------------------------------------------------+
-|  [🌌 KELASHUB]                      (Akun) Ariyas Pratama  [->]   |
-+-------------------------------------------------------------------+
-|  Tracker Kehadiran | Sisa Nyawa Bolos | Repositori | Keuangan     |
-|                                                                   |
-|  +-------------------------------------------------------------+  |
-|  |  MATA KULIAH: Pemrograman Web (3 SKS)                       |  |
-|  |  Dosen: Ir. Budi Santoso                                    |  |
-|  |  Status: [ONLINE]  <-- Toggleable by Ketua Kelas            |  |
-|  +-------------------------------------------------------------+  |
-|                                                                   |
-|  MANAJEMEN ANGGOTA KELAS (Tabel Responsif 3-Kolom Mobile)         |  |
-|  +-------------------------------------------------------------+  |
-|  |  MAHASISWA             | JABATAN           | AKSI           |  |
-|  +-------------------------------------------------------------+  |
-|  |  Hana Rifdah Rianra    | [ MAHASISWA ]     |  [ Hapus ]     |  |
-|  |  NIM: 231011401383     |                   |                |  |
-|  |  --------------------+-------------------+----------------  |
-|  |  Juan Montoya D.       | [ SEKRETARIS ]    |  [ Hapus ]     |  |
-|  |  NIM: 231011402105     |                   |                |  |
-|  +-------------------------------------------------------------+  |
-+-------------------------------------------------------------------+
+┌─────────────────────────────────────────────────────────┐
+│                   CLIENT LAYER                          │
+│  Android App (Kotlin WebView)  /  Mobile Browser        │
+└───────────────────────┬─────────────────────────────────┘
+                        │ HTTPS
+┌───────────────────────▼─────────────────────────────────┐
+│                   VERCEL EDGE                           │
+│  Static Assets → @vercel/static                         │
+│  PHP Requests  → vercel-php@0.9.0 → api/index.php       │
+└───────────────────────┬─────────────────────────────────┘
+                        │
+┌───────────────────────▼─────────────────────────────────┐
+│              LARAVEL 13 APPLICATION CORE                │
+│  ┌──────────┐  ┌───────────┐  ┌───────────────────────┐ │
+│  │  Routes  │→│Controllers │→│  Models (Eloquent)      │ │
+│  │ web.php  │  │ Engine    │  │  Student, Assignment,  │ │
+│  └──────────┘  │ Laporan   │  │  CashLedger, Module.. │ │
+│                │ Simulasi  │  └──────────┬────────────┘ │
+│                └───────────┘             │               │
+└──────────────────────────────────────────┼───────────────┘
+                                           │ MySQL Protocol
+┌──────────────────────────────────────────▼───────────────┐
+│                    TiDB CLOUD                            │
+│  Distributed MySQL-Compatible · 5 Tables + relations     │
+│  academic_classes, students, assignments,                 │
+│  cash_ledgers, class_attendances, learning_modules, ...  │
+└──────────────────────────────────────────────────────────┘
 ```
 
----
+### Dependency Utama
 
-## 🛠️ Arsitektur Sistem & Teknologi Stack
-
-KelasHub menggunakan kombinasi teknologi modern berkinerja tinggi untuk memastikan performa yang cepat dan bebas dari hambatan serverless (seperti Vercel Gateway Timeouts):
-
-### **1. Backend & Logika Core**
-*   **Framework:** Laravel 13.9.0 (PHP 8.5.2 / 8.3)
-*   **Routing & Templating:** Blade Views + Alpine.js (untuk reaktivitas frontend tanpa beban SPA yang berat).
-*   **Aplikasi Mobile:** Native Android Webview (Kotlin) dengan engine Chromium yang dioptimalkan.
-
-### **2. Database & Data Storage**
-*   **Sistem Database:** TiDB Cloud (MySQL-Compatible distributed database) untuk produksi, dan SQLite untuk pengembangan lokal.
-*   **Ceklis & Caching:** Redis/Database Caching untuk menyimpan data sesi secara stateless guna mencegah redundansi query.
-
-### **3. Desain & Antarmuka (Aesthetics)**
-*   **Tema Utama:** Dark Stealth (Zinc-900 / HSL Tailored Gradients).
-*   **Framework CSS:** Tailwind CSS v4 dengan optimisasi build menggunakan Vite.
-*   **Responsive Engine:** Unified Mobile-First layout yang otomatis menyesuaikan elemen tabel, tombol bertumpuk (*stacked buttons*), dan kartu interaktif di layar HP.
+| Komponen | Versi | Fungsi |
+|:---|:---:|:---|
+| Laravel | 13.x | Backend framework utama |
+| PHP | 8.3+ | Runtime |
+| TiDB Cloud | - | Database produksi (MySQL-compat) |
+| Tailwind CSS | v4 | Styling framework |
+| Alpine.js | 3.x | Reaktivitas frontend ringan |
+| barryvdh/laravel-dompdf | ^3.1 | Ekspor laporan PDF |
+| vercel-php | 0.9.0 | PHP runtime di Vercel Serverless |
 
 ---
 
-## ✨ Fitur-Fitur Utama KelasHub
+## 🗄️ Struktur Database
 
-### **1. Smart Attendance & "3-Alfa" Penalty Engine**
-*   **Sistem Sisa Nyawa:** Setiap mahasiswa dibekali dengan **3 Nyawa** per mata kuliah di awal semester.
-*   **Auto-Penalty:** Setiap kali sekretaris atau ketua kelas menandai mahasiswa sebagai **"Alfa"**, sistem otomatis mengurangi 1 nyawa mahasiswa tersebut pada mata kuliah terkait.
-*   **Sanksi Dicekal:** Jika nyawa mahasiswa menyentuh angka **0**, sistem otomatis mengubah status mahasiswa menjadi **"DICEKAL"**. Di dashboard mahasiswa akan muncul peringatan keras berkedip merah: *"Anda Terindikasi Nilai E / Tidak Bisa Mengikuti UTS/UAS"*.
+### Skema Relasi Antar Tabel
 
-### **2. Role-Based Access Control (RBAC) Interaktif**
-Sistem KelasHub membagi hak akses secara ketat berdasarkan status jabatan di kelas:
-*   **Ketua Kelas:** Memiliki kendali penuh untuk menambah/menghapus mahasiswa, mengatur jenis pembelajaran (Online/Offline) per mata kuliah secara *real-time*, dan memvalidasi persetujuan dispensasi.
-*   **Sekretaris:** Memiliki otorisasi penuh untuk mengelola lembar presensi harian kelas dan menginput data absensi.
-*   **Bendahara:** Memiliki hak akses khusus untuk mengelola buku kas kelas, mencatat uang kas masuk/keluar, dan memantau status iuran wajib anggota.
-*   **Mahasiswa:** Hak akses terbatas (baca-saja) untuk memantau sisa nyawa pribadi, mengunduh modul pembelajaran, dan mengirimkan rekap mandiri jika berhalangan hadir (Sakit/Izin).
+```
+academic_classes (1) ──────── (N) students
+academic_classes (1) ──────── (N) assignments
+academic_classes (1) ──────── (N) cash_ledgers
+academic_classes (1) ──────── (N) class_attendances
+academic_classes (1) ──────── (N) learning_modules
+academic_classes (1) ──────── (N) academic_schedules
+academic_classes (1) ──────── (N) notifications
 
-### **3. Academic Hub & File Repository**
-*   **Database Integrated Storage:** Modul pembelajaran dan tugas kuliah disimpan langsung di dalam database dalam bentuk terkompresi.
-*   **Upload & Download:** Ketua Kelas/Sekretaris dapat mengunggah file materi secara instan, dan mahasiswa dapat mengunduhnya langsung melalui aplikasi WebView.
+students (1) ─────────────── (N) class_attendances
+students (1) ─────────────── (N) cash_ledgers
+students (1) ─────────────── (N) notifications
+```
 
-### **4. Financial Ledger Tracking**
-*   Bendahara kelas dapat memasukkan nominal iuran mingguan.
-*   Tersedia diagram sirkulasi keuangan kas yang transparan untuk menghindari kecurangan atau salah hitung keuangan kelas.
+### Detail Tabel
 
----
-
-## 🗄️ Struktur Database & Migrasi Core
-
-KelasHub memiliki skema relasional database yang bersih dan optimal:
-
-### **1. Tabel Master Subjek (`master_subjects`)**
-Menyimpan daftar mata kuliah resmi di jurusan.
+#### `academic_classes`
 ```sql
-CREATE TABLE master_subjects (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) UNIQUE NOT NULL,
-    sks INT NOT NULL,
-    created_at TIMESTAMP NULL
-);
+id              BIGINT PK AUTO_INCREMENT
+name            VARCHAR(255)    -- "Teknik Informatika - 06TPLE013"
+code            VARCHAR(50)     -- "06TPLE013" (unique key isolasi data)
+academic_year   VARCHAR(20)     -- "2023/2024"
+department      VARCHAR(255)    -- "Teknik Informatika" (added v2)
+contact         VARCHAR(255)    -- No. HP / Email Ketua (added v2)
+created_at, updated_at
 ```
 
-### **2. Tabel Jadwal Kelas (`schedules`)**
-Menyimpan hari perkuliahan beserta nama dosen, kode kelas, dan metode penyampaian kelas (*Online/Offline*).
+#### `students`
 ```sql
-CREATE TABLE schedules (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    class_name VARCHAR(100) NOT NULL,
-    subject VARCHAR(255) NOT NULL,
-    dosen VARCHAR(255) NOT NULL,
-    day VARCHAR(50) NOT NULL,
-    time VARCHAR(50) NOT NULL,
-    code VARCHAR(50) DEFAULT 'REG-A',
-    delivery_type VARCHAR(50) DEFAULT 'offline', -- 'online' / 'offline'
-    created_at TIMESTAMP NULL
-);
+id              BIGINT PK
+class_id        FK → academic_classes.id
+nim             VARCHAR(20) UNIQUE  -- Nomor Induk Mahasiswa
+name            VARCHAR(255)        -- Digunakan sebagai username login
+password        VARCHAR(255)        -- bcrypt(NIM + "KK") untuk Ketua
+role            ENUM('ketua_kelas','sekretaris','bendahara','mahasiswa','super_admin')
+device_id       VARCHAR(255) NULL   -- Untuk keamanan perangkat
+created_at, updated_at
 ```
 
-### **3. Tabel Kehadiran Mahasiswa (`class_attendances`)**
-Mengelola status absensi mahasiswa per mata kuliah untuk melacak sisa nyawa bolos.
+#### `class_attendances`
 ```sql
-CREATE TABLE class_attendances (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    student_id INT NOT NULL,
-    subject_name VARCHAR(255) NOT NULL,
-    date DATE NOT NULL,
-    status VARCHAR(50) DEFAULT 'Hadir', -- 'Hadir', 'Sakit', 'Izin', 'Alfa'
-    notes VARCHAR(255) NULL,            -- Keterangan surat sakit atau izin
-    is_validated BOOLEAN DEFAULT TRUE,  -- Menunggu validasi Ketua Kelas jika diajukan mandiri
-    created_at TIMESTAMP NULL
-);
+id              BIGINT PK
+class_id        FK → academic_classes.id
+student_id      FK → students.id
+subject_name    VARCHAR(255)  -- Harus sesuai dengan master_subjects.name
+attendance_date DATE
+status          ENUM('Hadir','Izin','Sakit','Alfa')
+notes           TEXT NULL
+is_validated    BOOLEAN DEFAULT TRUE
+created_at, updated_at
 ```
 
-### **4. Tabel Modul Pembelajaran (`learning_modules`)**
-Menyimpan materi kuliah dan tugas dalam bentuk data biner langsung di cloud database.
+#### `cash_ledgers`
 ```sql
-CREATE TABLE learning_modules (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    subject_name VARCHAR(255) NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    file_content LONGBLOB NOT NULL,     -- File modul disimpan langsung di TiDB
-    file_name VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NULL
-);
+id              BIGINT PK
+class_id        FK → academic_classes.id
+student_id      FK → students.id  (nullable)
+type            ENUM('income','expense')
+amount          INTEGER       -- Dalam Rupiah
+description     VARCHAR(255)
+transaction_date DATE
+is_validated    BOOLEAN
+created_at, updated_at
+```
+
+#### `learning_modules`
+```sql
+id              BIGINT PK
+class_id        FK → academic_classes.id
+subject_name    VARCHAR(255)
+title           VARCHAR(255)
+type            ENUM('file','link')
+file_content    LONGTEXT NULL -- Base64 encoded (disimpan langsung di DB)
+mime_type       VARCHAR(100) NULL
+file_path       VARCHAR(255) NULL
+link_url        VARCHAR(500) NULL
+is_validated    BOOLEAN
+created_at, updated_at
+```
+
+#### `assignments`
+```sql
+id              BIGINT PK
+class_id        FK → academic_classes.id
+subject_name    VARCHAR(255)
+title           VARCHAR(255)
+description     TEXT NULL
+deadline        DATETIME
+material_link   VARCHAR(500) NULL
+type            ENUM('individual','group')
+members         TEXT NULL     -- Anggota kelompok (opsional)
+is_validated    BOOLEAN
+created_at, updated_at
+```
+
+#### `notifications`
+```sql
+id              BIGINT PK
+class_id        FK → academic_classes.id
+student_id      FK → students.id  (nullable)
+message         VARCHAR(500)
+is_read         BOOLEAN DEFAULT FALSE
+created_at, updated_at
+```
+
+#### `master_subjects`
+```sql
+id              BIGINT PK
+class_id        FK → academic_classes.id  (nullable)
+name            VARCHAR(255) UNIQUE
+sks             INT DEFAULT 2
+code            VARCHAR(50)
+default_lecturer VARCHAR(255) NULL
+created_at, updated_at
 ```
 
 ---
 
-## 📱 Dokumentasi Aplikasi Android WebView Wrapper
+## ⚙️ Instalasi Lokal
 
-Aplikasi Android KelasHub dikembangkan menggunakan Kotlin native sebagai wrapper dari URL Vercel. Menggunakan engine Google Chromium terbaru dengan konfigurasi performa maksimal agar tidak terasa seperti mengakses website biasa.
+### Prasyarat
+- PHP >= 8.3 dengan ekstensi: `pdo`, `mbstring`, `openssl`, `tokenizer`, `xml`, `ctype`, `json`
+- Composer >= 2.x
+- Node.js >= 18.x & npm
+- Database: SQLite (lokal) atau MySQL / TiDB Cloud (staging/prod)
 
-### **1. Konfigurasi Manifest (`AndroidManifest.xml`)**
-Mengaktifkan izin koneksi internet dan lalu lintas data yang aman:
-```xml
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.waveproject.kelashub">
+### Langkah-langkah
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+```bash
+# 1. Clone repositori
+git clone https://github.com/gmailtesid-stack/KlasHUB.git
+cd KlasHUB
 
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.KelasHUB">
-        
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.KelasHUB.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-    </application>
-</manifest>
+# 2. Install dependency PHP
+composer install
+
+# 3. Install dependency Node.js & build asset
+npm install
+npm run build
+
+# 4. Siapkan environment
+cp .env.example .env
+php artisan key:generate
+
+# 5. Konfigurasi database di .env (SQLite paling cepat untuk lokal)
+# DB_CONNECTION=sqlite
+# (file database.sqlite akan dibuat otomatis)
+
+# 6. Jalankan migrasi
+php artisan migrate
+
+# 7. Jalankan server lokal
+php artisan serve
 ```
 
-### **2. Logika WebView Premium (`MainActivity.kt`)**
-Memaksimalkan performa rendering, mengaktifkan penyimpanan lokal (*DOM Storage*), akselerasi perangkat keras (*Hardware Acceleration*), dan penanganan tombol kembali (*Back Button Navigation*):
-```kotlin
-package com.waveproject.kelashub
+Buka `http://localhost:8000` di browser Anda.
 
-import android.os.Bundle
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import androidx.appcompat.app.AppCompatActivity
+### Konfigurasi .env Penting
 
-class MainActivity : AppCompatActivity() {
-    private lateinit var webView: WebView
+```env
+APP_NAME=KelasHUB
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+DB_CONNECTION=sqlite
+# Untuk TiDB Cloud / MySQL:
+# DB_CONNECTION=mysql
+# DB_HOST=gateway01.ap-southeast-1.prod.aws.tidbcloud.com
+# DB_PORT=4000
+# DB_DATABASE=kelashub
+# DB_USERNAME=your_user
+# DB_PASSWORD=your_password
+# MYSQL_ATTR_SSL_CA=/path/to/cacert.pem
 
-        webView = findViewById(R.id.webView)
-        
-        // Konfigurasi WebSettings Premium
-        val settings: WebSettings = webView.settings
-        settings.javaScriptEnabled = true
-        settings.domStorageEnabled = true
-        settings.useWideViewPort = true
-        settings.loadWithOverviewMode = true
-        settings.databaseEnabled = true
-        settings.allowFileAccess = true
-        settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+SESSION_DRIVER=cookie
+CACHE_STORE=database
+```
 
-        // Pasang Client agar link tidak membuka browser luar
-        webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                if (url != null) {
-                    view?.loadUrl(url)
-                }
-                return true
-            }
-        }
+---
 
-        // Muat URL Produksi Vercel
-        webView.loadUrl("https://kelashub.vercel.app")
-    }
+## 🚀 Deployment ke Vercel
 
-    // Navigasi Tombol Back agar tidak langsung menutup aplikasi
-    override fun onBackPressed() {
-        if (webView.canGoBack()) {
-            webView.goBack()
-        } else {
-            super.onBackPressed()
-        }
-    }
+KelasHUB sudah dikonfigurasi secara penuh untuk berjalan di Vercel Free Tier.
+
+### Langkah Deploy
+
+```bash
+# 1. Install Vercel CLI
+npm install -g vercel
+
+# 2. Login ke akun Vercel
+vercel login
+
+# 3. Deploy (dari root proyek)
+vercel --prod
+```
+
+Atau cukup dengan **push ke GitHub** — Vercel akan otomatis trigger deploy baru.
+
+### Konfigurasi `vercel.json`
+
+File `vercel.json` di root proyek sudah menyertakan:
+- **Build**: PHP via `vercel-php@0.9.0`, static files via `@vercel/static`
+- **Routes**: Semua request diarahkan ke `api/index.php` kecuali asset publik
+- **Env**: Variabel produksi seperti `SESSION_DRIVER=cookie`, `VIEW_COMPILED_PATH=/tmp`
+- **Crons**: Reset jadwal otomatis setiap `23:59 WIB` (`59 16 * * *` UTC)
+
+### Environment Variables di Vercel Dashboard
+
+Tambahkan via Vercel Dashboard > Project Settings > Environment Variables:
+
+| Key | Value | Keterangan |
+|:---|:---|:---|
+| `APP_KEY` | `base64:xxx...` | Generate: `php artisan key:generate --show` |
+| `DB_HOST` | `gateway01.ap-...` | TiDB Cloud endpoint |
+| `DB_PORT` | `4000` | TiDB Cloud port |
+| `DB_DATABASE` | `kelashub` | Nama database |
+| `DB_USERNAME` | `xxx.root` | Username TiDB |
+| `DB_PASSWORD` | `your_password` | Password TiDB |
+| `MYSQL_ATTR_SSL_CA` | `/var/task/cacert.pem` | SSL cert path di Vercel |
+
+---
+
+## 🗺️ Referensi Route & API
+
+### Public Routes
+| Method | URL | Deskripsi |
+|:---:|:---|:---|
+| `GET` | `/` | Redirect ke `/login` |
+| `GET` | `/login` | Halaman login |
+| `POST` | `/login` | Proses autentikasi |
+| `POST` | `/logout` | Logout & invalidasi sesi |
+
+### Protected Routes (Middleware: `auth`)
+| Method | URL | Controller@Method | Role |
+|:---:|:---|:---|:---:|
+| `GET` | `/dashboard` | `KelasHubEngineController@getStudentDashboard` | Semua |
+| `POST` | `/kh/password` | `KelasHubEngineController@updatePassword` | Semua |
+| `POST` | `/kh/attendance` | `KelasHubEngineController@storeAttendance` | Semua |
+| `GET` | `/simulasi` | `SimulasiController@jalankanSimulasi` | Semua |
+| `GET` | `/report/pdf/{id}` | `LaporanController@exportPdf` | Semua |
+| `GET` | `/report/excel/{id}` | `LaporanController@exportExcel` | Semua |
+
+### Protected Routes (Middleware: `role:ketua_kelas,sekretaris,bendahara`)
+| Method | URL | Controller@Method |
+|:---:|:---|:---|
+| `POST` | `/kh/schedule` | `storeSchedule` |
+| `POST` | `/kh/schedule/toggle-delivery` | `toggleDeliveryType` |
+| `POST` | `/kh/assignment` | `storeAssignment` |
+| `POST` | `/kh/module` | `storeModule` |
+| `GET` | `/kh/module/{id}/download` | `downloadModule` |
+| `POST` | `/kh/cash` | `storeCashLedger` |
+| `POST` | `/kh/student` | `storeStudent` |
+| `DELETE` | `/kh/subject/{id}` | `deleteSubject` |
+| `DELETE` | `/kh/student/{id}` | `deleteStudent` |
+| `POST` | `/kh/master-subject` | `storeMasterSubject` |
+
+### Protected Routes (Middleware: `role:ketua_kelas`)
+| Method | URL | Controller@Method |
+|:---:|:---|:---|
+| `POST` | `/kh/validate` | `validateData` |
+| `POST` | `/kh/class` | `storeUnifiedClass` |
+| `POST` | `/kh/student/{id}/role` | `updateStudentRole` |
+| `GET` | `/kh/api/dashboard-data` | `getDashboardData` |
+| `GET` | `/kh/cron/reset-schedule` | Reset jadwal (cron) |
+
+### Report Routes
+| Method | URL | Laporan |
+|:---:|:---|:---|
+| `GET` | `/kh/reports/attendance/pdf` | PDF Presensi |
+| `GET` | `/kh/reports/attendance/excel` | Excel Presensi (CSV Stream) |
+| `GET` | `/kh/reports/cash/pdf` | PDF Keuangan |
+| `GET` | `/kh/reports/cash/excel` | Excel Keuangan (CSV Stream) |
+
+---
+
+## 🔐 Role-Based Access Control (RBAC)
+
+Sistem RBAC KelasHUB diimplementasikan via **custom middleware** `role` yang memeriksa field `role` pada tabel `students`.
+
+```php
+// Middleware: App\Http\Middleware\RoleMiddleware
+// Contoh penggunaan di routes:
+Route::middleware(['role:ketua_kelas,sekretaris'])->group(function () { ... });
+```
+
+### Matriks Hak Akses Fitur
+
+| Fitur | super_admin | ketua_kelas | sekretaris | bendahara | mahasiswa |
+|:---|:---:|:---:|:---:|:---:|:---:|
+| Registrasi Kelas | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Tambah Mahasiswa | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Hapus Mahasiswa | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Input Absensi | ✅ | ✅ | ✅ | ✅ | 🔘 Mandiri |
+| Validasi Data | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Upload Modul | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Download Modul | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Input Kas | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Export Laporan | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Kelola Jadwal | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Toggle Online/Offline | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Ubah Role Mahasiswa | ✅ | ✅ | ❌ | ❌ | ❌ |
+
+---
+
+## 🤖 Engine Simulasi & Laporan
+
+### Simulasi Engine (`SimulasiController`)
+Digunakan untuk mengisi data dummy secara otomatis untuk keperluan pengujian.
+
+**Endpoint**: `GET /simulasi`
+
+```
+Loop 4 detik (aman dari timeout 10 detik Vercel):
+  - Pilih acak 1 dari 5 kelas (class_id 1-5)
+  - Pilih acak 1 dari 4 aksi:
+    1. Insert ke assignments
+    2. Insert ke cash_ledgers
+    3. Insert ke learning_modules
+    4. Insert ke notifications
+```
+
+**Response JSON:**
+```json
+{
+  "success": true,
+  "message": "Simulasi selesai dalam rentang < 5 detik",
+  "total_inserted": 6,
+  "environment": "Vercel Optimized"
 }
 ```
 
----
+### Export Laporan (`LaporanController`)
 
-## ⚡ Optimalisasi Kinerja Serverless (Vercel)
+#### PDF (`/report/pdf/{class_id}`)
+- Menggunakan `barryvdh/laravel-dompdf`
+- Template `resources/views/reports/pdf.blade.php` (monokrom formal)
+- Berisi tabel kas + **rekap saldo akhir** di bawah tabel
 
-Karena KelasHub berjalan di atas platform Vercel Serverless Function, terdapat batasan ketat mengenai waktu eksekusi runtime (maksimal 10-15 detik per request). Beberapa teknik optimalisasi tingkat tinggi yang kami terapkan antara lain:
-
-1. **Database Caching:** Data mata kuliah dan jadwal kelas di-cache sementara di memori aplikasi untuk meminimalkan beban koneksi database transaksional.
-2. **Stateless PHP Handler:** `api/index.php` dikonfigurasi sebagai gerbang tunggal (*Single Entry Point*) yang langsung mengarahkan request ke kernel Laravel secara instan tanpa proses inisialisasi ganda.
-3. **Stateless Sessions:** Mengalihkan sesi pelacakan pengguna dari penyimpanan file server lokal (yang tidak didukung oleh arsitektur stateless Vercel) ke cookie-based session terenkripsi tinggi.
-4. **Vercel Build Target:** Mengabaikan folder vendor, cache lokal, dan modul Android (`.vercelignore`) saat melakukan deployment untuk memastikan waktu upload di bawah 5 detik.
-
----
-
-## 🚀 Panduan Instalasi Lokal & Build
-
-### **A. Menjalankan Website (Laravel Backend)**
-1. Clone repositori ini ke komputer lokal Anda.
-2. Salin berkas lingkungan:
-   ```bash
-   cp .env.example .env
-   ```
-3. Sesuaikan konfigurasi database Anda di dalam berkas `.env` (gunakan SQLite untuk pengembangan instan):
-   ```env
-   DB_CONNECTION=sqlite
-   ```
-4. Pasang dependensi PHP dan lakukan migrasi database:
-   ```bash
-   composer install
-   php artisan migrate --seed
-   ```
-5. Jalankan server pengembangan lokal:
-   ```bash
-   php artisan serve
-   ```
-6. Buka `http://localhost:8000` di peramban Anda.
-
-### **B. Melakukan Build Aplikasi Android APK**
-1. Buka folder `android-webview` menggunakan **Android Studio**.
-2. Pastikan file `local.properties` sudah mendeteksi lokasi SDK Android Anda.
-3. Lakukan sinkronisasi Gradle (Gradle Sync).
-4. Klik menu **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
-5. Berkas APK siap diinstal pada ponsel pintar Anda di folder:
-   `android-webview/app/build/outputs/apk/debug/app-debug.apk`
+#### Excel/CSV (`/report/excel/{class_id}`)
+- **Tanpa package berat** — CSV murni via `fputcsv`
+- Stream langsung ke `php://output` → RAM Vercel tetap ~0 MB
+- Menggunakan `chunk(200)` agar tidak overload memori
 
 ---
 
-## 💎 Filosofi Desain Antarmuka
+## ⚡ Optimasi Vercel Serverless
 
-KelasHub mengedepankan filosofi desain yang **intuitif, cepat, dan fungsional**:
-* **Konsistensi UI:** Semua tombol aksi, input form, dan tabel menggunakan palet warna gelap terpadu dari sistem **Zinc-900** milik Tailwind CSS.
-* **Aksesibilitas Satu Tangan:** Penempatan tab navigasi utama berada di bagian paling bawah layar (*Bottom Navigation Bar*), mempermudah pengoperasian aplikasi hanya dengan menggunakan satu jempol tangan.
-* **Kejelasan Informasi:** Label krusial seperti status Online/Offline perkuliahan dan sisa nyawa bolos didesain menonjol dengan efek *glow* agar langsung menarik perhatian pengguna saat pertama kali membuka aplikasi.
+KelasHUB didesain khusus untuk berjalan efisien di Vercel Free Tier dengan batasan:
+- ⏱ **Timeout**: 10 detik per request
+- 💾 **RAM**: 256 MB per function invocation
+- 📦 **Bundle Size**: Maksimal 250 MB (compressed)
+
+### Teknik Optimasi yang Diterapkan
+
+| Masalah | Solusi |
+|:---|:---|
+| Session tidak persistent | `SESSION_DRIVER=cookie` (encrypted, stateless) |
+| File cache tidak bisa ditulis | `VIEW_COMPILED_PATH=/tmp`, semua cache → `/tmp` |
+| Eloquent terlalu berat di loop | Gunakan `DB::table()` (Query Builder) murni |
+| Recursive eager loading | Hapus `BelongsToClass` trait dari semua model |
+| Export data besar | CSV Streaming → `fputcsv` ke `php://output` |
+| Cold boot lambat | Bootstrap minimal, lazy-loading model |
+| File storage tidak tersedia | Simpan file modul sebagai `base64` di database |
+| Cron job tidak ada di Vercel Free | Gunakan Vercel Cron (`vercel.json`) + route khusus |
 
 ---
-*Dikembangkan dengan penuh dedikasi oleh **Wave Project.ID** untuk memajukan efisiensi administrasi akademis mahasiswa Indonesia.* 🇮🇩🚀
+
+## 📱 Aplikasi Android WebView
+
+Proyek ini menyertakan wrapper Android native (`android-webview/`) yang membungkus URL Vercel dalam tampilan aplikasi mobile penuh layar.
+
+### Struktur Folder
+```
+android-webview/
+├── app/
+│   ├── src/main/
+│   │   ├── java/com/waveproject/kelashub/
+│   │   │   └── MainActivity.kt
+│   │   ├── res/
+│   │   │   ├── layout/activity_main.xml
+│   │   │   └── values/strings.xml
+│   │   └── AndroidManifest.xml
+│   └── build.gradle
+├── build.gradle
+└── gradle/
+```
+
+### `MainActivity.kt` — Fitur WebView Premium
+```kotlin
+val settings = webView.settings.apply {
+    javaScriptEnabled = true      // Alpine.js & form interaktif
+    domStorageEnabled = true      // LocalStorage untuk session
+    useWideViewPort = true        // Layout responsif penuh
+    loadWithOverviewMode = true   // Fit ke layar HP
+    databaseEnabled = true        // IndexedDB support
+    allowFileAccess = true        // Download modul
+}
+// Back-button navigation: webView.canGoBack() → webView.goBack()
+// Target URL: https://klas-hub.vercel.app
+```
+
+### Cara Build APK
+```bash
+# Di Android Studio:
+# Build > Build Bundle(s) / APK(s) > Build APK(s)
+
+# Output: android-webview/app/build/outputs/apk/debug/app-debug.apk
+```
+
+---
+
+## 🎨 Filosofi Desain UI
+
+### "Stealth Dark Operations" Theme
+KelasHUB menggunakan estetika **Zinc-900 Stealth** — warna dasar hitam pekat dengan aksen abu-abu dingin dan highlight biru elektrik. Terinspirasi dari UI terminal hacker dan dashboard sistem keamanan.
+
+### Prinsip Desain
+
+| Prinsip | Implementasi |
+|:---|:---|
+| **Mobile-First** | Bottom Navigation Bar, satu jempol operasional |
+| **Data Clarity** | Label menonjol + efek glow untuk info kritis |
+| **Micro-Animation** | Alpine.js transitions pada semua modal & tab |
+| **Glassmorphism** | `backdrop-blur-md` + `bg-white/[0.02]` pada card |
+| **Premium Feel** | Custom font tracking, letter-spacing, shadow-xl |
+
+### Responsive Breakpoints
+- **Mobile** (`< md`): Bottom nav, stacked cards, minimized table
+- **Desktop** (`>= md`): Sidebar nav, grid layout, expanded table
+
+---
+
+## 🤝 Kontribusi
+
+Silakan baca [CONTRIBUTING.md](CONTRIBUTING.md) untuk panduan kontribusi.
+
+```bash
+# Fork repo → Clone → Buat branch fitur
+git checkout -b feature/nama-fitur
+
+# Commit dengan format konvensional
+git commit -m "feat: tambah fitur xyz"
+
+# Push & buat Pull Request
+git push origin feature/nama-fitur
+```
+
+---
+
+## 📜 Lisensi
+
+Proyek ini dilisensikan di bawah **MIT License** — bebas digunakan, dimodifikasi, dan didistribusikan.
+
+---
+
+<div align="center">
+
+Dikembangkan dengan ❤️ oleh **Wave Project.ID**  
+Untuk memajukan efisiensi administrasi akademis mahasiswa Indonesia 🇮🇩
+
+</div>
