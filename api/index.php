@@ -47,4 +47,6 @@ $response->send();
 
 // The handle terminates the app automatically in some versions, 
 // but we call it explicitly if needed for cleanup.
-$app->terminate($request, $response);
+if (method_exists($app, 'terminate')) {
+    $app->terminate();
+}
