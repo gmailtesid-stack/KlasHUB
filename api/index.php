@@ -1,23 +1,20 @@
 <?php
+ini_set('display_errors', '1');
+error_reporting(E_ALL);
 
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-// Report errors for debug
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 require __DIR__ . '/../vendor/autoload.php';
 
 /** @var Application $app */
 $app = require_once __DIR__ . '/../bootstrap/app.php';
 
-// Force writable storage in /tmp for Vercel
+// Force Laravel to use the writable /tmp directory on Vercel Serverless Functions
 $app->useStoragePath('/tmp');
 
-// Ensure necessary directories exist in /tmp
 $dirs = [
     '/tmp/framework/views',
     '/tmp/framework/cache/data',
@@ -29,24 +26,12 @@ foreach ($dirs as $dir) {
     }
 }
 
-// CA Bundle for DB
+// Copy the full Mozilla CA bundle to /tmp so the mysqlnd C-extension can read it without permission errors
 if (!file_exists('/tmp/cacert.pem')) {
-    @copy(__DIR__ . '/../cacert.pem', '/tmp/cacert.pem');
+    $ca = @file_get_contents(__DIR__ . '/../cacert.pem');
+    if ($ca) {
+        @file_put_contents('/tmp/cacert.pem', $ca);
+    }
 }
 
-// Capture and handle the request
-$request = Request::capture();
-
-// Force HTTPS if on Vercel
-if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
-    $_SERVER['HTTPS'] = 'on';
-}
-
-$response = $app->handle($request);
-$response->send();
-
-// The handle terminates the app automatically in some versions, 
-// but we call it explicitly if needed for cleanup.
-if (method_exists($app, 'terminate')) {
-    $app->terminate();
-}
+$app->handleRequest(Request::capture());
