@@ -40,7 +40,7 @@ class KelasHubEngineController extends Controller
         });
 
         $startOfWeek = Carbon::now()->startOfWeek();
-        $isAdmin = in_array($student->role, ['ketua_kelas', 'sekretaris', 'bendahara']);
+        $isAdmin = in_array($student->role, ['ketua_kelas', 'sekretaris', 'bendahara', 'super_admin']);
 
         // Quick sums remain on first load
         $saldoKasSaatIni = CashLedger::when(!$isAdmin, function ($q) {
@@ -87,7 +87,7 @@ class KelasHubEngineController extends Controller
     public function getDashboardData()
     {
         $student = Auth::user();
-        $isAdmin = in_array($student->role, ['ketua_kelas', 'sekretaris', 'bendahara']);
+        $isAdmin = in_array($student->role, ['ketua_kelas', 'sekretaris', 'bendahara', 'super_admin']);
 
         return response()->json([
             'semua_mahasiswa' => Student::orderBy('name', 'asc')->get(),
@@ -173,7 +173,7 @@ class KelasHubEngineController extends Controller
             'delivery_type' => 'nullable|string',
         ]);
 
-        $data['is_validated'] = Auth::user()->role !== 'bendahara';
+        $data['is_validated'] = in_array(Auth::user()->role, ['ketua_kelas', 'super_admin']);
         $schedule = AcademicSchedule::create($data);
         return response()->json(['success' => true, 'schedule' => $schedule]);
     }
@@ -191,7 +191,7 @@ class KelasHubEngineController extends Controller
             'members' => 'nullable|string',
         ]);
 
-        $data['is_validated'] = Auth::user()->role !== 'bendahara';
+        $data['is_validated'] = in_array(Auth::user()->role, ['ketua_kelas', 'super_admin']);
         $assignment = Assignment::create($data);
         return response()->json(['success' => true, 'assignment' => $assignment]);
     }
@@ -217,7 +217,7 @@ class KelasHubEngineController extends Controller
             $data['type'] = 'file';
         }
 
-        $data['is_validated'] = Auth::user()->role === 'ketua_kelas';
+        $data['is_validated'] = in_array(Auth::user()->role, ['ketua_kelas', 'super_admin']);
         $module = LearningModule::create($data);
         return response()->json(['success' => true, 'module' => $module]);
     }
@@ -254,7 +254,7 @@ class KelasHubEngineController extends Controller
             'transaction_date' => 'required|date',
         ]);
 
-        $data['is_validated'] = Auth::user()->role === 'ketua_kelas';
+        $data['is_validated'] = in_array(Auth::user()->role, ['ketua_kelas', 'super_admin', 'bendahara']);
         $ledger = CashLedger::create($data);
         return response()->json(['success' => true, 'ledger' => $ledger]);
     }
@@ -305,7 +305,7 @@ class KelasHubEngineController extends Controller
 
     public function validateData(Request $request)
     {
-        if (Auth::user()->role !== 'ketua_kelas') {
+        if (!in_array(Auth::user()->role, ['ketua_kelas', 'super_admin'])) {
             abort(403, 'Hanya Ketua Kelas yang bisa memvalidasi data!');
         }
 
@@ -343,7 +343,7 @@ class KelasHubEngineController extends Controller
         ]);
 
         $user = Auth::user();
-        $isAdmin = in_array($user->role, ['ketua_kelas', 'sekretaris', 'bendahara']);
+        $isAdmin = in_array($user->role, ['ketua_kelas', 'sekretaris', 'bendahara', 'super_admin']);
 
         // If not admin, they can only record their OWN attendance (Rekap Mandiri)
         if (!$isAdmin) {
@@ -355,7 +355,7 @@ class KelasHubEngineController extends Controller
         }
 
         // Only Ketua Kelas can auto-validate
-        $isValidated = ($user->role === 'ketua_kelas');
+        $isValidated = in_array($user->role, ['ketua_kelas', 'super_admin']);
 
         foreach ($request->attendances as $att) {
             ClassAttendance::create([
