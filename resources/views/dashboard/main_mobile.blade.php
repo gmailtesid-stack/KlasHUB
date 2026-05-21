@@ -69,6 +69,7 @@
         modalAddSubject: false,
         modalAddStudent: false,
         modalConfirm: false,
+        modalRegisterClass: false,
         confirmData: { title: '', message: '', action: null },
         modalDetailTugas: false,
         selectedTugas: {},
@@ -458,6 +459,114 @@
             <!-- Scrollable Content -->
             <main class="flex-1 overflow-y-auto p-5 md:p-8 pb-24 md:pb-8">
                 <div class="max-w-5xl mx-auto w-full h-full">
+
+                    @if(($student->role ?? '') === 'super_admin')
+                        <!-- TAB: SUPER ADMIN -->
+                        <div x-show="tab === 'super'" x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="opacity-0 translate-y-4"
+                            x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+
+                            <!-- Header -->
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                                <div>
+                                    <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight mb-1">Super Admin
+                                        Panel</h2>
+                                    <p class="text-sm text-zinc-400">Daftarkan kelas baru beserta Admin Kelasnya sekaligus.
+                                    </p>
+                                </div>
+                                <button @click="modalRegisterClass = true"
+                                    class="w-full md:w-auto bg-blue-600 text-white font-bold px-6 py-2.5 rounded-xl hover:bg-blue-500 shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    + Registrasi Kelas
+                                </button>
+                            </div>
+
+                            <!-- Flash Success Message -->
+                            @if(session('success'))
+                                <div
+                                    class="mb-6 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm px-5 py-3 rounded-xl font-medium">
+                                    ✅ {{ session('success') }}
+                                </div>
+                            @endif
+
+                            <!-- Classes Table -->
+                            <div class="bg-zinc-950 border border-zinc-900 rounded-2xl overflow-hidden shadow-xl">
+                                <div class="px-6 py-4 border-b border-zinc-900 flex items-center justify-between">
+                                    <h3 class="text-sm font-bold text-zinc-300 uppercase tracking-widest">Daftar Kelas
+                                        Terdaftar</h3>
+                                    <span class="text-xs text-zinc-600 font-semibold">{{ count($academic_classes) }}
+                                        Kelas</span>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead>
+                                            <tr class="border-b border-zinc-900">
+                                                <th
+                                                    class="text-left px-6 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                                                    Kode Kelas</th>
+                                                <th
+                                                    class="text-left px-6 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                                                    Prodi / Jurusan</th>
+                                                <th
+                                                    class="text-left px-6 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                                                    Ketua Kelas</th>
+                                                <th
+                                                    class="text-left px-6 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                                                    NIM Ketua</th>
+                                                <th
+                                                    class="text-left px-6 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                                                    Kontak</th>
+                                                <th
+                                                    class="text-left px-6 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                                                    Anggota</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-zinc-900/50">
+                                            @forelse($academic_classes as $cls)
+                                                <tr class="hover:bg-zinc-900/30 transition">
+                                                    <td class="px-6 py-4">
+                                                        <span
+                                                            class="font-mono text-xs font-bold text-blue-400 bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20">{{ $cls->code }}</span>
+                                                    </td>
+                                                    <td class="px-6 py-4 text-zinc-300 font-medium text-xs">
+                                                        {{ $cls->department ?? $cls->name }}
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        @if($cls->ketuaKelas)
+                                                            <span
+                                                                class="text-white font-semibold text-xs">{{ $cls->ketuaKelas->name }}</span>
+                                                        @else
+                                                            <span class="text-zinc-600 italic text-xs">Belum ada</span>
+                                                        @endif
+                                                    </td>
+                                                    <td class="px-6 py-4 font-mono text-zinc-400 text-xs">
+                                                        {{ $cls->ketuaKelas->nim ?? '-' }}
+                                                    </td>
+                                                    <td class="px-6 py-4 text-zinc-400 text-xs">{{ $cls->contact ?? '-' }}</td>
+                                                    <td class="px-6 py-4">
+                                                        <span
+                                                            class="text-xs font-bold text-zinc-400 bg-zinc-900 px-2 py-1 rounded border border-zinc-800">{{ $cls->students_count }}
+                                                            orang</span>
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="6" class="px-6 py-12 text-center">
+                                                        <div class="text-zinc-600 text-sm">Belum ada kelas terdaftar.</div>
+                                                        <p class="text-zinc-700 text-xs mt-1">Klik "+ Registrasi Kelas" untuk
+                                                            menambahkan.</p>
+                                                    </td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
 
                     <!-- TAB: AKADEMI -->
                     <div x-show="tab === 'akademi'" x-transition:enter="transition ease-out duration-300"
@@ -1002,33 +1111,33 @@
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8" x-data="{ 
-                                                                currentAttendance: {},
-                                                                saveAttendance(matkul) {
-                                                                    let data = [];
-                                                                    semuaMahasiswa.forEach(m => {
-                                                                        data.push({
-                                                                            student_id: m.id,
-                                                                            status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
-                                                                        });
-                                                                    });
-                                                                    fetch('/kh/attendance', {
-                                                                        method: 'POST',
-                                                                        headers: {
-                                                                            'Content-Type': 'application/json',
-                                                                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
-                                                                        },
-                                                                        body: JSON.stringify({
-                                                                            subject_name: matkul,
-                                                                            date: new Date().toISOString().split('T')[0],
-                                                                            attendances: data
-                                                                        })
-                                                                    })
-                                                                    .then(res => res.json())
-                                                                    .then(res => {
-                                                                        if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
-                                                                    });
-                                                                }
-                                                            }">
+                                                                        currentAttendance: {},
+                                                                        saveAttendance(matkul) {
+                                                                            let data = [];
+                                                                            semuaMahasiswa.forEach(m => {
+                                                                                data.push({
+                                                                                    student_id: m.id,
+                                                                                    status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
+                                                                                });
+                                                                            });
+                                                                            fetch('/kh/attendance', {
+                                                                                method: 'POST',
+                                                                                headers: {
+                                                                                    'Content-Type': 'application/json',
+                                                                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                                                                                },
+                                                                                body: JSON.stringify({
+                                                                                    subject_name: matkul,
+                                                                                    date: new Date().toISOString().split('T')[0],
+                                                                                    attendances: data
+                                                                                })
+                                                                            })
+                                                                            .then(res => res.json())
+                                                                            .then(res => {
+                                                                                if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
+                                                                            });
+                                                                        }
+                                                                    }">
                                 <template x-for="(sks, matkulName) in matkuls_sks" :key="matkulName">
                                     <div
                                         class="bg-zinc-900/50 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col shadow-xl">
@@ -1110,11 +1219,11 @@
                                                             <span
                                                                 class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-tighter inline-block"
                                                                 :class="{
-                                                                                                                                      'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
-                                                                                                                                      'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
-                                                                                                                                      'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
-                                                                                                                                      'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
-                                                                                                                                  }"
+                                                                                                                                                      'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
+                                                                                                                                                      'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
+                                                                                                                                                      'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
+                                                                                                                                                      'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
+                                                                                                                                                  }"
                                                                 x-text="mhs.role.replace('_', ' ')"></span>
                                                         </td>
                                                         <td class="px-4 py-3 text-right">
@@ -1515,6 +1624,18 @@
                         </svg>
                         <span class="text-[9px] font-semibold tracking-wide">Finansial</span>
                     </button>
+                    @if(($student->role ?? '') === 'super_admin')
+                        <button @click="tab = 'super'"
+                            class="flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors relative"
+                            :class="tab === 'super' ? 'text-blue-400' : 'text-zinc-500 hover:text-zinc-300'">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z">
+                                </path>
+                            </svg>
+                            <span class="text-[9px] font-semibold tracking-wide">S. Admin</span>
+                        </button>
+                    @endif
                     <button @click="tab = 'presensi'"
                         class="flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors relative"
                         :class="tab === 'presensi' ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'">
@@ -2527,6 +2648,84 @@
                 </div>
             </div>
         </div>
+
+        @if(($student->role ?? '') === 'super_admin')
+            <!-- Modal Registrasi Kelas Terpadu -->
+            <div x-show="modalRegisterClass" x-transition.opacity
+                class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+                style="display: none;">
+                <div @click.away="modalRegisterClass = false" x-show="modalRegisterClass"
+                    x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95"
+                    x-transition:enter-end="opacity-100 scale-100"
+                    class="bg-zinc-900 border border-zinc-800 rounded-3xl w-full max-w-md p-6 space-y-5 shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-lg font-bold text-white mb-1">Registrasi Administrator Kelas</h3>
+                            <p class="text-xs text-zinc-500">Daftarkan kelas baru + Ketua Kelas dalam satu langkah.</p>
+                        </div>
+                        <button @click="modalRegisterClass = false"
+                            class="text-zinc-500 hover:text-white bg-black p-2 rounded-full border border-zinc-800">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <form method="POST" action="/kh/class" class="space-y-4">
+                        @csrf
+                        <div>
+                            <label class="block text-xs font-bold text-zinc-400 uppercase tracking-widest mb-1">Nama Lengkap
+                                Ketua Kelas <span class="text-blue-400">*</span></label>
+                            <input type="text" name="ketua_name" required
+                                class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition"
+                                placeholder="Contoh: ARIYAS PRATAMA RAMADHAN">
+                            <p class="text-[10px] text-zinc-600 mt-1">⚡ Nama ini akan menjadi <strong
+                                    class="text-zinc-400">username login</strong> Ketua Kelas.</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-zinc-400 uppercase tracking-widest mb-1">NIM
+                                    <span class="text-blue-400">*</span></label>
+                                <input type="text" name="ketua_nim" required
+                                    class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition"
+                                    placeholder="231011403268">
+                                <p class="text-[10px] text-zinc-600 mt-1">🔐 Password: NIM + <strong>KK</strong></p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-zinc-400 uppercase tracking-widest mb-1">Kode
+                                    Kelas <span class="text-blue-400">*</span></label>
+                                <input type="text" name="class_code" required
+                                    class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 font-mono transition"
+                                    placeholder="06TPLE015">
+                                <p class="text-[10px] text-zinc-600 mt-1">🔑 Kode unik isolasi data kelas.</p>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-zinc-400 uppercase tracking-widest mb-1">Prodi /
+                                Jurusan <span class="text-blue-400">*</span></label>
+                            <input type="text" name="department" required
+                                class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition"
+                                placeholder="Teknik Informatika">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-zinc-400 uppercase tracking-widest mb-1">No. HP /
+                                Email Kontak</label>
+                            <input type="text" name="contact"
+                                class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition"
+                                placeholder="08xxxxxxxxxx atau nama@email.com">
+                        </div>
+                        <div class="flex gap-3 pt-2">
+                            <button type="button" @click="modalRegisterClass = false"
+                                class="flex-1 bg-zinc-800 text-zinc-300 py-3 rounded-xl text-sm font-bold hover:bg-zinc-700 transition">Batal</button>
+                            <button type="submit"
+                                class="flex-1 bg-blue-600 text-white py-3 rounded-xl text-sm font-bold hover:bg-blue-500 transition shadow-lg shadow-blue-500/20">Aktifkan
+                                Kelas</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endif
 
         <!-- Toast Notification UI -->
         <div x-show="showToast" x-transition:enter="transition ease-out duration-300"

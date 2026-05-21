@@ -390,4 +390,63 @@ class KelasHubEngineController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function storeUnifiedClass(Request $request)
+    {
+        $this->authorizeAdmin();
+        if (Auth::user()->role !== 'super_admin') {
+            abort(403, 'Hanya Super Admin yang bisa mendaftarkan kelas baru.');
+        }
+
+        $data = $request->validate([
+            'class_code' => 'required|string|unique:academic_classes,code',
+            'department' => 'required|string',
+            'ketua_name' => 'required|string',
+            'ketua_nim' => 'required|string|unique:students,nim',
+            'contact' => 'nullable|string',
+        ]);
+
+        // 1. Create Class
+        $class = \App\Models\AcademicClass::create([
+            'name' => $data['department'] . ' - ' . $data['class_code'],
+            'code' => $data['class_code'],
+            'department' => $data['department'],
+            'contact' => $data['contact'],
+            'academic_year' => null,
+        ]);
+
+        // 2. Create Ketua Kelas
+        $password = $data['ketua_nim'] . 'KK';
+        Student::create([
+            'name' => $data['ketua_name'],
+            'nim' => $data['ketua_nim'],
+            'role' => 'ketua_kelas',
+            'class_id' => $class->id,
+            'password' => bcrypt($password),
+        ]);
+
+        return back()->with('success', 'Kelas dan Ketua Kelas berhasil didaftarkan: ' . $data['ketua_name']);
+    }
+
+    public function updateStudentRole(Request $request, $id)
+    {
+        $currentUser = Auth::user();
+        if (!in_array($currentUser->role, ['ketua_kelas', 'super_admin'])) {
+            abort(403, 'Anda tidak memiliki hak untuk mengubah peran.');
+        }
+
+        $request->validate([
+            'role' => 'required|in:mahasiswa,ketua_kelas,sekretaris,bendahara'
+        ]);
+
+        $targetStudent = Student::findOrFail($id);
+
+        if ($currentUser->role !== 'super_admin' && $targetStudent->class_id !== $currentUser->class_id) {
+            abort(403, 'Anda hanya bisa mengatur anggota kelas sendiri.');
+        }
+
+        $targetStudent->update(['role' => $request->role]);
+
+        return response()->json(['success' => true]);
+    }
 }

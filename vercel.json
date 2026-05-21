@@ -31,7 +31,7 @@
     ],
     "env": {
         "APP_ENV": "production",
-        "APP_DEBUG": "false",
+        "APP_DEBUG": "true",
         "APP_URL": "https://klas-hub.vercel.app",
         "CACHE_STORE": "database",
         "SESSION_DRIVER": "cookie",

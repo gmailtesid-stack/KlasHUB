@@ -73,15 +73,8 @@ Route::middleware(['auth'])->group(function () {
         });
 
         // Super Admin Management
-        Route::post('/kh/class', function (Request $request) {
-            $data = $request->validate([
-                'name' => 'required|string',
-                'code' => 'required|string|unique:academic_classes,code',
-                'academic_year' => 'required|string',
-            ]);
-            \App\Models\AcademicClass::create($data);
-            return back()->with('success', 'Kelas berhasil didaftarkan.');
-        });
+        Route::post('/kh/class', [KelasHubEngineController::class, 'storeUnifiedClass']);
+        Route::post('/kh/student/{id}/role', [KelasHubEngineController::class, 'updateStudentRole']);
 
         Route::get('/kh/api/dashboard-data', [KelasHubEngineController::class, 'getDashboardData']);
     });
