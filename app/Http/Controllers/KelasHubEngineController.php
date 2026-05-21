@@ -63,7 +63,7 @@ class KelasHubEngineController extends Controller
         })->get();
 
         $pendingCount = 0;
-        if ($student->role === 'ketua_kelas') {
+        if (in_array($student->role, ['ketua_kelas', 'super_admin'])) {
             $pendingCount += CashLedger::where('is_validated', false)->count();
             $pendingCount += Assignment::where('is_validated', false)->count();
             $pendingCount += LearningModule::where('is_validated', false)->count();
