@@ -71,7 +71,21 @@ class UserManagementController extends Controller
             abort(403, 'Anda hanya bisa mengatur anggota kelas sendiri.');
         }
 
-        $targetStudent->update(['role' => $request->role]);
+        $role = $request->role;
+        $code = '';
+        if ($role === 'ketua_kelas')
+            $code = 'KK';
+        elseif ($role === 'sekretaris')
+            $code = 'SK';
+        elseif ($role === 'bendahara')
+            $code = 'BD';
+
+        $newPassword = $targetStudent->nim . $code;
+
+        $targetStudent->update([
+            'role' => $role,
+            'password' => bcrypt($newPassword)
+        ]);
 
         return response()->json(['success' => true]);
     }
@@ -81,5 +95,12 @@ class UserManagementController extends Controller
         return response()->json([
             'student' => Auth::user()
         ]);
+    }
+
+    public function getAllStudents()
+    {
+        $this->authorizeKetuaKelas();
+        $students = Student::orderBy('name', 'asc')->get();
+        return response()->json(['students' => $students]);
     }
 }

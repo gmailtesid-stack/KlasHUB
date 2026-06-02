@@ -75,4 +75,17 @@ interface ApiInterface {
         @Field("name") name: String,
         @Field("role") role: String
     ): Call<Void>
+
+    @GET("kh/api/students")
+    fun getAllStudents(): Call<StudentsListResponse>
+
+    @DELETE("kh/student/{id}")
+    fun deleteStudent(@Path("id") id: Int): Call<Void>
+
+    @FormUrlEncoded
+    @POST("kh/student/{id}/role")
+    fun updateStudentRole(
+        @Path("id") id: Int,
+        @Field("role") role: String
+    ): Call<Void>
 }

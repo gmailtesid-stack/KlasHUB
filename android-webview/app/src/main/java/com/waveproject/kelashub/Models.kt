@@ -76,6 +76,10 @@ data class ProfileResponse(
     val student: Student
 )
 
+data class StudentsListResponse(
+    val students: List<Student>
+)
+
 data class PendingValidationResponse(
     val pending: List<PendingValidationItem>
 )

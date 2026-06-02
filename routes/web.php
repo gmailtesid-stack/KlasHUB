@@ -65,6 +65,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/kh/api/attendance', [AttendanceController::class, 'getAttendance']);
     Route::get('/kh/api/schedule', [AcademicController::class, 'getSchedule']);
     Route::get('/kh/api/profile', [UserManagementController::class, 'getProfile']);
+    Route::get('/kh/api/students', [UserManagementController::class, 'getAllStudents']);
     Route::get('/kh/api/pending-validations', [ValidationController::class, 'getPendingValidations']);
     Route::get('/kh/api/dashboard-data', [DashboardController::class, 'getDashboardData']);
 

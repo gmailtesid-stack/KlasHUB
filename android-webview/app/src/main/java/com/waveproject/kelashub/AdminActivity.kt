@@ -19,6 +19,7 @@ class AdminActivity : AppCompatActivity() {
         val btnNavInputKas = findViewById<Button>(R.id.btnNavInputKas)
         val btnNavInputSubject = findViewById<Button>(R.id.btnNavInputSubject)
         val btnNavInputStudent = findViewById<Button>(R.id.btnNavInputStudent)
+        val btnNavManageStudent = findViewById<Button>(R.id.btnNavManageStudent)
         
         btnNavValidation.visibility = View.GONE
         btnNavInputKas.visibility = View.GONE
@@ -29,6 +30,7 @@ class AdminActivity : AppCompatActivity() {
             btnNavInputKas.visibility = View.VISIBLE
             btnNavInputSubject.visibility = View.VISIBLE
             btnNavInputStudent.visibility = View.VISIBLE
+            btnNavManageStudent.visibility = View.VISIBLE
         } else if (role == "bendahara") {
             btnNavInputKas.visibility = View.VISIBLE
         }
@@ -47,6 +49,10 @@ class AdminActivity : AppCompatActivity() {
 
         btnNavInputStudent.setOnClickListener {
             startActivity(Intent(this, InputStudentActivity::class.java))
+        }
+
+        btnNavManageStudent.setOnClickListener {
+            startActivity(Intent(this, ManageStudentsActivity::class.java))
         }
     }
 }
