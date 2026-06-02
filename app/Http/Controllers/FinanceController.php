@@ -21,7 +21,12 @@ class FinanceController extends Controller
             'amount' => 'required|numeric',
             'description' => 'required|string',
             'transaction_date' => 'required|date',
+            'proof_image' => 'nullable|image|mimes:jpeg,png,jpg|max:3048'
         ]);
+
+        if ($request->hasFile('proof_image')) {
+            $data['proof_image'] = $request->file('proof_image')->store('proofs', 'public');
+        }
 
         $data['is_validated'] = in_array(Auth::user()->role, ['ketua_kelas', 'super_admin', 'bendahara']);
         $ledger = CashLedger::create($data);

@@ -49,6 +49,16 @@ interface ApiInterface {
         @Field("transaction_date") transactionDate: String
     ): Call<Void>
 
+    @Multipart
+    @POST("kh/cash")
+    fun addCashWithProof(
+        @Part("amount") amount: okhttp3.RequestBody,
+        @Part("type") type: okhttp3.RequestBody,
+        @Part("description") description: okhttp3.RequestBody,
+        @Part("transaction_date") transactionDate: okhttp3.RequestBody,
+        @Part proofImage: okhttp3.MultipartBody.Part
+    ): Call<Void>
+
     @FormUrlEncoded
     @POST("kh/attendance")
     fun requestIzin(
@@ -91,4 +101,10 @@ interface ApiInterface {
 
     @POST("kh/class/next-semester")
     fun nextSemester(): Call<Void>
+
+    @Multipart
+    @POST("kh/upload-qris")
+    fun uploadQris(
+        @Part qrisImage: okhttp3.MultipartBody.Part
+    ): Call<ApiResponse>
 }

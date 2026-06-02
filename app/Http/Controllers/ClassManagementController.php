@@ -69,4 +69,24 @@ class ClassManagementController extends Controller
             'new_semester' => $class->semester_ke
         ]);
     }
+
+    public function uploadQris(Request $request)
+    {
+        $this->authorizeAdmin(); // Pengurus kelas
+
+        $request->validate([
+            'qris_image' => 'required|image|mimes:jpeg,png,jpg|max:3048'
+        ]);
+
+        $class = AcademicClass::findOrFail(Auth::user()->class_id);
+
+        if ($request->hasFile('qris_image')) {
+            $path = $request->file('qris_image')->store('qris', 'public');
+            $class->qris_image = $path;
+            $class->save();
+            return response()->json(['success' => true, 'path' => $path]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Gagal mengunggah file.']);
+    }
 }

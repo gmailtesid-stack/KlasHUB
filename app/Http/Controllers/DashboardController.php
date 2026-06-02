@@ -110,6 +110,7 @@ class DashboardController extends Controller
         return response()->json([
             'student' => $student,
             'class_semester' => $class ? ((int) $class->semester_ke) : 1,
+            'qris_image' => $class ? $class->qris_image : null,
             'semua_mahasiswa' => Student::orderBy('name', 'asc')->get(),
             'semua_tugas' => Assignment::when(!$isAdmin, function ($q) {
                 return $q->where('is_validated', true);

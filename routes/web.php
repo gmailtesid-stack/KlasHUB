@@ -77,6 +77,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/kh/schedule/toggle-delivery', [AcademicController::class, 'toggleDeliveryType']);
         Route::post('/kh/schedule', [AcademicController::class, 'storeSchedule']);
         Route::post('/kh/master-subject', [AcademicController::class, 'storeMasterSubject']);
+        Route::post('/kh/upload-qris', [ClassManagementController::class, 'uploadQris']);
         Route::post('/kh/assignment', [AcademicMaterialController::class, 'storeAssignment']);
         Route::post('/kh/module', [AcademicMaterialController::class, 'storeModule']);
         Route::get('/kh/module/{id}/download', [AcademicMaterialController::class, 'downloadModule']);

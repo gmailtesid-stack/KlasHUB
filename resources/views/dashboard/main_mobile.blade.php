@@ -62,6 +62,10 @@
     <div x-data="{ 
         tab: '{{ Auth::user()->role === 'super_admin' ? 'super' : 'akademi' }}', 
         modalKas: false, 
+        modalUploadQris: false,
+        modalPayKas: false,
+        qrisImage: '',
+        selectedProofImage: '',
         modalAbsen: false,
         modalJadwal: false,
         modalTugas: false,
@@ -300,6 +304,7 @@
                         date: new Date(t.transaction_date).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'}),
                         student: t.student ? t.student.name : 'Umum'
                     }));
+                    this.qrisImage = data.qris_image || '';
                     this.notifications = data.notifikasi || [];
                     this.loadingHeavyData = false;
                     this.initCalendar();
@@ -424,11 +429,17 @@
                     <button @click="tab = 'admin'"
                         :class="tab === 'admin' ? 'bg-amber-600/20 text-amber-500 border-amber-500/30' : 'text-zinc-400 hover:bg-zinc-900/50 hover:text-zinc-200 border-transparent'"
                         class="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all border text-left font-medium">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
                         Panel Pengurus
                     </button>
                 @endif
-                
+
                 @if (($student->role ?? '') === 'super_admin')
                     <button @click="tab = 'super'"
                         :class="tab === 'super' ? 'bg-blue-600/20 text-blue-400 border-blue-500/30' : 'text-zinc-400 hover:bg-zinc-900/50 hover:text-zinc-200 border-transparent'"
@@ -694,47 +705,48 @@
                         <div x-show="tab === 'admin'" x-transition:enter="transition ease-out duration-300"
                             x-transition:enter-start="opacity-0 translate-y-4"
                             x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
-                            <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight mb-8">Panel Manajemen Pengurus</h2>
+                            <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight mb-8">Panel Manajemen
+                                Pengurus</h2>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 @if(in_array($student->role ?? '', ['ketua_kelas', 'super_admin']))
                                     <!-- NAIK SEMESTER -->
-                                    <div class="bg-red-950/20 border border-red-900/30 p-5 rounded-2xl flex flex-col justify-between">
+                                    <div
+                                        class="bg-red-950/20 border border-red-900/30 p-5 rounded-2xl flex flex-col justify-between">
                                         <div>
                                             <h3 class="text-red-500 font-bold mb-2">Promosi Semester Baru</h3>
-                                            <p class="text-zinc-500 text-xs mb-4">Mengarsipkan seluruh data akademik dan keuangan, mengatur kelas Anda menjadi kertas kosong untuk semester baru.</p>
+                                            <p class="text-zinc-500 text-xs mb-4">Mengarsipkan seluruh data akademik dan
+                                                keuangan, mengatur kelas Anda menjadi kertas kosong untuk semester baru.</p>
                                         </div>
-                                        <button @click="if(confirm('Data bulan ini tidak akan terhapus namun diarsipkan. Lanjutkan Promosi Semester?')) { fetch('/kh/class/next-semester', {method: 'POST', headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'}}).then(()=>location.reload()); }" class="bg-red-600/80 text-white font-bold w-full py-2.5 rounded-xl hover:bg-red-600 transition outline-none">Naik Semester Sekarang</button>
+                                        <button
+                                            @click="if(confirm('Data bulan ini tidak akan terhapus namun diarsipkan. Lanjutkan Promosi Semester?')) { fetch('/kh/class/next-semester', {method: 'POST', headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'}}).then(()=>location.reload()); }"
+                                            class="bg-red-600/80 text-white font-bold w-full py-2.5 rounded-xl hover:bg-red-600 transition outline-none">Naik
+                                            Semester Sekarang</button>
                                     </div>
 
-                                    <!-- MANAJEMEN ANGGOTA -->
-                                    <div class="bg-zinc-950 border border-zinc-900 p-5 rounded-2xl">
-                                        <h3 class="text-zinc-300 font-bold mb-2">Anggota & Rotasi Jabatan</h3>
-                                        <div class="max-h-64 overflow-y-auto pr-2 space-y-2 mt-4">
-                                            <template x-for="mhs in semuaMahasiswa" :key="'m-' + mhs.id">
-                                                <div class="flex justify-between items-center p-3 bg-zinc-900/50 rounded-lg group" x-show="!mhs.hidden">
-                                                    <div>
-                                                        <p class="text-xs text-white font-medium" x-text="mhs.name"></p>
-                                                        <p class="text-[10px] text-zinc-500 uppercase font-bold" x-text="mhs.role"></p>
-                                                    </div>
-                                                    <div class="flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition">
-                                                        <select @change="fetch('/kh/student/'+mhs.id+'/role', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'}, body: JSON.stringify({role: $event.target.value})}).then(()=>notify('Jabatan Diperbarui!'))" class="bg-black text-[10px] text-zinc-400 p-1.5 rounded outline-none border border-zinc-800 focus:border-zinc-500">
-                                                            <option value="mahasiswa" :selected="mhs.role === 'mahasiswa'">Mahasiswa</option>
-                                                            <option value="ketua_kelas" :selected="mhs.role === 'ketua_kelas'">Ketua</option>
-                                                            <option value="sekretaris" :selected="mhs.role === 'sekretaris'">Sekretaris</option>
-                                                            <option value="bendahara" :selected="mhs.role === 'bendahara'">Bendahara</option>
-                                                        </select>
-                                                        <button @click="if(confirm('Keluarkan mahasiswa dari universitas secara permanen?')) { fetch('/kh/student/'+mhs.id, {method: 'DELETE', headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'}}).then(()=>{mhs.hidden = true; notify('Mahasiswa didepak dari sistem!')}) }" class="text-red-500 bg-red-500/10 px-2 py-1.5 rounded hover:bg-red-500/20 text-[10px] font-bold">
-                                                            D.O
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </template>
-                                        </div>
-                                    </div>
                                 @else
-                                    <div class="bg-blue-950/20 border border-blue-900/30 p-5 rounded-2xl col-span-1 md:col-span-2">
-                                        <p class="text-blue-500 text-sm font-bold text-center">Hak Akses Terbatas. Hanya Ketua Kelas yang berhak mengakses Mutasi Mahasiswa dan Promosi Semester.</p>
+                                    <div
+                                        class="bg-blue-950/20 border border-blue-900/30 p-5 rounded-2xl col-span-1 md:col-span-2">
+                                        <p class="text-blue-500 text-sm font-bold text-center">Hak Akses Terbatas. Hanya Ketua
+                                            Kelas yang berhak mengakses Mutasi Mahasiswa dan Promosi Semester.</p>
+                                    </div>
+                                @endif
+
+                                @if(in_array($student->role ?? '', ['ketua_kelas', 'bendahara', 'super_admin']))
+                                    <!-- UPLOAD QRIS KAS -->
+                                    <div
+                                        class="bg-emerald-950/20 border border-emerald-900/30 p-5 rounded-2xl flex flex-col justify-between">
+                                        <div>
+                                            <h3 class="text-emerald-500 font-bold mb-2">Manajemen QRIS Kelas</h3>
+                                            <p class="text-zinc-500 text-xs mb-4">Unggah / perbarui bar-code QRIS statis untuk
+                                                memudahkan pembayaran iuran kas.</p>
+                                        </div>
+                                        <button @click="modalUploadQris = true"
+                                            class="bg-emerald-600/80 text-white font-bold w-full py-2.5 rounded-xl hover:bg-emerald-600 transition outline-none shadow flex items-center justify-center gap-2"><svg
+                                                class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 4v16m8-8H4"></path>
+                                            </svg> Upload Kode QRIS Baru</button>
                                     </div>
                                 @endif
                             </div>
@@ -1088,26 +1100,31 @@
                                     Kelas</h2>
                                 <p class="text-sm text-zinc-400">Transparansi uang kas dan log pengeluaran.</p>
                             </div>
-                            @if(in_array($student->role ?? '', ['ketua_kelas', 'sekretaris', 'bendahara', 'super_admin']))
-                                <div class="flex gap-2 w-full md:w-auto">
+                            <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                                @if(in_array($student->role ?? '', ['ketua_kelas', 'sekretaris', 'bendahara', 'super_admin']))
                                     <a href="{{ route('reports.cash.pdf') }}"
                                         class="flex-1 md:flex-none bg-red-600/20 border border-red-500/30 text-red-400 text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-red-600/30 transition flex items-center justify-center gap-2">
                                         PDF Kas
                                     </a>
                                     <a href="{{ route('reports.cash.excel') }}"
                                         class="flex-1 md:flex-none bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-emerald-600/30 transition flex items-center justify-center gap-2">
-                                        Excel Kas
+                                        Excel
                                     </a>
                                     <button @click="modalKas = true"
-                                        class="flex-1 md:flex-none bg-white text-black font-bold px-6 py-2.5 rounded-xl hover:bg-zinc-200 shadow-lg shadow-white/10 transition-all flex items-center justify-center gap-2">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 4v16m8-8H4"></path>
-                                        </svg>
-                                        Input Transaksi
+                                        class="flex-1 md:flex-none bg-white text-black font-bold px-5 py-2.5 rounded-xl hover:bg-zinc-200 shadow-lg justify-center transition flex items-center gap-2">
+                                        Input Ekstra
                                     </button>
-                                </div>
-                            @endif
+                                @endif
+                                <button @click="modalPayKas = true"
+                                    class="w-full md:w-auto bg-emerald-600 text-white font-bold px-6 py-2.5 rounded-xl hover:bg-emerald-500 justify-center shadow-lg transition flex items-center gap-2 mt-2 md:mt-0">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z">
+                                        </path>
+                                    </svg>
+                                    Bayar Kas (Upload Resi)
+                                </button>
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -1201,6 +1218,14 @@
                                                         <span
                                                             class="ml-2 px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500 text-[8px] font-black tracking-tighter border border-amber-500/20 uppercase">Pending</span>
                                                     </template>
+                                                    <template x-if="trx.proof_image">
+                                                        <div class="mt-2">
+                                                            <button
+                                                                @click.prevent="selectedProofImage = trx.proof_image; $dispatch('open-proof-modal')"
+                                                                class="text-[9px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 hover:bg-emerald-500/20 transition cursor-pointer">Lihat
+                                                                Bukti Foto</button>
+                                                        </div>
+                                                    </template>
                                                 </td>
                                                 <td class="py-4 text-right">
                                                     <div :class="trx.type === 'income' ? 'text-emerald-400' : 'text-red-400'"
@@ -1284,33 +1309,33 @@
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8" x-data="{ 
-                                                                                    currentAttendance: {},
-                                                                                    saveAttendance(matkul) {
-                                                                                        let data = [];
-                                                                                        semuaMahasiswa.forEach(m => {
-                                                                                            data.push({
-                                                                                                student_id: m.id,
-                                                                                                status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
-                                                                                            });
-                                                                                        });
-                                                                                        fetch('/kh/attendance', {
-                                                                                            method: 'POST',
-                                                                                            headers: {
-                                                                                                'Content-Type': 'application/json',
-                                                                                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
-                                                                                            },
-                                                                                            body: JSON.stringify({
-                                                                                                subject_name: matkul,
-                                                                                                date: new Date().toISOString().split('T')[0],
-                                                                                                attendances: data
-                                                                                            })
-                                                                                        })
-                                                                                        .then(res => res.json())
-                                                                                        .then(res => {
-                                                                                            if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
-                                                                                        });
-                                                                                    }
-                                                                                }">
+                                                                                            currentAttendance: {},
+                                                                                            saveAttendance(matkul) {
+                                                                                                let data = [];
+                                                                                                semuaMahasiswa.forEach(m => {
+                                                                                                    data.push({
+                                                                                                        student_id: m.id,
+                                                                                                        status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
+                                                                                                    });
+                                                                                                });
+                                                                                                fetch('/kh/attendance', {
+                                                                                                    method: 'POST',
+                                                                                                    headers: {
+                                                                                                        'Content-Type': 'application/json',
+                                                                                                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                                                                                                    },
+                                                                                                    body: JSON.stringify({
+                                                                                                        subject_name: matkul,
+                                                                                                        date: new Date().toISOString().split('T')[0],
+                                                                                                        attendances: data
+                                                                                                    })
+                                                                                                })
+                                                                                                .then(res => res.json())
+                                                                                                .then(res => {
+                                                                                                    if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
+                                                                                                });
+                                                                                            }
+                                                                                        }">
                                 <template x-for="(sks, matkulName) in matkuls_sks" :key="matkulName">
                                     <div
                                         class="bg-zinc-900/50 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col shadow-xl">
@@ -1392,11 +1417,11 @@
                                                             <span
                                                                 class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-tighter inline-block"
                                                                 :class="{
-                                                                                                                                                                              'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
-                                                                                                                                                                              'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
-                                                                                                                                                                              'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
-                                                                                                                                                                              'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
-                                                                                                                                                                          }"
+                                                                                                                                                                                              'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
+                                                                                                                                                                                              'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
+                                                                                                                                                                                              'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
+                                                                                                                                                                                              'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
+                                                                                                                                                                                          }"
                                                                 x-text="mhs.role.replace('_', ' ')"></span>
                                                         </td>
                                                         <td class="px-4 py-3 text-right">
@@ -2699,6 +2724,146 @@
                 </div>
             </div>
         @endif
+
+        <!-- Modal Preview Bukti -->
+        <div x-data="{ open: false }" @open-proof-modal.window="open = true" x-show="open" x-transition.opacity class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm" style="display: none;">
+            <div @click.away="open = false" class="relative group max-w-full">
+                <button @click="open = false" class="absolute -top-10 right-0 text-zinc-500 hover:text-white font-bold text-sm tracking-widest uppercase cursor-pointer">Tutup (X)</button>
+                <img :src="selectedProofImage" class="max-w-[90vw] max-h-[85vh] object-contain rounded-xl shadow-2xl">
+            </div>
+        </div>
+
+        <!-- Modal Upload QRIS -->
+        <div x-show="modalUploadQris" x-transition.opacity class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="display: none;">
+            <div @click.away="modalUploadQris = false" x-show="modalUploadQris" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" class="bg-zinc-900 border border-zinc-800 rounded-3xl w-full max-w-md p-6 md:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+                <div>
+                    <h3 class="text-xl font-bold text-white mb-1">Upload Kode QRIS</h3>
+                    <p class="text-xs text-zinc-500">Unggah QRCode kas kelas (*.jpg / *.png).</p>
+                </div>
+                <form class="space-y-4" x-data="{ qrisFileName: '', submitting: false }">
+                    <div class="relative w-full">
+                        <input type="file" id="upQrisFile" accept=".jpg,.png,.jpeg" @change="qrisFileName = $event.target.files[0]?.name || ''" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                        <div class="w-full bg-black border border-zinc-800 border-dashed rounded-xl px-4 py-8 text-center transition-all flex flex-col items-center justify-center gap-3" :class="qrisFileName ? 'border-emerald-500 bg-emerald-950/10' : 'hover:border-emerald-500/50'">
+                            <svg class="w-8 h-8 transition-colors" :class="qrisFileName ? 'text-emerald-500' : 'text-zinc-500'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            <span x-show="!qrisFileName" class="text-xs text-zinc-400 font-bold tracking-wide">Pilih Gambar QRIS...</span>
+                            <span x-show="qrisFileName" class="text-sm text-emerald-400 font-black break-all" x-text="qrisFileName"></span>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 pt-4">
+                        <button type="button" @click="modalUploadQris = false" class="flex-1 bg-zinc-800 text-zinc-300 py-3 rounded-xl text-sm font-bold hover:bg-zinc-700 transition">Batal</button>
+                        <button type="button" @click="
+                            if(!qrisFileName) return notify('Lengkapi file QRIS!');
+                            submitting = true;
+                            let fd = new FormData();
+                            fd.append('qris_image', document.getElementById('upQrisFile').files[0]);
+                            fetch('/kh/upload-qris', {
+                                method: 'POST',
+                                headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content') },
+                                body: fd
+                            }).then(f=>f.json()).then(res=>{
+                                if(res.success){
+                                    notify('QRIS Berhasil Di-Upload!');
+                                    qrisImage = res.image_url;
+                                    modalUploadQris = false;
+                                } else {
+                                    notify('Gagal mengupload QRIS!');
+                                }
+                                submitting = false;
+                            });
+                        " class="flex-1 bg-emerald-600 text-white py-3 rounded-xl text-sm font-bold hover:bg-emerald-500 transition shadow-lg shadow-emerald-500/20" x-text="submitting?'Mengunggah...':'Upload'"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Bayar Kas (Mahasiswa) -->
+        <div x-show="modalPayKas" x-transition.opacity class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="display: none;">
+            <div @click.away="modalPayKas = false" x-show="modalPayKas" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" class="bg-zinc-900 border border-zinc-800 rounded-3xl w-full max-w-md p-6 space-y-4 shadow-2xl relative overflow-hidden max-h-[90vh] flex flex-col">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+                <div class="shrink-0 flex justify-between items-start">
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-1">Bayar Kas Online</h3>
+                        <p class="text-[10px] text-zinc-500 uppercase tracking-widest">Via QRIS Kelas Menggunakan Resi</p>
+                    </div>
+                    <button @click="modalPayKas = false" class="text-zinc-500 hover:text-white bg-black p-2 rounded-full border border-zinc-800">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto space-y-4 pr-1">
+                    <div class="bg-black border border-zinc-800 p-4 rounded-xl flex items-center justify-center min-h-[180px]">
+                        <template x-if="qrisImage">
+                            <img :src="qrisImage" alt="QRIS Kelas" class="max-w-full max-h-56 object-contain rounded-lg">
+                        </template>
+                        <template x-if="!qrisImage">
+                            <p class="text-xs text-zinc-600 font-bold uppercase tracking-widest text-center px-4">Pengurus belum mengunggah<br>kode QRIS pada sistem.</p>
+                        </template>
+                    </div>
+
+                    <form x-data="{ pkAmount: '', pkDesc: '', pkFileName: '', submitting: false }" class="space-y-4">
+                        <div>
+                            <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5">Tujuan Pembayaran</label>
+                            <input type="text" x-model="pkDesc" placeholder="Contoh: Bayar Kas Minggu 1" class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-white text-xs font-bold focus:border-emerald-500 outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5">Nominal Transfer (Rp)</label>
+                            <input type="number" x-model="pkAmount" placeholder="Contoh: 15000" class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-white text-xs font-bold focus:border-emerald-500 outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5">Upload Bukti Transfer</label>
+                            <div class="relative w-full">
+                                <input type="file" id="pkFile" accept="image/*" @change="pkFileName = $event.target.files[0]?.name || ''" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                                <div class="w-full bg-black border border-zinc-800 border-dashed rounded-xl px-3 py-4 text-center transition-all flex flex-col items-center justify-center gap-1.5" :class="pkFileName ? 'border-emerald-500 bg-emerald-950/10' : 'hover:border-emerald-500/50'">
+                                    <span x-show="!pkFileName" class="text-[10px] text-zinc-500 font-medium">Klik untuk pilih gambar resi dari device</span>
+                                    <span x-show="pkFileName" class="text-xs text-emerald-400 font-bold break-all" x-text="pkFileName"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-2">
+                            <button type="button" @click="
+                                if(!pkAmount || !pkDesc || !pkFileName) return notify('Lengkapi Data & Foto Resi!');
+                                submitting = true;
+                                let fd2 = new FormData();
+                                fd2.append('type', 'income');
+                                fd2.append('amount', pkAmount);
+                                fd2.append('description', pkDesc);
+                                fd2.append('transaction_date', new Date().toISOString().split('T')[0]);
+                                fd2.append('proof_image', document.getElementById('pkFile').files[0]);
+                                fetch('/kh/cash', {
+                                    method: 'POST',
+                                    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content') },
+                                    body: fd2
+                                }).then(f=>f.json()).then(res=>{
+                                    if(res.success){
+                                        notify('Pembayaran terkirim! Menunggu validasi admin.');
+                                        semuaTransaksi.unshift({
+                                            type: 'income',
+                                            amount: parseInt(pkAmount),
+                                            desc: pkDesc,
+                                            student: res.ledger?.student ? res.ledger.student.name : 'Anda',
+                                            date: new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'}),
+                                            isValidated: false,
+                                            proof_image: res.ledger?.proof_image
+                                        });
+                                        modalPayKas = false;
+                                        pkAmount = ''; pkDesc = ''; pkFileName = '';
+                                    } else {
+                                        notify('Gagal menyimpan transaksi: ' + res.message);
+                                    }
+                                    submitting = false;
+                                }).catch(e => { notify('Terjadi kesalahan!'); submitting = false; });
+                            " :disabled="submitting" class="w-full bg-emerald-600 text-white py-3.5 rounded-xl text-sm font-bold hover:bg-emerald-500 transition shadow-lg shadow-emerald-500/20 flex justify-center items-center">
+                                <span x-text="submitting ? 'Mengunggah & Mengirim...' : 'Kirim Bukti Pembayaran!'"></span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
         <!-- Toast Notification UI -->
         <div x-show="showToast" x-transition:enter="transition ease-out duration-300"

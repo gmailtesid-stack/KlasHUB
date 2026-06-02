@@ -42,6 +42,13 @@
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:layout_marginTop="4dp" />
+            <ImageView
+                android:id="@+id/ivProofPreview"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="12dp"
+                android:scaleType="centerInside"
+                android:visibility="gone" />
         </LinearLayout>
         
         <Button

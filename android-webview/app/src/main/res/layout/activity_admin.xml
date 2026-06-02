@@ -42,8 +42,19 @@
         android:backgroundTint="@color/card_bg"
         android:textColor="@color/white"
         android:padding="16dp"
-        android:gravity="left|center_vertical"
         android:layout_marginBottom="12dp"/>
+
+    <Button
+        android:id="@+id/btnNavUploadQris"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Upload/Ganti QRIS Kelas (Kas)"
+        android:backgroundTint="@color/card_bg"
+        android:textColor="@color/white"
+        android:padding="16dp"
+        android:gravity="left|center_vertical"
+        android:layout_marginBottom="12dp"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/btnNavInputSubject"

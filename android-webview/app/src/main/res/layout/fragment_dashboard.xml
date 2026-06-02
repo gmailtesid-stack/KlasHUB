@@ -127,6 +127,17 @@
                     </LinearLayout>
                 </LinearLayout>
 
+                <Button
+                    android:id="@+id/btnPayKas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Bayar Kas Kelas (Upload Bukti)"
+                    android:backgroundTint="#2563EB"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:padding="12dp"/>
+
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

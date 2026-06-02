@@ -22,11 +22,13 @@ class AdminActivity : AppCompatActivity() {
         val btnNavManageStudent = findViewById<Button>(R.id.btnNavManageStudent)
         val btnNavNextSemester = findViewById<Button>(R.id.btnNavNextSemester)
         val btnNavSaaS = findViewById<Button>(R.id.btnNavSaaS) // New SaaS Button
+        val btnNavUploadQris = findViewById<Button>(R.id.btnNavUploadQris)
         
         btnNavValidation.visibility = View.GONE
         btnNavInputKas.visibility = View.GONE
         btnNavNextSemester.visibility = View.GONE
         btnNavSaaS.visibility = View.GONE
+        btnNavUploadQris.visibility = View.GONE
 
         val role = intent.getStringExtra("USER_ROLE") ?: ""
         if (role == "ketua_kelas" || role == "super_admin") {
@@ -39,7 +41,10 @@ class AdminActivity : AppCompatActivity() {
         }
         if (role == "super_admin") {
             btnNavSaaS.visibility = View.VISIBLE
-        } else if (role == "bendahara") {
+        } else if (role == "bendahara" || role == "ketua_kelas") {
+            btnNavUploadQris.visibility = View.VISIBLE
+        }
+        if (role == "bendahara") {
             btnNavInputKas.visibility = View.VISIBLE
         }
 
@@ -83,6 +88,10 @@ class AdminActivity : AppCompatActivity() {
 
         btnNavSaaS.setOnClickListener {
             startActivity(Intent(this, RegisterSaaSActivity::class.java))
+        }
+
+        btnNavUploadQris.setOnClickListener {
+            startActivity(Intent(this, UploadQrisActivity::class.java))
         }
     }
 }

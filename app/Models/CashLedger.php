@@ -17,6 +17,7 @@ class CashLedger extends Model
         'description',
         'transaction_date',
         'is_validated',
+        'proof_image',
     ];
 
     protected $casts = [

@@ -59,7 +59,7 @@ class ValidationController extends Controller
         $pending = collect([]);
 
         foreach (CashLedger::where('is_validated', false)->get() as $item) {
-            $pending->push(['id' => $item->id, 'type' => 'cash', 'title' => 'Uang Kas: Rp. ' . $item->amount, 'description' => $item->description]);
+            $pending->push(['id' => $item->id, 'type' => 'cash', 'title' => 'Uang Kas: Rp. ' . $item->amount, 'description' => $item->description, 'proof_image' => $item->proof_image]);
         }
 
         foreach (ClassAttendance::with('student')->where('is_validated', false)->get() as $item) {

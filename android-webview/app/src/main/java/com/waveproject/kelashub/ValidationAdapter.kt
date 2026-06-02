@@ -16,6 +16,7 @@ class ValidationAdapter(
         val tvValType: TextView = v.findViewById(R.id.tvValType)
         val tvValTitle: TextView = v.findViewById(R.id.tvValTitle)
         val tvValDesc: TextView = v.findViewById(R.id.tvValDesc)
+        val ivProofPreview: android.widget.ImageView = v.findViewById(R.id.ivProofPreview)
         val btnApprove: Button = v.findViewById(R.id.btnApprove)
     }
 
@@ -28,6 +29,25 @@ class ValidationAdapter(
         holder.tvValType.text = item.type.uppercase()
         holder.tvValTitle.text = item.title
         holder.tvValDesc.text = item.description
+
+        if (item.proofImage != null) {
+            holder.ivProofPreview.visibility = View.VISIBLE
+            val urlStr = "https://klas-hub.vercel.app/storage/" + item.proofImage
+            Thread {
+                try {
+                    val url = java.net.URL(urlStr)
+                    val bmp = android.graphics.BitmapFactory.decodeStream(url.openConnection().getInputStream())
+                    holder.ivProofPreview.post {
+                        holder.ivProofPreview.setImageBitmap(bmp)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }.start()
+        } else {
+            holder.ivProofPreview.visibility = View.GONE
+            holder.ivProofPreview.setImageBitmap(null)
+        }
 
         holder.btnApprove.setOnClickListener {
             onApprove(item)

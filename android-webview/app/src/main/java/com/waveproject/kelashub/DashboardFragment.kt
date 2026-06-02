@@ -27,12 +27,14 @@ class DashboardFragment : Fragment() {
     private lateinit var rvAssignments: RecyclerView
     private lateinit var rvModules: RecyclerView
     private lateinit var btnSemesterFilter: Button
+    private lateinit var btnPayKas: Button
 
     private lateinit var assignmentAdapter: AssignmentAdapter
     private lateinit var moduleAdapter: ModuleAdapter
     
     private var currentMaxSemester: Int = 1
     private var selectedSemester: Int? = null
+    private var currentQrisImage: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,6 +60,13 @@ class DashboardFragment : Fragment() {
         rvModules.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         moduleAdapter = ModuleAdapter(listOf())
         rvModules.adapter = moduleAdapter
+        
+        btnPayKas = root.findViewById(R.id.btnPayKas)
+        btnPayKas.setOnClickListener {
+            val intent = Intent(requireContext(), PayKasActivity::class.java)
+            intent.putExtra("QRIS_URL", currentQrisImage)
+            startActivity(intent)
+        }
         
         btnSemesterFilter = root.findViewById(R.id.btnSemesterFilter)
         btnSemesterFilter.setOnClickListener {
@@ -126,6 +135,8 @@ class DashboardFragment : Fragment() {
 
     private fun updateUI(data: DashboardDataResponse) {
         currentMaxSemester = data.classSemester
+        currentQrisImage = data.qrisImage
+
         if (selectedSemester == null) {
             btnSemesterFilter.text = "Semester ${data.classSemester} ▼"
         }

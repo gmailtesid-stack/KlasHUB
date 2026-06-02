@@ -75,6 +75,7 @@ data class ScheduleData(
 data class DashboardDataResponse(
     val student: Student,
     @SerializedName("class_semester") val classSemester: Int,
+    @SerializedName("qris_image") val qrisImage: String?,
     @SerializedName("semua_mahasiswa") val students: List<Student>,
     @SerializedName("semua_tugas") val assignments: List<Assignment>,
     @SerializedName("semua_modul") val modules: List<Module>,
@@ -97,5 +98,6 @@ data class PendingValidationItem(
     val id: Int,
     val type: String,
     val title: String,
-    val description: String
+    val description: String,
+    @SerializedName("proof_image") val proofImage: String? = null
 )
