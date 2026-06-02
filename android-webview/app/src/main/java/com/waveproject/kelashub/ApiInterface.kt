@@ -23,4 +23,10 @@ interface ApiInterface {
 
     @GET("kh/api/attendance")
     fun getAttendance(): Call<AttendanceResponse>
+
+    @GET("kh/api/schedule")
+    fun getSchedule(): Call<ScheduleResponse>
+
+    @GET("kh/api/profile")
+    fun getProfile(): Call<ProfileResponse>
 }

@@ -75,4 +75,11 @@ class UserManagementController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function getProfile()
+    {
+        return response()->json([
+            'student' => Auth::user()
+        ]);
+    }
 }

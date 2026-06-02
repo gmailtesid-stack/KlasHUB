@@ -94,4 +94,18 @@ class AcademicController extends Controller
         AcademicSchedule::where('id', $request->id)->update(['is_validated' => true]);
         return response()->json(['success' => true]);
     }
+
+    public function getSchedule()
+    {
+        $student = Auth::user();
+        $isAdmin = in_array($student->role, ['ketua_kelas', 'super_admin']);
+
+        $schedules = AcademicSchedule::when(!$isAdmin, function ($q) {
+            return $q->where('is_validated', true);
+        })->get();
+
+        return response()->json([
+            'schedules' => $schedules
+        ]);
+    }
 }

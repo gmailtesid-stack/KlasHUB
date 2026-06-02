@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_schedule -> {
-                    loadFragment(PlaceholderFragment("Jadwal Native\n(Akan hadir di Fase 3)"))
+                    loadFragment(ScheduleFragment())
                     true
                 }
                 R.id.nav_attendance -> {
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_profile -> {
-                    loadFragment(PlaceholderFragment("Profil Pengguna\n(Akan hadir di Fase 4)"))
+                    loadFragment(ProfileFragment())
                     true
                 }
                 else -> false

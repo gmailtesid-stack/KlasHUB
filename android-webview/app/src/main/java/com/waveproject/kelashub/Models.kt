@@ -55,3 +55,23 @@ data class AttendanceStat(
     @SerializedName("status_nilai") val status: String,
     @SerializedName("is_banned") val isBanned: Boolean
 )
+
+data class ScheduleResponse(
+    val schedules: List<ScheduleData>
+)
+
+data class ScheduleData(
+    val id: Int,
+    @SerializedName("subject_name") val subjectName: String,
+    @SerializedName("lecturer_name") val lecturer: String,
+    val day: String,
+    @SerializedName("time_start") val timeStart: String?,
+    @SerializedName("time_end") val timeEnd: String?,
+    val room: String?,
+    @SerializedName("delivery_type") val deliveryType: String?,
+    @SerializedName("is_validated") val isValidated: Boolean
+)
+
+data class ProfileResponse(
+    val student: Student
+)

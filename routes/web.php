@@ -63,6 +63,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/kh/device-token', [DashboardController::class, 'updateDeviceToken']);
     Route::post('/kh/attendance', [AttendanceController::class, 'storeAttendance']);
     Route::get('/kh/api/attendance', [AttendanceController::class, 'getAttendance']);
+    Route::get('/kh/api/schedule', [AcademicController::class, 'getSchedule']);
+    Route::get('/kh/api/profile', [UserManagementController::class, 'getProfile']);
     Route::get('/kh/api/dashboard-data', [DashboardController::class, 'getDashboardData']);
 
     Route::get('/report/pdf/{class_id}', [App\Http\Controllers\LaporanController::class, 'exportPdf']);
