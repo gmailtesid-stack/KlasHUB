@@ -2,6 +2,12 @@ package com.waveproject.kelashub
 
 import com.google.gson.annotations.SerializedName
 
+data class ApiResponse(
+    val success: Boolean,
+    val message: String?,
+    val image_url: String? = null
+)
+
 data class LoginResponse(
     val success: Boolean,
     val message: String?
