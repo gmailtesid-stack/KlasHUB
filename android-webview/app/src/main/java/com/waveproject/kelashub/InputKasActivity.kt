@@ -24,12 +24,14 @@ class InputKasActivity : AppCompatActivity() {
         val progress = findViewById<ProgressBar>(R.id.progressInput)
 
         btnSubmit.setOnClickListener {
+            btnSubmit.isEnabled = false
             val amountStr = etAmount.text.toString()
             val desc = etDesc.text.toString()
             val dateStr = etDate.text.toString()
 
             if (amountStr.isEmpty() || desc.isEmpty() || dateStr.isEmpty()) {
                 Toast.makeText(this, "Isi form lengkap!", Toast.LENGTH_SHORT).show()
+                btnSubmit.isEnabled = true
                 return@setOnClickListener
             }
 
@@ -37,7 +39,6 @@ class InputKasActivity : AppCompatActivity() {
             val typeVal = if (rbIncome.isChecked) "income" else "expense"
 
             progress.visibility = View.VISIBLE
-            btnSubmit.isEnabled = false
 
             ApiClient.apiInterface.addCash(amount, typeVal, desc, dateStr).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {

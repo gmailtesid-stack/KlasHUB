@@ -81,11 +81,13 @@ class PayKasActivity : AppCompatActivity() {
         }
 
         btnSubmitPay.setOnClickListener {
+            btnSubmitPay.isEnabled = false
             val amountStr = etAmount.text.toString()
             val descStr = etDescription.text.toString()
 
             if (amountStr.isEmpty() || descStr.isEmpty() || selectedProofUri == null) {
                 Toast.makeText(this, "Data belum lengkap! Harap lampirkan nominal, laporan pembayaran, dan resi foto.", Toast.LENGTH_SHORT).show()
+                btnSubmitPay.isEnabled = true
                 return@setOnClickListener
             }
             submitPayment(amountStr, descStr, selectedProofUri!!)

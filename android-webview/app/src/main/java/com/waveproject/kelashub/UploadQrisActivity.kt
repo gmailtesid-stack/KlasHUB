@@ -48,7 +48,13 @@ class UploadQrisActivity : AppCompatActivity() {
         }
 
         btnUpload.setOnClickListener {
-            selectedImageUri?.let { uri -> uploadImage(uri) }
+            btnUpload.isEnabled = false
+            if (selectedImageUri == null) {
+                Toast.makeText(this, "Pilih gambar terlebih dahulu", Toast.LENGTH_SHORT).show()
+                btnUpload.isEnabled = true
+                return@setOnClickListener
+            }
+            uploadImage(selectedImageUri!!)
         }
     }
 
