@@ -42,7 +42,14 @@ class ScheduleFragment : Fragment() {
             override fun onResponse(call: Call<ScheduleResponse>, response: Response<ScheduleResponse>) {
                 progress.visibility = View.GONE
                 if (response.isSuccessful && response.body() != null) {
-                    adapter.updateData(response.body()!!.schedules)
+                    val data = response.body()!!
+                    try {
+                        val prefs = requireContext().getSharedPreferences("OfflineCache", android.content.Context.MODE_PRIVATE)
+                        val json = com.google.gson.Gson().toJson(data)
+                        prefs.edit().putString("schedule_data", json).apply()
+                    } catch (e: Exception) {}
+                    
+                    adapter.updateData(data.schedules)
                 } else if (response.code() == 401) {
                     startActivity(Intent(requireContext(), LoginActivity::class.java))
                     requireActivity().finish()
@@ -53,7 +60,19 @@ class ScheduleFragment : Fragment() {
 
             override fun onFailure(call: Call<ScheduleResponse>, t: Throwable) {
                 progress.visibility = View.GONE
-                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                try {
+                    val prefs = requireContext().getSharedPreferences("OfflineCache", android.content.Context.MODE_PRIVATE)
+                    val json = prefs.getString("schedule_data", null)
+                    if (json != null) {
+                        val data = com.google.gson.Gson().fromJson(json, ScheduleResponse::class.java)
+                        adapter.updateData(data.schedules)
+                        Toast.makeText(requireContext(), "Mode Offline: Jadwal Tersimpan", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(requireContext(), "Error koneksi, cache kosong", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         })
     }

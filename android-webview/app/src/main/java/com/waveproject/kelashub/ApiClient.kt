@@ -8,21 +8,28 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import android.content.Context
 
 object ApiClient {
     private const val BASE_URL = "https://klas-hub.vercel.app/"
     private var retrofit: Retrofit? = null
+    private lateinit var cookieJar: CookieJar
 
-    // Simple in-memory cookie storage
-    private val cookieJar = object : CookieJar {
-        private val cookieStore = mutableMapOf<String, List<Cookie>>()
+    fun init(context: Context) {
+        cookieJar = object : CookieJar {
+            private val prefs = context.getSharedPreferences("CookiePrefs", Context.MODE_PRIVATE)
 
-        override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-            cookieStore[url.host] = cookies
-        }
+            override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
+                val editor = prefs.edit()
+                val cookieStrings = cookies.map { it.toString() }.toSet()
+                editor.putStringSet(url.host, cookieStrings)
+                editor.apply()
+            }
 
-        override fun loadForRequest(url: HttpUrl): List<Cookie> {
-            return cookieStore[url.host] ?: listOf()
+            override fun loadForRequest(url: HttpUrl): List<Cookie> {
+                val cookieStrings = prefs.getStringSet(url.host, emptySet())
+                return cookieStrings?.mapNotNull { Cookie.parse(url, it) } ?: emptyList()
+            }
         }
     }
 

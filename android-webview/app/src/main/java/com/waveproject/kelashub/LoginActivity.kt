@@ -18,6 +18,14 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        val prefs = getSharedPreferences("AuthPrefs", MODE_PRIVATE)
+        if (prefs.getBoolean("is_logged_in", false)) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            return
+        }
+        
         setContentView(R.layout.activity_login)
 
         etNim = findViewById(R.id.etNim)
@@ -46,8 +54,10 @@ class LoginActivity : AppCompatActivity() {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 progress.visibility = View.GONE
                 btnLogin.isEnabled = true
-                
                 if (response.isSuccessful) {
+                    val prefs = getSharedPreferences("AuthPrefs", MODE_PRIVATE)
+                    prefs.edit().putBoolean("is_logged_in", true).apply()
+                    
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
                     startActivity(intent)
                     finish()

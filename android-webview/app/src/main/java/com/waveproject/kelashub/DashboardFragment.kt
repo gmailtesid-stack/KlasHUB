@@ -85,6 +85,13 @@ class DashboardFragment : Fragment() {
                 if (response.isSuccessful) {
                     val data = response.body()
                     if (data != null) {
+                        try {
+                            val prefs = requireContext().getSharedPreferences("OfflineCache", android.content.Context.MODE_PRIVATE)
+                            val json = com.google.gson.Gson().toJson(data)
+                            val cacheKey = if (selectedSemester != null) "dashboard_data_$selectedSemester" else "dashboard_data_active"
+                            prefs.edit().putString(cacheKey, json).apply()
+                        } catch (e: Exception) {}
+                        
                         updateUI(data)
                     }
                 } else {
@@ -99,7 +106,20 @@ class DashboardFragment : Fragment() {
 
             override fun onFailure(call: Call<DashboardDataResponse>, t: Throwable) {
                 progress?.visibility = View.GONE
-                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                try {
+                    val prefs = requireContext().getSharedPreferences("OfflineCache", android.content.Context.MODE_PRIVATE)
+                    val cacheKey = if (selectedSemester != null) "dashboard_data_$selectedSemester" else "dashboard_data_active"
+                    val json = prefs.getString(cacheKey, null)
+                    if (json != null) {
+                        val data = com.google.gson.Gson().fromJson(json, DashboardDataResponse::class.java)
+                        updateUI(data)
+                        Toast.makeText(requireContext(), "Mode Offline Aktif (\u26A0\uFE0F)", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(requireContext(), "Tidak ada koneksi dan cache kosong", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         })
     }

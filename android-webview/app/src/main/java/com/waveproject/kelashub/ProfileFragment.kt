@@ -39,6 +39,11 @@ class ProfileFragment : Fragment() {
         btnLogout = root.findViewById(R.id.btnLogout)
 
         btnLogout.setOnClickListener {
+            // Bersihkan semua penyimpanan offline (Bypass Reset)
+            requireContext().getSharedPreferences("AuthPrefs", android.content.Context.MODE_PRIVATE).edit().clear().apply()
+            requireContext().getSharedPreferences("CookiePrefs", android.content.Context.MODE_PRIVATE).edit().clear().apply()
+            requireContext().getSharedPreferences("OfflineCache", android.content.Context.MODE_PRIVATE).edit().clear().apply()
+            
             startActivity(Intent(requireContext(), LoginActivity::class.java))
             requireActivity().finish()
         }

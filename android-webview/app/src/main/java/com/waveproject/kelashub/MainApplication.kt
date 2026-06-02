@@ -11,5 +11,8 @@ class MainApplication : Application() {
         // OneSignal Initialization
         OneSignal.Debug.logLevel = LogLevel.VERBOSE
         OneSignal.initWithContext(this, "04a9cff3-874a-4e84-96c0-f79cfa86d255")
+
+        // Offline First Initialization
+        ApiClient.init(this)
     }
 }
