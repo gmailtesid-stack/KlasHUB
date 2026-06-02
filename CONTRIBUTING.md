@@ -1,7 +1,7 @@
 # Panduan Kontribusi — KelasHUB
 
 Terima kasih atas minat Anda untuk berkontribusi pada **KelasHUB**! 🎉  
-Panduan ini menjelaskan cara berkontribusi dengan efektif.
+Panduan ini menjelaskan cara berkontribusi dengan efektif pada platform v2.3.0+.
 
 ---
 
@@ -43,8 +43,9 @@ Proyek ini mengikuti standar komunitas open-source yang inklusif dan saling meng
 
 **Environment:**
 - OS: [Windows / macOS / Linux]
-- Browser: [Chrome / Firefox]
+- Browser / Platform: [Chrome / Android App]
 - Versi PHP: [8.3.x]
+- Versi App: [2.3.0]
 ```
 
 ---
@@ -75,15 +76,12 @@ git pull upstream main
 
 # 5. Buat branch fitur baru
 git checkout -b feat/nama-fitur-singkat
-# atau untuk bugfix:
-git checkout -b fix/nama-bug-singkat
 
 # 6. Kerjakan perubahan Anda
-# ... edit file ...
 
-# 7. Commit dengan format konvensional (lihat bawah)
+# 7. Commit dengan format konvensional
 git add .
-git commit -m "feat: tambah fitur export laporan PDF"
+git commit -m "feat(notification): tambah trigger notifikasi saat validasi data"
 
 # 8. Push ke fork Anda
 git push origin feat/nama-fitur-singkat
@@ -112,6 +110,17 @@ $data = DB::table('assignments')
 $data = Assignment::where('class_id', $classId)->get();
 ```
 
+### Notifikasi
+- **Wajib** menggunakan `NotificationService` untuk semua pengiriman notifikasi. Jangan panggil OneSignal API langsung dari Controller.
+
+```php
+// ✅ Benar
+app(NotificationService::class)->notifyClass($classId, 'Ada tugas baru!');
+
+// ❌ Hindari
+Http::post('https://onesignal.com/...', [...]);  // dari dalam Controller
+```
+
 ### Blade / Frontend
 - Gunakan `x-data` Alpine.js untuk reaktivitas, bukan JavaScript inline.
 - Semua modal harus bisa ditutup dengan klik di luar (`@click.outside`).
@@ -122,6 +131,10 @@ $data = Assignment::where('class_id', $classId)->get();
 - Beri nama migrasi dengan format: `YYYY_MM_DD_HHMMSS_deskripsi_singkat.php`
 - Tambahkan `class_id` FK ke tabel baru jika berkaitan dengan data per-kelas.
 
+### Android (Kotlin)
+- Semua API call harus melalui `ApiClient.apiInterface`.
+- Token sinkronisasi (OneSignal) harus dipanggil ulang setiap kali user masuk ke `MainActivity`.
+
 ---
 
 ## 📌 Konvensi Commit
@@ -130,9 +143,6 @@ Gunakan format **Conventional Commits**:
 
 ```
 <type>(<scope>): <deskripsi singkat>
-
-[body opsional]
-[footer opsional]
 ```
 
 ### Tipe Commit yang Valid
@@ -143,7 +153,7 @@ Gunakan format **Conventional Commits**:
 | `fix` | Perbaikan bug |
 | `refactor` | Perubahan kode tanpa menambah/memperbaiki fitur |
 | `docs` | Perubahan dokumentasi saja |
-| `style` | Format, spasi, titik-koma (tanpa ubah logika) |
+| `style` | Format, spasi (tanpa ubah logika) |
 | `test` | Menambah atau memperbaiki test |
 | `chore` | Update dependency, konfigurasi |
 | `perf` | Peningkatan performa |
@@ -151,9 +161,10 @@ Gunakan format **Conventional Commits**:
 ### Contoh Commit yang Benar
 
 ```bash
-feat(auth): tambah validasi NIM pada login
-fix(attendance): perbaiki hitung sisa nyawa mahasiswa transfer
-docs(readme): update panduan instalasi lokal
+feat(notification): tambah NotificationService dengan OneSignal v2
+fix(android): perbaiki null check pada syncOneSignalToken
+docs(api): update dokumentasi endpoint /kh/device-token
+chore(android): update OneSignal SDK ke versi terbaru
 perf(export): ganti Eloquent dengan DB::table pada ekspor CSV
 ```
 
@@ -164,6 +175,7 @@ perf(export): ganti Eloquent dengan DB::table pada ekspor CSV
 Pastikan:
 - [ ] Kode tidak memiliki syntax error (`php artisan route:list`)
 - [ ] Migrasi berjalan bersih (`php artisan migrate:fresh`)
-- [ ] Tidak ada query tanpa `where('class_id')` pada tabel yang berisi data multi-kelas
-- [ ] Semua endpoint yang baru sudah dilindungi middleware `auth`
-- [ ] Format kode sudah sesuai PSR-12 (bisa pakai `./vendor/bin/pint`)
+- [ ] Tidak ada query tanpa `where('class_id')` pada tabel multi-kelas
+- [ ] Semua endpoint baru dilindungi middleware `auth`
+- [ ] Fitur yang memerlukan notifikasi sudah menggunakan `NotificationService`
+- [ ] Format kode sudah sesuai PSR-12 (`./vendor/bin/pint`)

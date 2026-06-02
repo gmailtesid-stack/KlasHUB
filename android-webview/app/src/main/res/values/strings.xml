@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">KelasHub</string>
+    <string name="title_dashboard">KELAS HUB</string>
+    <string name="subtitle_dashboard">Platform Manajemen Kelas Terpadu</string>
+    <string name="btn_login">GO TO LOGIN</string>
+    <string name="footer_version">NATIVE BUILD V1.0.3</string>
+    <string name="loading_text">SINCHRONIZING SYSTEM...</string>
 </resources>

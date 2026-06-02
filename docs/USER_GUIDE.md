@@ -2,78 +2,106 @@
 
 **Proyek**: KelasHUB — All-in-One Class Operations Suite  
 **Author**: Ariyas Pratama Ramadhan By WaveProject.ID  
-**Bahasa**: Indonesia
+**Versi**: 2.3.0  
+**Bahasa**: Indonesia  
+**Tanggal**: 30 Mei 2026
 
 ---
 
 ## 1. Pengenalan
-Selamat datang di **KelasHUB**, platform operasional kelas modern yang dirancang untuk memudahkan manajemen perkuliahan, transparansi keuangan, dan distribusi materi. 
+Selamat datang di **KelasHUB**, platform operasional kelas modern yang dirancang untuk memudahkan manajemen perkuliahan, transparansi keuangan, distribusi materi, dan kini dilengkapi **notifikasi push real-time** langsung ke HP Anda.
 
-Aplikasi ini dioptimalkan untuk penggunaan mobile dan dapat diakses kapan saja untuk memantau "kesehatan" akademik Anda melalui sistem **Sisa Nyawa**.
+Fitur unggulan:
+- 📱 Notifikasi pop-up saat ada tugas baru, modul, atau pengumuman.
+- 📊 Dashboard personal dengan sistem **Sisa Nyawa** untuk memantau kehadiran.
+- 💰 Transparansi penuh kas kelas secara real-time.
 
 ---
 
-## 2. Manajemen Akun
-### 2.1 Login Sistem
-1. Masukkan **NIM** Anda sebagai username.
-2. Masukkan password default yang diberikan oleh Ketua Kelas (biasanya `NIM + KK/SK/BD`).
-3. Klik "Login" untuk masuk ke Dashboard.
+## 2. Memulai — Download & Login Aplikasi
 
-### 2.2 Mengganti Password
-Sangat disarankan untuk mengganti password default Anda:
-1. Di sidebar (Desktop) atau Profil (Mobile), pilih **"Ganti Password"**.
-2. Masukkan password lama dan buat password baru yang kuat (minimal 6 karakter).
+### 2.1 Via Aplikasi Android (Direkomendasikan)
+1. Install file **APK** KelasHUB yang dibagikan oleh pengurus kelas.
+2. Buka aplikasi. Notifikasi push akan aktif secara otomatis sejak pertama kali dibuka.
+3. Login dengan NIM dan password Anda.
+
+### 2.2 Via Browser
+1. Buka `https://klas-hub.vercel.app`
+2. Masukkan **Nama Lengkap** (huruf kapital) sebagai username.
+3. Masukkan password default dari Ketua Kelas.
+
+### 2.3 Mengganti Password
+Sangat disarankan untuk mengganti password default:
+1. Di sidebar (Desktop) atau menu Profil (Mobile), pilih **"Ganti Password"**.
+2. Masukkan password lama dan buat password baru (minimal 6 karakter).
 
 ---
 
 ## 3. Fitur Utama Mahasiswa
 
-### 3.1 Akademi Hub
-Menu ini adalah pusat informasi akademik harian Anda:
-- **Jadwal Kuliah**: Lihat mata kuliah hari ini, ruangan, dan dosen pengampu. Perhatikan indikator **OFFLINE** (biru) atau **ONLINE** (kuning).
-- **Tugas & Deadline**: Lihat daftar tugas terdekat. Klik pada tugas untuk melihat deskripsi lengkap dan link pengumpulan.
-- **Kalender Deadline**: Pantau deadline tugas dalam sebulan ke depan melalui tampilan kalender visual.
+### 3.1 🔔 Notifikasi Push
+Fitur **baru di v2.3** — Anda akan menerima pop-up di HP saat:
+- Ada **tugas baru** yang diunggah pengurus.
+- Ada **modul pembelajaran** yang dibagikan.
+- Ada **transaksi kas** yang berkaitan dengan Anda.
+- Pengajuan **rekap mandiri** Anda perlu divalidasi.
 
-### 3.2 Repositori Materi
-Tempat mengunduh modul atau melihat link referensi yang dibagikan oleh dosen atau pengurus kelas:
+> **Penting:** Pastikan Anda menggunakan **aplikasi Android**, bukan browser, agar fitur notifikasi berfungsi. Izinkan notifikasi saat pertama kali membuka aplikasi.
+
+### 3.2 🎓 Akademi Hub
+Menu pusat informasi akademik harian:
+- **Jadwal Kuliah**: Lihat mata kuliah hari ini, ruangan, dan dosen. Perhatikan indikator **OFFLINE** (biru) atau **ONLINE** (kuning).
+- **Tugas & Deadline**: Daftar tugas terdekat. Klik untuk melihat detail dan link pengumpulan.
+- **Kalender Deadline**: Pantau deadline dalam tampilan kalender visual sebulan ke depan.
+
+### 3.3 📚 Repositori Materi
+Tempat mengunduh modul atau melihat link referensi yang dibagikan:
 - Klik tombol **Download** untuk mengunduh modul langsung ke perangkat Anda.
+- Modul tersedia dalam format PDF, DOCX, TXT, atau link eksternal.
 
-### 3.3 Finansial Kelas (Buku Kas)
-Memberikan transparansi penuh terhadap saldo kas kelas:
+### 3.4 💰 Finansial Kelas (Buku Kas)
+Transparansi penuh terhadap kas kelas:
 - **Saldo Saat Ini**: Total uang yang ada di bendahara.
-- **Riwayat Transaksi**: Lihat setiap pengeluaran dan pemasukan yang telah divalidasi.
+- **Riwayat Transaksi**: Setiap pengeluaran dan pemasukan yang telah divalidasi.
 
-### 3.4 Presensi Tracker & "Sisa Nyawa"
-Ini adalah fitur paling kritis di KelasHUB:
-- **Sisa Nyawa**: Setiap mata kuliah memberi Anda **3 Nyawa**. Setiap ketidakhadiran (Alfa) akan mengurangi 1 nyawa.
-- **Status Dicekal**: Jika nyawa mencapai 0, status Anda menjadi **DICEKAL** (Risiko nilai E). Segera hubungi pengurus kelas jika terjadi kesalahan data.
-- **Rekap Mandiri**: Anda bisa menginput kehadiran Anda sendiri, namun statusnya akan tetap **PENDING** sampai divalidasi oleh Ketua Kelas/Sekretaris.
+### 3.5 ❤️ Presensi Tracker & "Sisa Nyawa"
+Fitur paling kritis di KelasHUB:
+- **Sisa Nyawa**: Setiap mata kuliah memberikan **3 Nyawa**. Setiap ketidakhadiran (Alfa) tervalidasi mengurangi 1 nyawa.
+- **Status DICEKAL**: Nyawa = 0 → Status **DICEKAL** (Risiko nilai E). Segera hubungi pengurus kelas jika ada kesalahan data.
+- **Rekap Mandiri**: Anda bisa menginput kehadiran sendiri, statusnya **PENDING** hingga divalidasi Ketua/Sekretaris. Pengurus akan mendapat notifikasi saat Anda submit.
 
 ---
 
 ## 4. Panduan Khusus Pengurus (Admin)
 
 ### 4.1 Ketua Kelas & Sekretaris
-- **Input Jadwal/Tugas**: Klik tombol `+ Jadwal` atau `+ Tugas` untuk mendistribusikan informasi ke seluruh anggota kelas.
-- **Validasi Data**: Periksa notifikasi orange di dashboard. Setiap input dari mahasiswa (absen mandiri/kas) harus disetujui agar muncul di laporan resmi.
-- **Manajemen Anggota**: Menambahkan mahasiswa baru ke dalam kelas atau mengubah peran (misal: mempromosikan anggota menjadi Bendahara).
+- **Input Jadwal/Tugas/Modul**: Setiap input baru akan otomatis mengirim notifikasi push ke seluruh anggota kelas.
+- **Validasi Data**: Cek notifikasi di dashboard — setiap input dari mahasiswa harus disetujui agar muncul di laporan resmi.
+- **Manajemen Anggota**: Tambah mahasiswa baru atau ubah peran (misal: promosi ke Bendahara).
 
 ### 4.2 Bendahara
-- **Catat Kas**: Masukkan pemasukan (iuran) atau pengeluaran (fotokopi, kegiatan) melalui menu Finansial.
-- **Verifikasi Iuran**: Memvalidasi input setoran iuran mandiri dari mahasiswa.
+- **Catat Kas**: Masukkan pemasukan/pengeluaran melalui menu Finansial. Anggota kelas akan mendapat notifikasi otomatis.
+- **Export Laporan**: Unduh laporan dalam format **PDF** (formal) atau **Excel/CSV** dari tab Presensi.
+
+### 4.3 Super Admin
+- **Registrasi Kelas**: Gunakan form terpadu untuk mendaftarkan kelas baru sekaligus akun Ketua Kelas dalam satu langkah.
 
 ---
 
 ## 5. FAQ (Tanya Jawab)
 
-**Q: Kenapa tugas yang saya lihat berbeda dengan teman saya?**
-*A: Pastikan Anda berada di Kelas yang benar. Jika ada kesalahan data, hubungi Super Admin.*
+**Q: Kenapa saya tidak dapat notifikasi?**  
+*A: Pastikan Anda menggunakan aplikasi Android (bukan browser) dan sudah mengizinkan notifikasi. Coba logout dan login ulang agar token perangkat diperbarui.*
 
-**Q: Saya lupa password, bagaimana cara resetnya?**
-*A: Hubungi Ketua Kelas Anda. Ketua Kelas memiliki otoritas untuk mereset password anggota melalui panel admin.*
+**Q: Kenapa tugas yang saya lihat berbeda dengan teman?**  
+*A: Pastikan Anda berada di Kelas yang benar. Hubungi Super Admin jika ada kesalahan.*
 
-**Q: Apakah aplikasi ini aman digunakan di jaringan publik?**
-*A: Ya, KelasHUB menggunakan enkripsi SSL/TLS berlapis dan perlindungan header keamanan "Wave Project.ID Identity Protection".*
+**Q: Saya lupa password, bagaimana cara resetnya?**  
+*A: Hubungi Ketua Kelas. Ketua Kelas bisa mereset password anggota melalui panel admin.*
+
+**Q: Apakah aplikasi ini aman?**  
+*A: Ya. KelasHUB menggunakan enkripsi SSL/TLS berlapis, perlindungan session cookie, dan API Key notifikasi disimpan aman di server — tidak terekspos ke aplikasi.*
 
 ---
-© 2026 **WaveProject.ID** | Dikembangkan oleh **Ariyas Pratama Ramadhan**.
+
+© 2026 **WaveProject.ID** | Dikembangkan oleh **Ariyas Pratama Ramadhan** | v2.3.0

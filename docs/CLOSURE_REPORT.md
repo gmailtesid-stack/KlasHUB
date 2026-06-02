@@ -2,26 +2,32 @@
 
 **Nama Proyek**: KelasHUB — All-in-One Class Operations Suite  
 **Penyusun**: Ariyas Pratama Ramadhan By WaveProject.ID  
-**Tanggal**: 27 Mei 2026  
+**Tanggal**: 30 Mei 2026  
+**Versi Final**: 2.3.0  
 **Status**: SELESAI (Final Delivery)
 
 ---
 
 ## 1. Ringkasan Eksekutif
-Proyek KelasHUB telah berhasil bertransformasi dari sistem MVP (Minimum Viable Product) menjadi platform **Enterprise Multi-Tenant** yang siap digunakan secara massal. Seluruh kebutuhan utama, termasuk sistem "Sisa Nyawa", manajemen iuran kas, dan repositori materi, telah diimplementasikan dengan standar industri yang tinggi, mengutamakan efisiensi di lingkungan *Serverless*.
+Proyek KelasHUB telah berhasil bertransformasi dari sistem MVP (Minimum Viable Product) menjadi platform **Enterprise Multi-Tenant** dengan kapabilitas **Push Notification Real-Time** yang siap digunakan secara massal. Seluruh kebutuhan utama — sistem "Sisa Nyawa", manajemen iuran kas, repositori materi, manajemen jadwal, dan kini notifikasi push otomatis — telah diimplementasikan dengan standar industri tinggi, mengutamakan efisiensi di lingkungan *Serverless*.
 
 ---
 
 ## 2. Pencapaian Teknis & Fungsional
-Dalam fase pengembangan ini, beberapa pencapaian utama meliputi:
-- **Arsitektur Multi-Tenant**: Implementasi isolasi data otomatis berbasis `class_id` yang menjamin keamanan data antar kelas tanpa kebocoran silang.
-- **Optimasi Vercel Serverless**: Penggunaan `DB::table()` untuk query yang lebih cepat dan efisien dalam batas timeout 10 detik.
-- **Storage Statis via Database**: Solusi inovatif penyimpanan file (LMS) sebagai string Base64 di SQL untuk mengatasi keterbatasan *stateless filesystem*.
-- **Keamanan Berlapis**: Implementasi `SecurityHeaders` dan RBAC yang ketat untuk melindungi data sensitif mahasiswa.
+
+| Pencapaian | Detail |
+|:---|:---|
+| **Arsitektur Multi-Tenant** | Isolasi data otomatis berbasis `class_id`, terjamin tanpa kebocoran silang. |
+| **Optimasi Vercel Serverless** | `DB::table()` untuk query batch, aman dalam batas timeout 10 detik. |
+| **Storage Statis via Database** | File modul tersimpan sebagai Base64 di SQL — tanpa filesystem. |
+| **Keamanan Berlapis** | `SecurityHeaders` dan RBAC ketat untuk melindungi data mahasiswa. |
+| **Push Notification (v2.3)** | Integrasi OneSignal REST API v2 untuk pop-up real-time ke perangkat Android. |
+| **Android Native Kotlin** | Aplikasi native dengan Retrofit2 API client dan sinkronisasi token perangkat. |
 
 ---
 
 ## 3. Status Terakhir Modul
+
 | Modul | Deskripsi | Status |
 |:---|:---|:---:|
 | **Engine Akademi** | Jadwal, Tugas, & Kalender | ✅ Stabil |
@@ -29,36 +35,40 @@ Dalam fase pengembangan ini, beberapa pencapaian utama meliputi:
 | **Engine Presensi** | Logika Sisa Nyawa & Rekap | ✅ Stabil |
 | **Panel Super Admin** | Registrasi Kelas & Multi-class | ✅ Stabil |
 | **LMS Hub** | Manajemen Materi Base64 | ✅ Stabil |
-| **Android WebView** | Wrapper Kotlin Native | ✅ Stabil |
+| **Sistem Notifikasi** | Internal (Dashboard) + Eksternal (OneSignal) | ✅ Stabil (v2.3) |
+| **Android Native** | Kotlin App + OneSignal SDK | ✅ Stabil (v2.3) |
 
 ---
 
 ## 4. Rencana Pemeliharaan (Maintenance Plan)
 
-Untuk menjaga stabilitas jangka panjang, pengelola (WaveProject.ID) disarankan mengikuti protokol berikut:
-
 ### 4.1 Pemantauan Keamanan
 - Periksa log keamanan di dashboard Vercel secara berkala.
-- Pastikan `APP_KEY` dan kredensial TiDB Cloud tetap aman di *Vercel Environment Variables*.
+- Pastikan `APP_KEY`, `ONESIGNAL_REST_API_KEY`, dan kredensial TiDB Cloud tetap aman di *Vercel Environment Variables*.
+- Rotasi API Key OneSignal secara berkala (disarankan setiap 6 bulan).
 
 ### 4.2 Manajemen Database (TiDB Cloud)
 - **Backup berkala**: Gunakan fitur *Automated Backup* di TiDB Cloud.
-- **Optimasi Tabel**: Lakukan pembersihan (reset) data jadwal yang sudah lewat menggunakan command internal `ResetScheduleCommand`.
+- **Cleanup `onesignal_id`**: Lakukan pembersihan kolom `onesignal_id` untuk mahasiswa yang sudah keluar atau tidak aktif.
+- **Optimasi Tabel**: Gunakan `ResetScheduleCommand` untuk membersihkan data jadwal yang sudah lewat.
 
 ### 4.3 Pembaruan Sistem (Updates)
 - Pantau pembaruan keamanan Laravel (saat ini 13.x).
-- Pastikan sertifikat CA (`cacert.pem`) diperbarui setiap 12-24 bulan jika terjadi perubahan pada otoritas sertifikat penyedia database.
+- Pastikan OneSignal SDK Android diperbarui mengikuti rilis stabil terbaru.
+- Perbarui sertifikat CA (`cacert.pem`) setiap 12-24 bulan.
 
 ---
 
 ## 5. Rekomendasi Pengembangan Mendatang
-1. **Integrasi Media**: Memindahkan penyimpanan file ke S3 Storage (AWS/DO) jika volume data materi meningkat drastis (untuk mengurangi beban database).
-2. **Push Notifications**: Implementasi Firebase Cloud Messaging (FCM) pada wrapper Android untuk pengingat deadline tugas.
-3. **Analitik Lanjut**: Pengembangan modul visualisasi grafik performa akademik mahasiswa berdasarkan riwayat presensi.
+
+1. **Dashboard Analitik**: Modul visualisasi grafik tren kehadiran dan keuangan per semester.
+2. **S3 File Storage**: Migrasi penyimpanan file modul dari Base64 database ke S3 Storage jika volume data meningkat drastis.
+3. **AI Chatbot**: Rekap otomatis materi perkuliahan dari modul PDF menggunakan model bahasa.
+4. **Notifikasi WhatsApp**: Tambahan saluran notifikasi via WhatsApp API untuk jangkauan lebih luas.
 
 ---
 
 ## 6. Pernyataan Penutup
-Dengan diserahkannya laporan ini, seluruh siklus dokumentasi teknis dan panduan operasional KelasHUB dinyatakan lengkap. Sistem siap untuk dideploy ke lingkungan produksi dan berfungsi penuh sebagai alat bantu operasional kelas.
+Dengan diserahkannya laporan ini, seluruh siklus pengembangan, dokumentasi teknis, dan panduan operasional KelasHUB v2.3.0 dinyatakan lengkap. Sistem siap untuk dideploy ke lingkungan produksi dan berfungsi penuh sebagai alat bantu operasional kelas dengan kapabilitas notifikasi push real-time.
 
 Dibuat secara profesional oleh **Ariyas Pratama Ramadhan @ WaveProject.ID**.

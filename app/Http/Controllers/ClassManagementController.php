@@ -1,0 +1,51 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\AcademicClass;
+use App\Models\Student;
+use App\Http\Traits\AuthorizesAdmin;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class ClassManagementController extends Controller
+{
+    use AuthorizesAdmin;
+
+    public function storeUnifiedClass(Request $request)
+    {
+        $this->authorizeAdmin();
+        if (Auth::user()->role !== 'super_admin') {
+            abort(403, 'Hanya Super Admin yang bisa mendaftarkan kelas baru.');
+        }
+
+        $data = $request->validate([
+            'class_code' => 'required|string|unique:academic_classes,code',
+            'department' => 'required|string',
+            'ketua_name' => 'required|string',
+            'ketua_nim' => 'required|string|unique:students,nim',
+            'contact' => 'nullable|string',
+        ]);
+
+        // 1. Create Class
+        $class = AcademicClass::create([
+            'name' => $data['department'] . ' - ' . $data['class_code'],
+            'code' => $data['class_code'],
+            'department' => $data['department'],
+            'contact' => $data['contact'],
+            'academic_year' => null,
+        ]);
+
+        // 2. Create Ketua Kelas
+        $password = $data['ketua_nim'] . 'KK';
+        Student::create([
+            'name' => $data['ketua_name'],
+            'nim' => $data['ketua_nim'],
+            'role' => 'ketua_kelas',
+            'class_id' => $class->id,
+            'password' => bcrypt($password),
+        ]);
+
+        return back()->with('success', 'Kelas dan Ketua Kelas berhasil didaftarkan: ' . $data['ketua_name']);
+    }
+}

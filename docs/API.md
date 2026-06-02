@@ -4,7 +4,8 @@ Dokumen ini menjelaskan semua endpoint HTTP yang tersedia di KelasHUB, parameter
 
 > **Base URL:** `https://klas-hub.vercel.app`  
 > **Autentikasi:** Session Cookie (login via `POST /login` terlebih dahulu)  
-> **Format Respons:** JSON untuk semua endpoint AJAX, HTML Redirect untuk form submission
+> **Format Respons:** JSON untuk semua endpoint AJAX, HTML Redirect untuk form submission  
+> **Terakhir Diperbarui:** 30 Mei 2026 (v2.3.0)
 
 ---
 
@@ -16,7 +17,7 @@ Masuk ke sistem menggunakan nama lengkap dan password.
 **Body (form-data):**
 ```
 name     : "ARIYAS PRATAMA RAMADHAN"   (Nama lengkap, case-sensitive)
-password : "231011403268KK"            (NIM + "KK" untuk Ketua, atau custom)
+password : "231011403268**"            (NIM + "**" untuk Ketua, atau custom)
 ```
 
 **Response:**
@@ -49,12 +50,13 @@ Halaman utama dashboard pengguna. Mengembalikan HTML view `dashboard.main_mobile
 | `$master_subjects` | `Collection` | Daftar semua mata kuliah |
 | `$jadwal_harian` | `Collection` | Jadwal kuliah yang aktif |
 | `$pending_count` | `int` | Jumlah data menunggu validasi (untuk admin) |
+| `$notifications` | `Collection` | Notifikasi internal terbaru (max 10) |
 | `$academic_classes` | `Collection` | Semua kelas (hanya Super Admin) |
 
 ---
 
 ### `GET /kh/api/dashboard-data`
-Endpoint AJAX untuk refresh data dashboard tanpa reload halaman.
+Endpoint AJAX untuk refresh data dashboard tanpa reload halaman. Digunakan oleh aplikasi Android native.
 
 **Middleware:** `auth`, `role:ketua_kelas`  
 **Response JSON:**
@@ -63,9 +65,34 @@ Endpoint AJAX untuk refresh data dashboard tanpa reload halaman.
   "students": [...],
   "modules": [...],
   "assignments": [...],
-  "cash_flows": [...]
+  "cashTransactions": [...]
 }
 ```
+
+---
+
+## 📱 Mobile — Device Token
+
+### `POST /kh/device-token`
+Registrasikan atau perbarui OneSignal Subscription ID perangkat mahasiswa. Dipanggil otomatis oleh aplikasi Android setiap kali dashboard dimuat.
+
+**Middleware:** `auth`  
+**Body (application/x-www-form-urlencoded):**
+```
+player_id : "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+```
+
+**Response JSON (Sukses):**
+```json
+{ "success": true, "message": "Device token updated." }
+```
+
+**Response JSON (Gagal - sudah sama):**
+```json
+{ "success": false, "message": "Token unchanged." }
+```
+
+**Catatan:** Field `player_id` menyimpan **OneSignal Subscription ID** (UUID v4) dari perangkat pengguna, yang digunakan oleh backend untuk mengirim push notification yang ditargetkan melalui `NotificationService`.
 
 ---
 
@@ -165,6 +192,8 @@ Input absensi kelas untuk satu sesi perkuliahan.
 { "success": true }
 ```
 
+> **Integrasi Notifikasi:** Setiap input absensi yang mengandung status `Izin`/`Sakit` secara otomatis memicu notifikasi push ke Ketua Kelas via `NotificationService`.
+
 ---
 
 ## 📚 Repositori Modul
@@ -201,6 +230,8 @@ file         : [binary file, max 4MB, .pdf/.doc/.docx/.txt]
   }
 }
 ```
+
+> **Integrasi Notifikasi:** Upload modul baru secara otomatis mengirim push notification ke seluruh anggota kelas.
 
 ---
 
@@ -242,6 +273,8 @@ Input tugas baru untuk kelas.
 }
 ```
 
+> **Integrasi Notifikasi:** Tugas baru secara otomatis mengirim push notification ke seluruh anggota kelas.
+
 ---
 
 ## 💰 Keuangan Kas
@@ -270,6 +303,8 @@ Catat transaksi keuangan kelas (masuk atau keluar).
 }
 ```
 
+> **Integrasi Notifikasi:** Transaksi kas baru secara otomatis mengirim push notification ke anggota kelas yang terdampak.
+
 ---
 
 ## 👤 Manajemen Mahasiswa
@@ -288,7 +323,7 @@ Daftarkan mahasiswa baru ke kelas.
 }
 ```
 
-**Password** dibuat otomatis = `nim` (login pertama, mahasiswa harus ganti).
+**Password** dibuat otomatis = `nim`.
 
 **Response:** Redirect dengan flash message
 
@@ -340,7 +375,7 @@ Daftarkan kelas baru beserta Ketua Kelasnya dalam satu operasi atomik.
 ```
 
 **Efek:**
-1. Membuat record di `academic_classes` dengan kode `code`
+1. Membuat record di `academic_classes`
 2. Membuat akun `students` dengan role `ketua_kelas`
 3. Password otomatis = `NIM + "KK"`
 
@@ -376,7 +411,7 @@ Validasi (approve) data yang masih berstatus `is_validated = false`.
 Download laporan keuangan kelas dalam format PDF.
 
 **Middleware:** `auth`  
-**Response:** Binary stream, `Content-Type: application/pdf`, `Content-Disposition: attachment; filename=Laporan-Keuangan-{code}.pdf`
+**Response:** Binary stream, `Content-Type: application/pdf`
 
 ---
 
@@ -384,8 +419,6 @@ Download laporan keuangan kelas dalam format PDF.
 Download laporan keuangan kelas dalam format CSV.
 
 **Middleware:** `auth`  
-**Response:** Streaming CSV, `Content-Type: text/csv`, `Content-Disposition: attachment; filename=Laporan-Kas-{code}-{date}.csv`
-
 **Kolom CSV:** `ID | Tanggal | Tipe | Jumlah | Nama Mahasiswa | Keterangan`
 
 ---
@@ -405,14 +438,14 @@ Download laporan presensi kelas dalam format Excel (CSV).
 ---
 
 ### `GET /kh/reports/cash/pdf`
-Download laporan keuangan kelas dalam format PDF (via ReportController).
+Download laporan keuangan kelas dalam format PDF.
 
 **Middleware:** `auth` | **Response:** PDF stream
 
 ---
 
 ### `GET /kh/reports/cash/excel`
-Download laporan keuangan kelas dalam format Excel (CSV, via ReportController).
+Download laporan keuangan kelas dalam format Excel (CSV).
 
 **Middleware:** `auth` | **Response:** CSV stream
 
@@ -441,29 +474,26 @@ Jalankan simulasi aktivitas kelas otomatis.
 Jalankan semua uji fungsional dalam satu request.
 
 **Middleware:** `auth`  
-**Efek:** Insert data uji ke `assignments`, `learning_modules`, `class_attendances` (3 Alfa), dan `cash_ledgers`
-
 **Response JSON:**
 ```json
 {
   "status": "Testing Finalized",
   "results": {
-    "upload_tugas": "SUCCESS (ID: 30002)",
-    "upload_modul": "SUCCESS (ID: 60002)",
-    "notif_3_alfa": "SUCCESS (3 Alfa Inserted for ARIYAS)",
-    "kas_manajemen": "SUCCESS (IN: 3, OUT: 4)"
-  },
-  "message": "Silakan cek Dashboard ARIYAS untuk melihat notifikasi DICEKAL dan data lainnya."
+    "upload_tugas": "SUCCESS",
+    "upload_modul": "SUCCESS",
+    "notif_3_alfa": "SUCCESS",
+    "kas_manajemen": "SUCCESS"
+  }
 }
 ```
 
 ---
 
 ### `GET /kh/cron/reset-schedule`
-Reset (truncate) seluruh jadwal kuliah. Dipanggil otomatis via Vercel Cron setiap `23:59 WIB`.
+Reset seluruh jadwal kuliah. Dipanggil otomatis via Vercel Cron setiap `23:59 WIB`.
 
 **Middleware:** `role:ketua_kelas`  
-**Jadwal Cron:** `59 16 * * *` (UTC) = 23:59 WIB  
+**Jadwal Cron:** `59 16 * * *` (UTC)  
 **Response JSON:**
 ```json
 { "success": true, "message": "Academic schedule reset successfully" }
@@ -506,4 +536,4 @@ Ganti password akun pengguna yang sedang login.
 
 ---
 
-*Didokumentasikan secara otomatis berdasarkan `routes/web.php` dan implementasi controller. Terakhir diperbarui: **21 Mei 2026**.*
+*Didokumentasikan berdasarkan `routes/web.php` dan implementasi controller. Terakhir diperbarui: **30 Mei 2026** (v2.3.0).*

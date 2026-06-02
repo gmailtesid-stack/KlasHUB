@@ -3,8 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Http\Controllers\KelasHubEngineController;
-use App\Models\Student;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\FinanceController;
+use App\Http\Controllers\AcademicController;
+use App\Http\Controllers\AcademicMaterialController;
+use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\ClassManagementController;
+use App\Http\Controllers\ValidationController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -33,7 +39,7 @@ Route::post('/login', function (Request $request) {
     return back()->withErrors([
         'name' => 'Nama atau Password (NIM+Kode) salah.',
     ])->onlyInput('name');
-});
+})->middleware('throttle:5,1');
 
 Route::post('/logout', function (Request $request) {
     Auth::logout();
@@ -42,51 +48,64 @@ Route::post('/logout', function (Request $request) {
     return redirect('/');
 })->name('logout');
 
-// Dipindahkan ke grup auth untuk keamanan
-// Route::get('/kh/cron/reset-schedule', function (Request $request) { ... });
+Route::post('/kh/api/login', function (Request $request) {
+    if (Auth::attempt($request->only('name', 'password'))) {
+        $request->session()->regenerate();
+        return response()->json(['message' => 'Login successful']);
+    }
+    return response()->json(['message' => 'Invalid credentials'], 401);
+});
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [KelasHubEngineController::class, 'getStudentDashboard'])->name('dashboard');
-    Route::post('/kh/password', [KelasHubEngineController::class, 'updatePassword']);
-    Route::post('/kh/attendance', [KelasHubEngineController::class, 'storeAttendance']);
+    Route::get('/dashboard', [DashboardController::class, 'getStudentDashboard'])->name('dashboard');
+    Route::post('/kh/password', [DashboardController::class, 'updatePassword']);
+    Route::post('/kh/notifications/read', [DashboardController::class, 'markNotificationAsRead']);
+    Route::post('/kh/device-token', [DashboardController::class, 'updateDeviceToken']);
+    Route::post('/kh/attendance', [AttendanceController::class, 'storeAttendance']);
+    Route::get('/kh/api/dashboard-data', [DashboardController::class, 'getDashboardData']);
 
-    // Simulasi & Laporan Engine (Optimasi Vercel)
-    Route::get('/simulasi', [App\Http\Controllers\SimulasiController::class, 'jalankanSimulasi']);
-    Route::get('/test-full', [App\Http\Controllers\UjiKomprehensifController::class, 'jalankanSemuaUji']);
-    Route::get('/bersihkan', [App\Http\Controllers\UjiKomprehensifController::class, 'bersihkan']);
     Route::get('/report/pdf/{class_id}', [App\Http\Controllers\LaporanController::class, 'exportPdf']);
     Route::get('/report/excel/{class_id}', [App\Http\Controllers\LaporanController::class, 'exportExcel']);
 
     // Routes khusus Pengurus (Ketua Kelas, Sekretaris, Bendahara)
     Route::middleware(['role:ketua_kelas,sekretaris,bendahara'])->group(function () {
-        Route::post('/kh/schedule/toggle-delivery', [KelasHubEngineController::class, 'toggleDeliveryType']);
-        Route::post('/kh/schedule', [KelasHubEngineController::class, 'storeSchedule']);
-        Route::post('/kh/master-subject', [KelasHubEngineController::class, 'storeMasterSubject']);
-        Route::post('/kh/assignment', [KelasHubEngineController::class, 'storeAssignment']);
-        Route::post('/kh/module', [KelasHubEngineController::class, 'storeModule']);
-        Route::get('/kh/module/{id}/download', [KelasHubEngineController::class, 'downloadModule']);
-        Route::post('/kh/cash', [KelasHubEngineController::class, 'storeCashLedger']);
-        Route::post('/kh/student', [KelasHubEngineController::class, 'storeStudent']);
-        Route::delete('/kh/subject/{id}', [KelasHubEngineController::class, 'deleteSubject']);
-        Route::delete('/kh/student/{id}', [KelasHubEngineController::class, 'deleteStudent']);
+        Route::post('/kh/schedule/toggle-delivery', [AcademicController::class, 'toggleDeliveryType']);
+        Route::post('/kh/schedule', [AcademicController::class, 'storeSchedule']);
+        Route::post('/kh/master-subject', [AcademicController::class, 'storeMasterSubject']);
+        Route::post('/kh/assignment', [AcademicMaterialController::class, 'storeAssignment']);
+        Route::post('/kh/module', [AcademicMaterialController::class, 'storeModule']);
+        Route::get('/kh/module/{id}/download', [AcademicMaterialController::class, 'downloadModule']);
+        Route::post('/kh/cash', [FinanceController::class, 'storeCashLedger']);
+        Route::post('/kh/student', [UserManagementController::class, 'storeStudent']);
+        Route::delete('/kh/subject/{id}', [AcademicController::class, 'deleteSubject']);
+        Route::delete('/kh/student/{id}', [UserManagementController::class, 'deleteStudent']);
     });
 
     // Routes khusus Ketua Kelas
     Route::middleware(['role:ketua_kelas'])->group(function () {
-        Route::post('/kh/validate', [KelasHubEngineController::class, 'validateData']);
+        Route::post('/kh/validate', [ValidationController::class, 'validateData']);
+
+        // Vercel Cron Bypass logic using CRON_SECRET
         Route::get('/kh/cron/reset-schedule', function (Request $request) {
+            $authHeader = $request->header('Authorization');
+            $cronSecret = config('app.cron_secret');
+
+            if ($authHeader !== 'Bearer ' . $cronSecret && $request->query('key') !== $cronSecret) {
+                if (!Auth::check() || Auth::user()->role !== 'ketua_kelas') {
+                    abort(401, 'Unauthorized Cron Access');
+                }
+            }
+
             \App\Models\AcademicSchedule::truncate();
             return response()->json(['success' => true, 'message' => 'Academic schedule reset successfully']);
         });
 
         // Super Admin Management
-        Route::post('/kh/class', [KelasHubEngineController::class, 'storeUnifiedClass']);
-        Route::post('/kh/student/{id}/role', [KelasHubEngineController::class, 'updateStudentRole']);
-
-        Route::get('/kh/api/dashboard-data', [KelasHubEngineController::class, 'getDashboardData']);
+        Route::post('/kh/class', [ClassManagementController::class, 'storeUnifiedClass']);
+        Route::post('/kh/student/{id}/role', [UserManagementController::class, 'updateStudentRole']);
     });
 
-    // Fitur Pelaporan (Baru)
+    // Fitur Pelaporan
     Route::get('/kh/reports/attendance/pdf', [\App\Http\Controllers\ReportController::class, 'exportAttendancePdf'])->name('reports.attendance.pdf');
     Route::get('/kh/reports/attendance/excel', [\App\Http\Controllers\ReportController::class, 'exportAttendanceExcel'])->name('reports.attendance.excel');
     Route::get('/kh/reports/cash/pdf', [\App\Http\Controllers\ReportController::class, 'exportCashPdf'])->name('reports.cash.pdf');

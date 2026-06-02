@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Notification extends Model
+{
+    protected $fillable = [
+        'class_id',
+        'student_id',
+        'message',
+        'is_read'
+    ];
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class);
+    }
+
+    public function academicClass()
+    {
+        return $this->belongsTo(AcademicClass::class, 'class_id');
+    }
+}

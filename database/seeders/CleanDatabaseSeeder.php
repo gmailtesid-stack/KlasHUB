@@ -19,17 +19,28 @@ class CleanDatabaseSeeder extends Seeder
         // Disable foreign key checks to allow truncate
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-        // 1. Truncate all dynamic tables
-        Student::truncate();
-        AcademicSchedule::truncate();
-        MasterSubject::truncate();
-        Assignment::truncate();
-        ClassAttendance::truncate();
-        CashLedger::truncate();
+        // 1. Truncate all tables
+        DB::table('notifications')->truncate();
+        DB::table('learning_modules')->truncate();
+        \App\Models\AcademicClass::truncate();
+        \App\Models\Student::truncate();
+        \App\Models\AcademicSchedule::truncate();
+        \App\Models\MasterSubject::truncate();
+        \App\Models\Assignment::truncate();
+        \App\Models\ClassAttendance::truncate();
+        \App\Models\CashLedger::truncate();
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // 2. Seed 35 Saturday Class Students
+        // 2. Seed Academic Class
+        $class = \App\Models\AcademicClass::create([
+            'name' => 'TPLE013 (Reguler C)',
+            'code' => 'TPLE-013',
+            'academic_year' => '2023/2024',
+            'department' => 'Teknik Informatika'
+        ]);
+
+        // 3. Seed 35 Saturday Class Students
         $students = [
             ['nim' => '231011402802', 'name' => 'ARFIANNISA KAYLA', 'role' => 'mahasiswa'],
             ['nim' => '231011403268', 'name' => 'ARIYAS PRATAMA RAMADHAN', 'role' => 'ketua_kelas'],
@@ -69,7 +80,6 @@ class CleanDatabaseSeeder extends Seeder
         ];
 
         foreach ($students as $student) {
-            // Determine password: NIM+Kode for admins, NIM for regular students
             $passwordVal = $student['nim'];
             if ($student['role'] === 'ketua_kelas') {
                 $passwordVal .= 'KK';
@@ -80,6 +90,7 @@ class CleanDatabaseSeeder extends Seeder
             }
 
             Student::create([
+                'class_id' => $class->id,
                 'nim' => $student['nim'],
                 'name' => $student['name'],
                 'password' => Hash::make($passwordVal),
@@ -88,26 +99,32 @@ class CleanDatabaseSeeder extends Seeder
             ]);
         }
 
-        // 3. Seed 2 Academic Schedules
+        // 4. Seed Academic Schedules
         AcademicSchedule::create([
+            'class_id' => $class->id,
             'subject_name' => 'Mobile Programming',
-            'lecturer_name' => 'Pak Dika',
-            'day' => 'Senin',
-            'time_start' => '08:00:00',
-            'time_end' => '10:30:00',
-            'room' => 'Lab R.304'
-        ]);
-        
-        AcademicSchedule::create([
-            'subject_name' => 'Rekayasa Perangkat Lunak',
-            'lecturer_name' => 'Bu Rina',
-            'day' => 'Senin',
-            'time_start' => '10:30:00',
-            'time_end' => '13:00:00',
-            'room' => 'Ruang L.101'
+            'subject_code' => 'MP-101',
+            'lecturer_name' => 'TIO ANDRIAN S.T., M.KOM.',
+            'day' => 'Sabtu',
+            'time_start' => '07:30:00',
+            'time_end' => '10:00:00',
+            'room' => 'Lab R.304',
+            'class_name' => 'TPLE013'
         ]);
 
-        // 4. Seed 8 Master Subjects
+        AcademicSchedule::create([
+            'class_id' => $class->id,
+            'subject_name' => 'Rekayasa Perangkat Lunak',
+            'subject_code' => 'RPL-202',
+            'lecturer_name' => 'ULIYATUNISA S.Kom., M.Kom.',
+            'day' => 'Sabtu',
+            'time_start' => '10:00:00',
+            'time_end' => '12:30:00',
+            'room' => 'Ruang L.401',
+            'class_name' => 'TPLE013'
+        ]);
+
+        // 5. Seed 8 Master Subjects
         $matkuls = [
             ['name' => 'Rekayasa Perangkat Lunak', 'sks' => 3, 'lecturer' => 'ULIYATUNISA S.Kom., M.Kom.'],
             ['name' => 'Kerja Praktek', 'sks' => 2, 'lecturer' => 'SUTRIYONO S.KOM., M.KOM.'],

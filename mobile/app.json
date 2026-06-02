@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "KelasHUB",
+    "slug": "kelashub-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0d0d13"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kelashub.mobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#0d0d13"
+      },
+      "package": "com.kelashub.mobile",
+      "splash": {
+        "image": "./assets/icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#0d0d13"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "244570a8-20d0-45ef-a291-2d7883ddaf07"
+      }
+    }
+  }
+}
