@@ -46,6 +46,13 @@ class ClassManagementController extends Controller
             'password' => bcrypt($password),
         ]);
 
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Kelas ' . $class->name . ' dan Ketua Kelas (' . $data['ketua_name'] . ') berhasil didaftarkan.'
+            ]);
+        }
+
         return back()->with('success', 'Kelas dan Ketua Kelas berhasil didaftarkan: ' . $data['ketua_name']);
     }
 

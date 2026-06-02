@@ -21,10 +21,12 @@ class AdminActivity : AppCompatActivity() {
         val btnNavInputStudent = findViewById<Button>(R.id.btnNavInputStudent)
         val btnNavManageStudent = findViewById<Button>(R.id.btnNavManageStudent)
         val btnNavNextSemester = findViewById<Button>(R.id.btnNavNextSemester)
+        val btnNavSaaS = findViewById<Button>(R.id.btnNavSaaS) // New SaaS Button
         
         btnNavValidation.visibility = View.GONE
         btnNavInputKas.visibility = View.GONE
         btnNavNextSemester.visibility = View.GONE
+        btnNavSaaS.visibility = View.GONE
 
         val role = intent.getStringExtra("USER_ROLE") ?: ""
         if (role == "ketua_kelas" || role == "super_admin") {
@@ -34,6 +36,9 @@ class AdminActivity : AppCompatActivity() {
             btnNavInputStudent.visibility = View.VISIBLE
             btnNavManageStudent.visibility = View.VISIBLE
             btnNavNextSemester.visibility = View.VISIBLE
+        }
+        if (role == "super_admin") {
+            btnNavSaaS.visibility = View.VISIBLE
         } else if (role == "bendahara") {
             btnNavInputKas.visibility = View.VISIBLE
         }
@@ -74,6 +79,10 @@ class AdminActivity : AppCompatActivity() {
                 }
                 .setNegativeButton("Batal", null)
                 .show()
+        }
+
+        btnNavSaaS.setOnClickListener {
+            startActivity(Intent(this, RegisterSaaSActivity::class.java))
         }
     }
 }

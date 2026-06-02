@@ -94,6 +94,19 @@
         android:layout_marginBottom="12dp"
         android:visibility="gone"/>
 
+    <Button
+        android:id="@+id/btnNavSaaS"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="👑 DEVELOPER: Registrasi Kelas/Institusi Baru"
+        android:backgroundTint="#3B82F6"
+        android:textColor="#FFFFFF"
+        android:padding="16dp"
+        android:textStyle="bold"
+        android:gravity="left|center_vertical"
+        android:layout_marginBottom="12dp"
+        android:visibility="gone"/>
+
     <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"

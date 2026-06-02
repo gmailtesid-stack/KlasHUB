@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#121212"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="👑 SaaS Developer Console"
+        android:textColor="#3B82F6"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Registrasi institusi/kelas baru dan tetapkan Ketua Kelas."
+        android:textColor="#A1A1AA"
+        android:textSize="13sp"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- Ketua Name -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nama Lengkap Ketua Kelas"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+    <EditText
+        android:id="@+id/etKetuaName"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#000000"
+        android:textColor="#FFFFFF"
+        android:padding="12dp"
+        android:hint="Contoh: Budi Santoso"
+        android:textColorHint="#555555"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Ketua NIM -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="NIM (Nomor Induk Mahasiswa)"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+    <EditText
+        android:id="@+id/etKetuaNim"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#000000"
+        android:textColor="#FFFFFF"
+        android:padding="12dp"
+        android:hint="Contoh: 1010101010"
+        android:inputType="number"
+        android:textColorHint="#555555"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Class Code -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Kode Kelas (Unik)"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+    <EditText
+        android:id="@+id/etClassCode"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#000000"
+        android:textColor="#FFFFFF"
+        android:padding="12dp"
+        android:hint="Contoh: 06TPLE015"
+        android:textColorHint="#555555"
+        android:layout_marginBottom="16dp"/>
+        
+    <!-- Department -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Program Studi"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+    <EditText
+        android:id="@+id/etDepartment"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#000000"
+        android:textColor="#FFFFFF"
+        android:padding="12dp"
+        android:hint="Teknik Informatika"
+        android:textColorHint="#555555"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/btnRegisterSubmit"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:backgroundTint="#3B82F6"
+        android:text="AKTIFKAN INSTITUSI BARU"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp"/>
+
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:backgroundTint="#27272A"
+        android:text="KEMBALI"
+        android:textColor="#FFFFFF" />
+
+</LinearLayout>

@@ -35,6 +35,14 @@
             android:name=".MainActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+        <activity android:name=".AdminActivity" android:exported="false" android:screenOrientation="portrait" />
+        <activity android:name=".InputKasActivity" android:exported="false" android:screenOrientation="portrait" />
+        <activity android:name=".InputStudentActivity" android:exported="false" android:screenOrientation="portrait" />
+        <activity android:name=".InputSubjectActivity" android:exported="false" android:screenOrientation="portrait" />
+        <activity android:name=".IzinActivity" android:exported="false" android:screenOrientation="portrait" />
+        <activity android:name=".ManageStudentsActivity" android:exported="false" android:screenOrientation="portrait" />
+        <activity android:name=".RegisterSaaSActivity" android:exported="false" android:screenOrientation="portrait" />
+        <activity android:name=".ValidationActivity" android:exported="false" android:screenOrientation="portrait" />
             
     </application>
 </manifest>
