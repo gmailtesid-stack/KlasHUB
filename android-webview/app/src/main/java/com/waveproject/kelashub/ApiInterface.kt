@@ -58,4 +58,21 @@ interface ApiInterface {
         @Field("date") date: String,
         @Field("notes") notes: String
     ): Call<Void>
+
+    @FormUrlEncoded
+    @POST("kh/master-subject")
+    fun addMasterSubject(
+        @Field("name") name: String,
+        @Field("sks") sks: Int,
+        @Field("code") code: String,
+        @Field("default_lecturer") defaultLecturer: String
+    ): Call<Void>
+
+    @FormUrlEncoded
+    @POST("kh/student")
+    fun addStudent(
+        @Field("nim") nim: String,
+        @Field("name") name: String,
+        @Field("role") role: String
+    ): Call<Void>
 }

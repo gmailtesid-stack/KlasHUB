@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Notification extends Model
 {
+    use BelongsToClass;
+
     protected $fillable = [
         'class_id',
         'student_id',

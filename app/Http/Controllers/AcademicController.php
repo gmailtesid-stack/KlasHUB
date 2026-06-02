@@ -15,7 +15,7 @@ class AcademicController extends Controller
 
     public function storeMasterSubject(Request $request)
     {
-        $this->authorizeAdmin();
+        $this->authorizeKetuaKelas();
         $data = $request->validate([
             'name' => 'required|string|unique:master_subjects,name',
             'sks' => 'required|integer',
@@ -32,7 +32,7 @@ class AcademicController extends Controller
 
     public function deleteSubject($id)
     {
-        $this->authorizeAdmin();
+        $this->authorizeKetuaKelas();
         MasterSubject::destroy($id);
         return response()->json(['success' => true]);
     }

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background"
+    android:padding="20dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="24dp">
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kembali"
+            android:backgroundTint="@color/card_bg"
+            android:textColor="@color/white"
+            android:layout_marginEnd="16dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:text="INPUT MATA KULIAH"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/etSubjectName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nama Mata Kuliah (Misal: Fisika)"
+        android:textColorHint="@color/text_secondary"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/primary"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etCode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Kode MK (Misal: FS101)"
+        android:textColorHint="@color/text_secondary"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/primary"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etSks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Jumlah SKS (Misal: 3)"
+        android:textColorHint="@color/text_secondary"
+        android:textColor="@color/white"
+        android:inputType="number"
+        android:backgroundTint="@color/primary"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etLecturer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nama Dosen Lengkap (Opsional)"
+        android:textColorHint="@color/text_secondary"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/primary"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/btnSubmitSubject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="BUAT MATA KULIAH"
+        android:backgroundTint="@color/primary"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:padding="16dp"/>
+
+    <ProgressBar
+        android:id="@+id/progressSubject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:visibility="gone" />
+</LinearLayout>

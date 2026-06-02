@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background"
+    android:padding="20dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="24dp">
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kembali"
+            android:backgroundTint="@color/card_bg"
+            android:textColor="@color/white"
+            android:layout_marginEnd="16dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:text="DAFTAR MAHASISWA"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/etNim"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="NIM (Nomor Induk Mahasiswa)"
+        android:textColorHint="@color/text_secondary"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/primary"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nama Lengkap Mahasiswa"
+        android:textColorHint="@color/text_secondary"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/primary"
+        android:layout_marginBottom="16dp"/>
+        
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Jabatan / Peran (Role)"
+        android:textColor="@color/text_secondary"
+        android:layout_marginBottom="8dp"/>
+
+    <RadioGroup
+        android:id="@+id/rgRole"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="24dp">
+        <RadioButton
+            android:id="@+id/rbMahasiswa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mahasiswa Biasa"
+            android:textColor="@color/white"
+            android:checked="true"
+            android:buttonTint="@color/primary"/>
+        <RadioButton
+            android:id="@+id/rbBendahara"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bendahara"
+            android:textColor="@color/white"
+            android:buttonTint="@color/primary"/>
+        <RadioButton
+            android:id="@+id/rbSekretaris"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sekretaris"
+            android:textColor="@color/white"
+            android:buttonTint="@color/primary"/>
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btnSubmitStudent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="DAFTARKAN MAHASISWA"
+        android:backgroundTint="@color/primary"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:padding="16dp"/>
+
+    <ProgressBar
+        android:id="@+id/progressStudent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:visibility="gone" />
+</LinearLayout>
