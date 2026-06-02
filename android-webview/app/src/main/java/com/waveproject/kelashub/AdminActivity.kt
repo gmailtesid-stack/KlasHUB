@@ -20,9 +20,11 @@ class AdminActivity : AppCompatActivity() {
         val btnNavInputSubject = findViewById<Button>(R.id.btnNavInputSubject)
         val btnNavInputStudent = findViewById<Button>(R.id.btnNavInputStudent)
         val btnNavManageStudent = findViewById<Button>(R.id.btnNavManageStudent)
+        val btnNavNextSemester = findViewById<Button>(R.id.btnNavNextSemester)
         
         btnNavValidation.visibility = View.GONE
         btnNavInputKas.visibility = View.GONE
+        btnNavNextSemester.visibility = View.GONE
 
         val role = intent.getStringExtra("USER_ROLE") ?: ""
         if (role == "ketua_kelas" || role == "super_admin") {
@@ -31,6 +33,7 @@ class AdminActivity : AppCompatActivity() {
             btnNavInputSubject.visibility = View.VISIBLE
             btnNavInputStudent.visibility = View.VISIBLE
             btnNavManageStudent.visibility = View.VISIBLE
+            btnNavNextSemester.visibility = View.VISIBLE
         } else if (role == "bendahara") {
             btnNavInputKas.visibility = View.VISIBLE
         }
@@ -53,6 +56,24 @@ class AdminActivity : AppCompatActivity() {
 
         btnNavManageStudent.setOnClickListener {
             startActivity(Intent(this, ManageStudentsActivity::class.java))
+        }
+
+        btnNavNextSemester.setOnClickListener {
+            android.app.AlertDialog.Builder(this)
+                .setTitle("Perhatian!")
+                .setMessage("Yakin ingin naik ke semester selanjutnya? Seluruh data Jadwal Harian dan Absensi semester ini akan terarsip, dan halaman utama akan kosong (Semester Baru).")
+                .setPositiveButton("Naik Semester") { _, _ ->
+                    ApiClient.apiInterface.nextSemester().enqueue(object: retrofit2.Callback<Void> {
+                        override fun onResponse(call: retrofit2.Call<Void>, response: retrofit2.Response<Void>) {
+                            if (response.isSuccessful) {
+                                android.widget.Toast.makeText(this@AdminActivity, "Berhasil masuk ke Semester Baru!", android.widget.Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        override fun onFailure(call: retrofit2.Call<Void>, t: Throwable) {}
+                    })
+                }
+                .setNegativeButton("Batal", null)
+                .show()
         }
     }
 }

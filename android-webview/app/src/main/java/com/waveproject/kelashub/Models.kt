@@ -72,6 +72,15 @@ data class ScheduleData(
     @SerializedName("is_validated") val isValidated: Boolean
 )
 
+data class DashboardDataResponse(
+    val student: Student,
+    @SerializedName("class_semester") val classSemester: Int,
+    @SerializedName("semua_mahasiswa") val students: List<Student>,
+    @SerializedName("semua_tugas") val assignments: List<Assignment>,
+    @SerializedName("semua_modul") val modules: List<Module>,
+    @SerializedName("transaksi_kas") val cashTransactions: List<CashTransaction>
+)
+
 data class ProfileResponse(
     val student: Student
 )

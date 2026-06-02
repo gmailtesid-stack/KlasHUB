@@ -12,6 +12,31 @@
         android:orientation="vertical"
         android:padding="20dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-bold"
+                android:text="Dashboard Utama"
+                android:textColor="@color/white"
+                android:textSize="20sp"/>
+            <Button
+                android:id="@+id/btnSemesterFilter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Semester 1 ▼"
+                android:backgroundTint="@color/zinc_800"
+                android:textColor="@color/text_secondary"
+                android:minHeight="0dp"
+                android:padding="12dp"/>
+        </LinearLayout>
+
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

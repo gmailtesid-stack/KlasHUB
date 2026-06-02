@@ -98,7 +98,13 @@ class DashboardController extends Controller
         $student = Auth::user();
         $isAdmin = in_array($student->role, ['ketua_kelas', 'sekretaris', 'bendahara', 'super_admin']);
 
+        $class = \Illuminate\Support\Facades\DB::table('academic_classes')
+            ->where('id', $student->class_id)
+            ->first();
+
         return response()->json([
+            'student' => $student,
+            'class_semester' => $class ? ((int) $class->semester_ke) : 1,
             'semua_mahasiswa' => Student::orderBy('name', 'asc')->get(),
             'semua_tugas' => Assignment::when(!$isAdmin, function ($q) {
                 return $q->where('is_validated', true);

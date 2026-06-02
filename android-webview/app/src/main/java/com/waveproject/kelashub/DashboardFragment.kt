@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,9 +26,13 @@ class DashboardFragment : Fragment() {
     private lateinit var tvExpense: TextView
     private lateinit var rvAssignments: RecyclerView
     private lateinit var rvModules: RecyclerView
+    private lateinit var btnSemesterFilter: Button
 
     private lateinit var assignmentAdapter: AssignmentAdapter
     private lateinit var moduleAdapter: ModuleAdapter
+    
+    private var currentMaxSemester: Int = 1
+    private var selectedSemester: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,14 +58,29 @@ class DashboardFragment : Fragment() {
         rvModules.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         moduleAdapter = ModuleAdapter(listOf())
         rvModules.adapter = moduleAdapter
+        
+        btnSemesterFilter = root.findViewById(R.id.btnSemesterFilter)
+        btnSemesterFilter.setOnClickListener {
+            val popup = PopupMenu(requireContext(), it)
+            for (i in 1..currentMaxSemester) {
+                popup.menu.add(0, i, 0, "Arsip Semester $i")
+            }
+            popup.setOnMenuItemClickListener { item ->
+                selectedSemester = item.itemId
+                btnSemesterFilter.text = "Semester ${item.itemId} ▼"
+                fetchData()
+                true
+            }
+            popup.show()
+        }
     }
 
     private fun fetchData() {
         val progress = requireActivity().findViewById<ProgressBar>(R.id.mainProgress)
         progress?.visibility = View.VISIBLE
 
-        ApiClient.apiInterface.getDashboardData().enqueue(object : Callback<DashboardData> {
-            override fun onResponse(call: Call<DashboardData>, response: Response<DashboardData>) {
+        ApiClient.apiInterface.getDashboardData(selectedSemester).enqueue(object : Callback<DashboardDataResponse> {
+            override fun onResponse(call: Call<DashboardDataResponse>, response: Response<DashboardDataResponse>) {
                 progress?.visibility = View.GONE
                 if (response.isSuccessful) {
                     val data = response.body()
@@ -76,14 +97,19 @@ class DashboardFragment : Fragment() {
                 }
             }
 
-            override fun onFailure(call: Call<DashboardData>, t: Throwable) {
+            override fun onFailure(call: Call<DashboardDataResponse>, t: Throwable) {
                 progress?.visibility = View.GONE
                 Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
-    private fun updateUI(data: DashboardData) {
+    private fun updateUI(data: DashboardDataResponse) {
+        currentMaxSemester = data.classSemester
+        if (selectedSemester == null) {
+            btnSemesterFilter.text = "Semester ${data.classSemester} ▼"
+        }
+        
         var income = 0.0
         var expense = 0.0
         data.cashTransactions.forEach {

@@ -48,4 +48,18 @@ class ClassManagementController extends Controller
 
         return back()->with('success', 'Kelas dan Ketua Kelas berhasil didaftarkan: ' . $data['ketua_name']);
     }
+
+    public function nextSemester()
+    {
+        $this->authorizeKetuaKelas();
+        $class = AcademicClass::findOrFail(Auth::user()->class_id);
+
+        $class->semester_ke++;
+        $class->save();
+
+        return response()->json([
+            'success' => true,
+            'new_semester' => $class->semester_ke
+        ]);
+    }
 }

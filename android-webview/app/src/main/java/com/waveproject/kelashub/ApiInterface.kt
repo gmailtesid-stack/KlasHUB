@@ -13,7 +13,7 @@ interface ApiInterface {
     ): Call<Void>
 
     @GET("kh/api/dashboard-data")
-    fun getDashboardData(): Call<DashboardData>
+    fun getDashboardData(@Query("semester") semester: Int? = null): Call<DashboardDataResponse>
 
     @FormUrlEncoded
     @POST("kh/device-token")
@@ -88,4 +88,7 @@ interface ApiInterface {
         @Path("id") id: Int,
         @Field("role") role: String
     ): Call<Void>
+
+    @POST("kh/class/next-semester")
+    fun nextSemester(): Call<Void>
 }
