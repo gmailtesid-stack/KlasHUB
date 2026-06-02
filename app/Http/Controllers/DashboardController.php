@@ -74,6 +74,10 @@ class DashboardController extends Controller
 
         $academicClasses = $student->role === 'super_admin' ? \App\Models\AcademicClass::withCount('students')->with('ketuaKelas')->get() : [];
 
+        $class = \Illuminate\Support\Facades\DB::table('academic_classes')
+            ->where('id', $student->class_id)
+            ->first();
+
         $notifications = Notification::where('student_id', $student->id)
             ->latest()
             ->take(10)
@@ -81,6 +85,7 @@ class DashboardController extends Controller
 
         return view('dashboard.main_mobile', [
             'student' => $student,
+            'class_semester' => $class ? ((int) $class->semester_ke) : 1,
             'absensi' => $absensi,
             'saldo_kas' => $saldoKasSaatIni,
             'pemasukan_mingguan' => $pemasukanMingguan,

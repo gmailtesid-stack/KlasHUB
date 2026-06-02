@@ -346,6 +346,18 @@
             </div>
 
             <nav class="flex-1 p-5 space-y-3">
+                <form method="GET" action="{{ url()->current() }}" class="mb-4 pb-4 border-b border-zinc-900/50">
+                    <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Pilih Arsip
+                        Semester</label>
+                    <select name="semester" onchange="this.form.submit()"
+                        class="w-full bg-zinc-900/50 border border-zinc-800 text-zinc-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none hover:border-zinc-700 transition appearance-none text-center font-bold">
+                        @for($i = 1; $i <= ($class_semester ?? 1); $i++)
+                            <option value="{{ $i }}" {{ request('semester', $class_semester ?? 1) == $i ? 'selected' : '' }}>
+                                Data Semester {{ $i }}</option>
+                        @endfor
+                    </select>
+                </form>
+
                 <button @click="tab = 'akademi'"
                     :class="tab === 'akademi' ? 'bg-zinc-900 text-white border-zinc-800 shadow-md' : 'text-zinc-400 hover:bg-zinc-900/50 hover:text-zinc-200 border-transparent'"
                     class="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all border text-left font-medium">
@@ -408,6 +420,15 @@
                     </template>
                 </button>
 
+                @if (in_array($student->role ?? '', ['ketua_kelas', 'sekretaris', 'bendahara', 'super_admin']))
+                    <button @click="tab = 'admin'"
+                        :class="tab === 'admin' ? 'bg-amber-600/20 text-amber-500 border-amber-500/30' : 'text-zinc-400 hover:bg-zinc-900/50 hover:text-zinc-200 border-transparent'"
+                        class="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all border text-left font-medium">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        Panel Pengurus
+                    </button>
+                @endif
+                
                 @if (($student->role ?? '') === 'super_admin')
                     <button @click="tab = 'super'"
                         :class="tab === 'super' ? 'bg-blue-600/20 text-blue-400 border-blue-500/30' : 'text-zinc-400 hover:bg-zinc-900/50 hover:text-zinc-200 border-transparent'"
@@ -462,6 +483,14 @@
                         <span
                             class="text-xs font-bold text-zinc-300 tracking-tight">{{ explode(' ', $student->name ?? 'Mahasiswa')[0] }}</span>
                     </div>
+                    <form method="GET" action="{{ url()->current() }}">
+                        <select name="semester" onchange="this.form.submit()"
+                            class="bg-zinc-900 border border-zinc-800 text-[10px] font-bold rounded-lg text-zinc-300 px-2 py-1.5 focus:ring-blue-500 focus:border-blue-500 max-w-[90px] outline-none">
+                            @for($i = 1; $i <= ($class_semester ?? 1); $i++)
+                                <option value="{{ $i }}" {{ request('semester', $class_semester ?? 1) == $i ? 'selected' : '' }}>Smstr {{ $i }}</option>
+                            @endfor
+                        </select>
+                    </form>
                     <form method="POST" action="/logout">
                         @csrf
                         <button type="submit" class="text-zinc-500 hover:text-white">
@@ -509,9 +538,12 @@
                         <div class="space-y-3">
                             <template x-if="notifications.length === 0">
                                 <div class="text-center py-20 bg-zinc-950/50 border border-zinc-900 rounded-3xl">
-                                    <div class="w-16 h-16 bg-zinc-900 rounded-full flex items-center justify-center mx-auto mb-4 text-zinc-700">
+                                    <div
+                                        class="w-16 h-16 bg-zinc-900 rounded-full flex items-center justify-center mx-auto mb-4 text-zinc-700">
                                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                                            </path>
                                         </svg>
                                     </div>
                                     <p class="text-zinc-500 font-bold">Belum Ada Notifikasi</p>
@@ -519,23 +551,29 @@
                             </template>
 
                             <template x-for="n in notifications" :key="n.id">
-                                <div @click="markAsRead(n.id)" 
+                                <div @click="markAsRead(n.id)"
                                     class="p-4 rounded-2xl border transition relative overflow-hidden group cursor-pointer"
                                     :class="n.is_read ? 'bg-zinc-950/30 border-zinc-900/50 grayscale-[0.5]' : 'bg-zinc-900 border-zinc-800 shadow-lg shadow-white/5'">
-                                    
+
                                     <div class="flex gap-4 items-start relative z-10">
                                         <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                                             :class="n.is_read ? 'bg-zinc-800 text-zinc-500' : 'bg-blue-600/20 text-blue-400'">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                                </path>
                                             </svg>
                                         </div>
                                         <div class="flex-1">
-                                            <p class="text-sm text-zinc-100 font-medium leading-relaxed mb-1" x-text="n.message"></p>
-                                            <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest" x-text="new Date(n.created_at).toLocaleString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'})"></p>
+                                            <p class="text-sm text-zinc-100 font-medium leading-relaxed mb-1"
+                                                x-text="n.message"></p>
+                                            <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest"
+                                                x-text="new Date(n.created_at).toLocaleString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'})">
+                                            </p>
                                         </div>
                                         <template x-if="!n.is_read">
-                                            <span class="w-2.5 h-2.5 bg-blue-500 rounded-full animate-pulse shadow-lg shadow-blue-500/50"></span>
+                                            <span
+                                                class="w-2.5 h-2.5 bg-blue-500 rounded-full animate-pulse shadow-lg shadow-blue-500/50"></span>
                                         </template>
                                     </div>
                                 </div>
@@ -647,6 +685,58 @@
                                         </tbody>
                                     </table>
                                 </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- TAB: ADMIN PENGURUS -->
+                    @if(in_array($student->role ?? '', ['ketua_kelas', 'sekretaris', 'bendahara', 'super_admin']))
+                        <div x-show="tab === 'admin'" x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="opacity-0 translate-y-4"
+                            x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                            <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight mb-8">Panel Manajemen Pengurus</h2>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                @if(in_array($student->role ?? '', ['ketua_kelas', 'super_admin']))
+                                    <!-- NAIK SEMESTER -->
+                                    <div class="bg-red-950/20 border border-red-900/30 p-5 rounded-2xl flex flex-col justify-between">
+                                        <div>
+                                            <h3 class="text-red-500 font-bold mb-2">Promosi Semester Baru</h3>
+                                            <p class="text-zinc-500 text-xs mb-4">Mengarsipkan seluruh data akademik dan keuangan, mengatur kelas Anda menjadi kertas kosong untuk semester baru.</p>
+                                        </div>
+                                        <button @click="if(confirm('Data bulan ini tidak akan terhapus namun diarsipkan. Lanjutkan Promosi Semester?')) { fetch('/kh/class/next-semester', {method: 'POST', headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'}}).then(()=>location.reload()); }" class="bg-red-600/80 text-white font-bold w-full py-2.5 rounded-xl hover:bg-red-600 transition outline-none">Naik Semester Sekarang</button>
+                                    </div>
+
+                                    <!-- MANAJEMEN ANGGOTA -->
+                                    <div class="bg-zinc-950 border border-zinc-900 p-5 rounded-2xl">
+                                        <h3 class="text-zinc-300 font-bold mb-2">Anggota & Rotasi Jabatan</h3>
+                                        <div class="max-h-64 overflow-y-auto pr-2 space-y-2 mt-4">
+                                            <template x-for="mhs in semuaMahasiswa" :key="'m-' + mhs.id">
+                                                <div class="flex justify-between items-center p-3 bg-zinc-900/50 rounded-lg group" x-show="!mhs.hidden">
+                                                    <div>
+                                                        <p class="text-xs text-white font-medium" x-text="mhs.name"></p>
+                                                        <p class="text-[10px] text-zinc-500 uppercase font-bold" x-text="mhs.role"></p>
+                                                    </div>
+                                                    <div class="flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition">
+                                                        <select @change="fetch('/kh/student/'+mhs.id+'/role', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'}, body: JSON.stringify({role: $event.target.value})}).then(()=>notify('Jabatan Diperbarui!'))" class="bg-black text-[10px] text-zinc-400 p-1.5 rounded outline-none border border-zinc-800 focus:border-zinc-500">
+                                                            <option value="mahasiswa" :selected="mhs.role === 'mahasiswa'">Mahasiswa</option>
+                                                            <option value="ketua_kelas" :selected="mhs.role === 'ketua_kelas'">Ketua</option>
+                                                            <option value="sekretaris" :selected="mhs.role === 'sekretaris'">Sekretaris</option>
+                                                            <option value="bendahara" :selected="mhs.role === 'bendahara'">Bendahara</option>
+                                                        </select>
+                                                        <button @click="if(confirm('Keluarkan mahasiswa dari universitas secara permanen?')) { fetch('/kh/student/'+mhs.id, {method: 'DELETE', headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'}}).then(()=>{mhs.hidden = true; notify('Mahasiswa didepak dari sistem!')}) }" class="text-red-500 bg-red-500/10 px-2 py-1.5 rounded hover:bg-red-500/20 text-[10px] font-bold">
+                                                            D.O
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="bg-blue-950/20 border border-blue-900/30 p-5 rounded-2xl col-span-1 md:col-span-2">
+                                        <p class="text-blue-500 text-sm font-bold text-center">Hak Akses Terbatas. Hanya Ketua Kelas yang berhak mengakses Mutasi Mahasiswa dan Promosi Semester.</p>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     @endif
@@ -1194,33 +1284,33 @@
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8" x-data="{ 
-                                                                                currentAttendance: {},
-                                                                                saveAttendance(matkul) {
-                                                                                    let data = [];
-                                                                                    semuaMahasiswa.forEach(m => {
-                                                                                        data.push({
-                                                                                            student_id: m.id,
-                                                                                            status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
+                                                                                    currentAttendance: {},
+                                                                                    saveAttendance(matkul) {
+                                                                                        let data = [];
+                                                                                        semuaMahasiswa.forEach(m => {
+                                                                                            data.push({
+                                                                                                student_id: m.id,
+                                                                                                status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
+                                                                                            });
                                                                                         });
-                                                                                    });
-                                                                                    fetch('/kh/attendance', {
-                                                                                        method: 'POST',
-                                                                                        headers: {
-                                                                                            'Content-Type': 'application/json',
-                                                                                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
-                                                                                        },
-                                                                                        body: JSON.stringify({
-                                                                                            subject_name: matkul,
-                                                                                            date: new Date().toISOString().split('T')[0],
-                                                                                            attendances: data
+                                                                                        fetch('/kh/attendance', {
+                                                                                            method: 'POST',
+                                                                                            headers: {
+                                                                                                'Content-Type': 'application/json',
+                                                                                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                                                                                            },
+                                                                                            body: JSON.stringify({
+                                                                                                subject_name: matkul,
+                                                                                                date: new Date().toISOString().split('T')[0],
+                                                                                                attendances: data
+                                                                                            })
                                                                                         })
-                                                                                    })
-                                                                                    .then(res => res.json())
-                                                                                    .then(res => {
-                                                                                        if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
-                                                                                    });
-                                                                                }
-                                                                            }">
+                                                                                        .then(res => res.json())
+                                                                                        .then(res => {
+                                                                                            if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
+                                                                                        });
+                                                                                    }
+                                                                                }">
                                 <template x-for="(sks, matkulName) in matkuls_sks" :key="matkulName">
                                     <div
                                         class="bg-zinc-900/50 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col shadow-xl">
@@ -1302,11 +1392,11 @@
                                                             <span
                                                                 class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-tighter inline-block"
                                                                 :class="{
-                                                                                                                                                                      'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
-                                                                                                                                                                      'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
-                                                                                                                                                                      'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
-                                                                                                                                                                      'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
-                                                                                                                                                                  }"
+                                                                                                                                                                              'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
+                                                                                                                                                                              'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
+                                                                                                                                                                              'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
+                                                                                                                                                                              'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
+                                                                                                                                                                          }"
                                                                 x-text="mhs.role.replace('_', ' ')"></span>
                                                         </td>
                                                         <td class="px-4 py-3 text-right">
