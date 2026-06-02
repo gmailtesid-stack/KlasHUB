@@ -125,4 +125,7 @@ return [
 
     'cron_secret' => env('CRON_SECRET'),
 
+    'onesignal_app_id' => env('ONESIGNAL_APP_ID'),
+    'onesignal_rest_api_key' => env('ONESIGNAL_REST_API_KEY'),
+
 ];

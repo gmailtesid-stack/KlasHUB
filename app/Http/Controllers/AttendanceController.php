@@ -30,7 +30,17 @@ class AttendanceController extends Controller
         if (!$isAdmin) {
             foreach ($request->attendances as $att) {
                 if ($att['student_id'] != $user->id) {
-                    abort(403, 'Anda hanya bisa melakukan Rekap Mandiri untuk diri sendiri!');
+                    abort(403, 'Akses Ditolak: Anda hanya bisa melakukan Rekap Mandiri untuk diri sendiri!');
+                }
+            }
+        } else {
+            // Admin can record for others, BUT only within their own class
+            if ($user->role !== 'super_admin') {
+                foreach ($request->attendances as $att) {
+                    $targetStudent = \App\Models\Student::find($att['student_id']);
+                    if (!$targetStudent || $targetStudent->class_id !== $user->class_id) {
+                        abort(403, 'Akses Ditolak: Mahasiswa bukan dari kelas Anda.');
+                    }
                 }
             }
         }
@@ -62,7 +72,16 @@ class AttendanceController extends Controller
         $this->authorizeKetuaKelas();
         $request->validate(['id' => 'required|integer']);
 
-        ClassAttendance::where('id', $request->id)->update(['is_validated' => true]);
+        $attendance = ClassAttendance::findOrFail($request->id);
+
+        if (Auth::user()->role !== 'super_admin') {
+            $student = \App\Models\Student::find($attendance->student_id);
+            if (!$student || $student->class_id !== Auth::user()->class_id) {
+                abort(403, 'Akses Ditolak: Absensi tersebut bukan dari anggota kelas Anda.');
+            }
+        }
+
+        $attendance->update(['is_validated' => true]);
         return response()->json(['success' => true]);
     }
 

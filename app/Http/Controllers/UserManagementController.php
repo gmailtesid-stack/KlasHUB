@@ -21,7 +21,12 @@ class UserManagementController extends Controller
             'class_id' => 'nullable|exists:academic_classes,id'
         ]);
 
-        if (!isset($data['class_id'])) {
+        if (Auth::user()->role !== 'super_admin') {
+            $data['class_id'] = Auth::user()->class_id;
+            if ($data['role'] === 'super_admin') {
+                abort(403, 'Akses Ditolak: Anda bukan Super Admin.');
+            }
+        } elseif (!isset($data['class_id'])) {
             $data['class_id'] = Auth::user()->class_id;
         }
 
@@ -52,7 +57,19 @@ class UserManagementController extends Controller
         if ($user->id == $id) {
             return response()->json(['success' => false, 'message' => 'Anda tidak bisa menghapus diri sendiri!'], 400);
         }
-        Student::destroy($id);
+
+        $target = Student::findOrFail($id);
+
+        if ($user->role !== 'super_admin') {
+            if ($target->class_id !== $user->class_id) {
+                abort(403, 'Akses Ditolak: Mahasiswa ini bukan anggota kelas Anda.');
+            }
+            if ($target->role === 'super_admin') {
+                abort(403, 'Akses Ditolak: Anda tidak dapat menghapus Super Admin.');
+            }
+        }
+
+        $target->delete();
         return response()->json(['success' => true]);
     }
 
@@ -100,7 +117,15 @@ class UserManagementController extends Controller
     public function getAllStudents()
     {
         $this->authorizeKetuaKelas();
-        $students = Student::orderBy('name', 'asc')->get();
+        $user = Auth::user();
+
+        $query = Student::orderBy('name', 'asc');
+
+        if ($user->role !== 'super_admin') {
+            $query->where('class_id', $user->class_id);
+        }
+
+        $students = $query->get();
         return response()->json(['students' => $students]);
     }
 }

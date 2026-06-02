@@ -54,7 +54,7 @@ Route::post('/kh/api/login', function (Request $request) {
         return response()->json(['message' => 'Login successful']);
     }
     return response()->json(['message' => 'Invalid credentials'], 401);
-});
+})->middleware('throttle:10,1');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'getStudentDashboard'])->name('dashboard');
@@ -94,9 +94,12 @@ Route::middleware(['auth'])->group(function () {
         // Vercel Cron Bypass logic using CRON_SECRET
         Route::get('/kh/cron/reset-schedule', function (Request $request) {
             $authHeader = $request->header('Authorization');
-            $cronSecret = config('app.cron_secret');
+            $cronSecret = config('app.cron_secret') ?? '';
 
-            if ($authHeader !== 'Bearer ' . $cronSecret && $request->query('key') !== $cronSecret) {
+            $isValidHeader = $authHeader && str_starts_with($authHeader, 'Bearer ') && hash_equals($cronSecret, substr($authHeader, 7));
+            $isValidQuery = $request->has('key') && hash_equals($cronSecret, (string) $request->query('key'));
+
+            if (!$isValidHeader && !$isValidQuery) {
                 if (!Auth::check() || Auth::user()->role !== 'ketua_kelas') {
                     abort(401, 'Unauthorized Cron Access');
                 }

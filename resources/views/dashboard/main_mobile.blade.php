@@ -88,10 +88,10 @@
             @foreach($master_subjects as $ms)
                 {
                     id: {{ $ms->id }},
-                    name: '{!! addslashes($ms->name) !!}',
+                    name: @json($ms->name),
                     sks: {{ $ms->sks }},
                     code: '{{ $ms->code }}',
-                    lecturer: '{!! addslashes($ms->default_lecturer) !!}'
+                    lecturer: @json($ms->default_lecturer)
                 },
             @endforeach
         ],
@@ -104,8 +104,8 @@
             @foreach($jadwal_harian as $jd)
                 {
                     id: {{ $jd->id }},
-                    matkul: '{!! addslashes($jd->subject_name) !!}',
-                    dosen: '{!! addslashes($jd->lecturer_name) !!}',
+                    matkul: @json($jd->subject_name),
+                    dosen: @json($jd->lecturer_name),
                     hari: '{{ $jd->day }}',
                     jamMulai: '{{ substr($jd->time_start, 0, 5) }}',
                     jamSelesai: '{{ substr($jd->time_end, 0, 5) }}',
@@ -123,7 +123,7 @@
                         'Mobile Programming': 3,
                         'Sistem Pendukung Keputusan': 2,
                         'Teknik Kompilasi': 2
-                    }['{!! addslashes($jd->subject_name) !!}'] || 2
+                    }[@json($jd->subject_name)] || 2
                 },
             @endforeach
         ],
@@ -1309,33 +1309,33 @@
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8" x-data="{ 
-                                                                                            currentAttendance: {},
-                                                                                            saveAttendance(matkul) {
-                                                                                                let data = [];
-                                                                                                semuaMahasiswa.forEach(m => {
-                                                                                                    data.push({
-                                                                                                        student_id: m.id,
-                                                                                                        status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
-                                                                                                    });
-                                                                                                });
-                                                                                                fetch('/kh/attendance', {
-                                                                                                    method: 'POST',
-                                                                                                    headers: {
-                                                                                                        'Content-Type': 'application/json',
-                                                                                                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
-                                                                                                    },
-                                                                                                    body: JSON.stringify({
-                                                                                                        subject_name: matkul,
-                                                                                                        date: new Date().toISOString().split('T')[0],
-                                                                                                        attendances: data
-                                                                                                    })
-                                                                                                })
-                                                                                                .then(res => res.json())
-                                                                                                .then(res => {
-                                                                                                    if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
-                                                                                                });
-                                                                                            }
-                                                                                        }">
+                                                                                                    currentAttendance: {},
+                                                                                                    saveAttendance(matkul) {
+                                                                                                        let data = [];
+                                                                                                        semuaMahasiswa.forEach(m => {
+                                                                                                            data.push({
+                                                                                                                student_id: m.id,
+                                                                                                                status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
+                                                                                                            });
+                                                                                                        });
+                                                                                                        fetch('/kh/attendance', {
+                                                                                                            method: 'POST',
+                                                                                                            headers: {
+                                                                                                                'Content-Type': 'application/json',
+                                                                                                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                                                                                                            },
+                                                                                                            body: JSON.stringify({
+                                                                                                                subject_name: matkul,
+                                                                                                                date: new Date().toISOString().split('T')[0],
+                                                                                                                attendances: data
+                                                                                                            })
+                                                                                                        })
+                                                                                                        .then(res => res.json())
+                                                                                                        .then(res => {
+                                                                                                            if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
+                                                                                                        });
+                                                                                                    }
+                                                                                                }">
                                 <template x-for="(sks, matkulName) in matkuls_sks" :key="matkulName">
                                     <div
                                         class="bg-zinc-900/50 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col shadow-xl">
@@ -1417,11 +1417,11 @@
                                                             <span
                                                                 class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-tighter inline-block"
                                                                 :class="{
-                                                                                                                                                                                              'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
-                                                                                                                                                                                              'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
-                                                                                                                                                                                              'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
-                                                                                                                                                                                              'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
-                                                                                                                                                                                          }"
+                                                                                                                                                                                                              'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
+                                                                                                                                                                                                              'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
+                                                                                                                                                                                                              'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
+                                                                                                                                                                                                              'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
+                                                                                                                                                                                                          }"
                                                                 x-text="mhs.role.replace('_', ' ')"></span>
                                                         </td>
                                                         <td class="px-4 py-3 text-right">
@@ -2726,16 +2726,25 @@
         @endif
 
         <!-- Modal Preview Bukti -->
-        <div x-data="{ open: false }" @open-proof-modal.window="open = true" x-show="open" x-transition.opacity class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm" style="display: none;">
+        <div x-data="{ open: false }" @open-proof-modal.window="open = true" x-show="open" x-transition.opacity
+            class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
+            style="display: none;">
             <div @click.away="open = false" class="relative group max-w-full">
-                <button @click="open = false" class="absolute -top-10 right-0 text-zinc-500 hover:text-white font-bold text-sm tracking-widest uppercase cursor-pointer">Tutup (X)</button>
+                <button @click="open = false"
+                    class="absolute -top-10 right-0 text-zinc-500 hover:text-white font-bold text-sm tracking-widest uppercase cursor-pointer">Tutup
+                    (X)</button>
                 <img :src="selectedProofImage" class="max-w-[90vw] max-h-[85vh] object-contain rounded-xl shadow-2xl">
             </div>
         </div>
 
         <!-- Modal Upload QRIS -->
-        <div x-show="modalUploadQris" x-transition.opacity class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="display: none;">
-            <div @click.away="modalUploadQris = false" x-show="modalUploadQris" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" class="bg-zinc-900 border border-zinc-800 rounded-3xl w-full max-w-md p-6 md:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+        <div x-show="modalUploadQris" x-transition.opacity
+            class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            style="display: none;">
+            <div @click.away="modalUploadQris = false" x-show="modalUploadQris"
+                x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                class="bg-zinc-900 border border-zinc-800 rounded-3xl w-full max-w-md p-6 md:p-8 space-y-6 shadow-2xl relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
                 <div>
                     <h3 class="text-xl font-bold text-white mb-1">Upload Kode QRIS</h3>
@@ -2743,18 +2752,29 @@
                 </div>
                 <form class="space-y-4" x-data="{ qrisFileName: '', submitting: false }">
                     <div class="relative w-full">
-                        <input type="file" id="upQrisFile" accept=".jpg,.png,.jpeg" @change="qrisFileName = $event.target.files[0]?.name || ''" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                        <div class="w-full bg-black border border-zinc-800 border-dashed rounded-xl px-4 py-8 text-center transition-all flex flex-col items-center justify-center gap-3" :class="qrisFileName ? 'border-emerald-500 bg-emerald-950/10' : 'hover:border-emerald-500/50'">
-                            <svg class="w-8 h-8 transition-colors" :class="qrisFileName ? 'text-emerald-500' : 'text-zinc-500'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        <input type="file" id="upQrisFile" accept=".jpg,.png,.jpeg"
+                            @change="qrisFileName = $event.target.files[0]?.name || ''"
+                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                        <div class="w-full bg-black border border-zinc-800 border-dashed rounded-xl px-4 py-8 text-center transition-all flex flex-col items-center justify-center gap-3"
+                            :class="qrisFileName ? 'border-emerald-500 bg-emerald-950/10' : 'hover:border-emerald-500/50'">
+                            <svg class="w-8 h-8 transition-colors"
+                                :class="qrisFileName ? 'text-emerald-500' : 'text-zinc-500'" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4"></path>
                             </svg>
-                            <span x-show="!qrisFileName" class="text-xs text-zinc-400 font-bold tracking-wide">Pilih Gambar QRIS...</span>
-                            <span x-show="qrisFileName" class="text-sm text-emerald-400 font-black break-all" x-text="qrisFileName"></span>
+                            <span x-show="!qrisFileName" class="text-xs text-zinc-400 font-bold tracking-wide">Pilih
+                                Gambar QRIS...</span>
+                            <span x-show="qrisFileName" class="text-sm text-emerald-400 font-black break-all"
+                                x-text="qrisFileName"></span>
                         </div>
                     </div>
                     <div class="flex gap-4 pt-4">
-                        <button type="button" @click="modalUploadQris = false" class="flex-1 bg-zinc-800 text-zinc-300 py-3 rounded-xl text-sm font-bold hover:bg-zinc-700 transition">Batal</button>
-                        <button type="button" @click="
+                        <button type="button" @click="modalUploadQris = false"
+                            class="flex-1 bg-zinc-800 text-zinc-300 py-3 rounded-xl text-sm font-bold hover:bg-zinc-700 transition">Batal</button>
+                        <button type="button" :disabled="submitting"
+                            :class="{'opacity-50 cursor-not-allowed': submitting}" @click="
+                            if(submitting) return;
                             if(!qrisFileName) return notify('Lengkapi file QRIS!');
                             submitting = true;
                             let fd = new FormData();
@@ -2773,58 +2793,87 @@
                                 }
                                 submitting = false;
                             });
-                        " class="flex-1 bg-emerald-600 text-white py-3 rounded-xl text-sm font-bold hover:bg-emerald-500 transition shadow-lg shadow-emerald-500/20" x-text="submitting?'Mengunggah...':'Upload'"></button>
+                        " class="flex-1 bg-emerald-600 text-white py-3 rounded-xl text-sm font-bold hover:bg-emerald-500 transition shadow-lg shadow-emerald-500/20"
+                            x-text="submitting?'Mengunggah...':'Upload'"></button>
                     </div>
                 </form>
             </div>
         </div>
 
         <!-- Modal Bayar Kas (Mahasiswa) -->
-        <div x-show="modalPayKas" x-transition.opacity class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="display: none;">
-            <div @click.away="modalPayKas = false" x-show="modalPayKas" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" class="bg-zinc-900 border border-zinc-800 rounded-3xl w-full max-w-md p-6 space-y-4 shadow-2xl relative overflow-hidden max-h-[90vh] flex flex-col">
+        <div x-show="modalPayKas" x-transition.opacity
+            class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            style="display: none;">
+            <div @click.away="modalPayKas = false" x-show="modalPayKas"
+                x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                class="bg-zinc-900 border border-zinc-800 rounded-3xl w-full max-w-md p-6 space-y-4 shadow-2xl relative overflow-hidden max-h-[90vh] flex flex-col">
                 <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
                 <div class="shrink-0 flex justify-between items-start">
                     <div>
                         <h3 class="text-xl font-bold text-white mb-1">Bayar Kas Online</h3>
-                        <p class="text-[10px] text-zinc-500 uppercase tracking-widest">Via QRIS Kelas Menggunakan Resi</p>
+                        <p class="text-[10px] text-zinc-500 uppercase tracking-widest">Via QRIS Kelas Menggunakan Resi
+                        </p>
                     </div>
-                    <button @click="modalPayKas = false" class="text-zinc-500 hover:text-white bg-black p-2 rounded-full border border-zinc-800">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    <button @click="modalPayKas = false"
+                        class="text-zinc-500 hover:text-white bg-black p-2 rounded-full border border-zinc-800">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
                     </button>
                 </div>
-                
+
                 <div class="flex-1 overflow-y-auto space-y-4 pr-1">
-                    <div class="bg-black border border-zinc-800 p-4 rounded-xl flex items-center justify-center min-h-[180px]">
+                    <div
+                        class="bg-black border border-zinc-800 p-4 rounded-xl flex items-center justify-center min-h-[180px]">
                         <template x-if="qrisImage">
-                            <img :src="qrisImage" alt="QRIS Kelas" class="max-w-full max-h-56 object-contain rounded-lg">
+                            <img :src="qrisImage" alt="QRIS Kelas"
+                                class="max-w-full max-h-56 object-contain rounded-lg">
                         </template>
                         <template x-if="!qrisImage">
-                            <p class="text-xs text-zinc-600 font-bold uppercase tracking-widest text-center px-4">Pengurus belum mengunggah<br>kode QRIS pada sistem.</p>
+                            <p class="text-xs text-zinc-600 font-bold uppercase tracking-widest text-center px-4">
+                                Pengurus belum mengunggah<br>kode QRIS pada sistem.</p>
                         </template>
                     </div>
 
                     <form x-data="{ pkAmount: '', pkDesc: '', pkFileName: '', submitting: false }" class="space-y-4">
                         <div>
-                            <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5">Tujuan Pembayaran</label>
-                            <input type="text" x-model="pkDesc" placeholder="Contoh: Bayar Kas Minggu 1" class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-white text-xs font-bold focus:border-emerald-500 outline-none transition">
+                            <label
+                                class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5">Tujuan
+                                Pembayaran</label>
+                            <input type="text" x-model="pkDesc" placeholder="Contoh: Bayar Kas Minggu 1"
+                                class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-white text-xs font-bold focus:border-emerald-500 outline-none transition">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5">Nominal Transfer (Rp)</label>
-                            <input type="number" x-model="pkAmount" placeholder="Contoh: 15000" class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-white text-xs font-bold focus:border-emerald-500 outline-none transition">
+                            <label
+                                class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5">Nominal
+                                Transfer (Rp)</label>
+                            <input type="number" x-model="pkAmount" placeholder="Contoh: 15000"
+                                class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-white text-xs font-bold focus:border-emerald-500 outline-none transition">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5">Upload Bukti Transfer</label>
+                            <label
+                                class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5">Upload
+                                Bukti Transfer</label>
                             <div class="relative w-full">
-                                <input type="file" id="pkFile" accept="image/*" @change="pkFileName = $event.target.files[0]?.name || ''" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                                <div class="w-full bg-black border border-zinc-800 border-dashed rounded-xl px-3 py-4 text-center transition-all flex flex-col items-center justify-center gap-1.5" :class="pkFileName ? 'border-emerald-500 bg-emerald-950/10' : 'hover:border-emerald-500/50'">
-                                    <span x-show="!pkFileName" class="text-[10px] text-zinc-500 font-medium">Klik untuk pilih gambar resi dari device</span>
-                                    <span x-show="pkFileName" class="text-xs text-emerald-400 font-bold break-all" x-text="pkFileName"></span>
+                                <input type="file" id="pkFile" accept="image/*"
+                                    @change="pkFileName = $event.target.files[0]?.name || ''"
+                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                                <div class="w-full bg-black border border-zinc-800 border-dashed rounded-xl px-3 py-4 text-center transition-all flex flex-col items-center justify-center gap-1.5"
+                                    :class="pkFileName ? 'border-emerald-500 bg-emerald-950/10' : 'hover:border-emerald-500/50'">
+                                    <span x-show="!pkFileName" class="text-[10px] text-zinc-500 font-medium">Klik untuk
+                                        pilih gambar resi dari device</span>
+                                    <span x-show="pkFileName" class="text-xs text-emerald-400 font-bold break-all"
+                                        x-text="pkFileName"></span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="pt-2">
-                            <button type="button" @click="
+                            <button type="button" :disabled="submitting"
+                                :class="{'opacity-50 cursor-not-allowed': submitting}" @click="
+                                if(submitting) return;
                                 if(!pkAmount || !pkDesc || !pkFileName) return notify('Lengkapi Data & Foto Resi!');
                                 submitting = true;
                                 let fd2 = new FormData();
@@ -2856,8 +2905,10 @@
                                     }
                                     submitting = false;
                                 }).catch(e => { notify('Terjadi kesalahan!'); submitting = false; });
-                            " :disabled="submitting" class="w-full bg-emerald-600 text-white py-3.5 rounded-xl text-sm font-bold hover:bg-emerald-500 transition shadow-lg shadow-emerald-500/20 flex justify-center items-center">
-                                <span x-text="submitting ? 'Mengunggah & Mengirim...' : 'Kirim Bukti Pembayaran!'"></span>
+                            " :disabled="submitting"
+                                class="w-full bg-emerald-600 text-white py-3.5 rounded-xl text-sm font-bold hover:bg-emerald-500 transition shadow-lg shadow-emerald-500/20 flex justify-center items-center">
+                                <span
+                                    x-text="submitting ? 'Mengunggah & Mengirim...' : 'Kirim Bukti Pembayaran!'"></span>
                             </button>
                         </div>
                     </form>

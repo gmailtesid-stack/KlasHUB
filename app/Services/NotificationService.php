@@ -82,8 +82,8 @@ class NotificationService
      */
     private static function sendExternalPush(array $playerIds, $message)
     {
-        $appId = env('ONESIGNAL_APP_ID');
-        $apiKey = env('ONESIGNAL_REST_API_KEY');
+        $appId = config('app.onesignal_app_id');
+        $apiKey = config('app.onesignal_rest_api_key');
 
         if (!$appId || !$apiKey) {
             Log::warning('OneSignal credentials not set. External push skipped.');

@@ -29,6 +29,7 @@ class FinanceController extends Controller
         }
 
         $data['is_validated'] = in_array(Auth::user()->role, ['ketua_kelas', 'super_admin', 'bendahara']);
+        $data['class_id'] = Auth::user()->class_id;
         $ledger = CashLedger::create($data);
 
         $typeLabel = $ledger->type === 'income' ? 'Pemasukan' : 'Pengeluaran';
@@ -42,7 +43,12 @@ class FinanceController extends Controller
         $this->authorizeKetuaKelas();
         $request->validate(['id' => 'required|integer']);
 
-        CashLedger::where('id', $request->id)->update(['is_validated' => true]);
+        $ledger = CashLedger::findOrFail($request->id);
+        if (Auth::user()->role !== 'super_admin' && $ledger->class_id !== Auth::user()->class_id) {
+            abort(403, 'Akses Ditolak: Data keuangan ini bukan milik kelas Anda.');
+        }
+
+        $ledger->update(['is_validated' => true]);
         return response()->json(['success' => true]);
     }
 }

@@ -19,17 +19,21 @@ class DashboardController extends Controller
     {
         $student = Auth::user();
 
-        $masterSubjects = \App\Models\MasterSubject::orderBy('name')->get();
+        $masterSubjects = \Illuminate\Support\Facades\Cache::remember('master_subjects', 60, function () {
+            return \App\Models\MasterSubject::orderBy('name')->get();
+        });
 
         // Optimized Attendance Calculation
-        $attendances = ClassAttendance::where('student_id', $student->id)
+        $attendances = ClassAttendance::selectRaw('subject_name, count(*) as total_alfa')
+            ->where('student_id', $student->id)
             ->where('status', 'Alfa')
             ->where('is_validated', true)
+            ->groupBy('subject_name')
             ->get()
-            ->groupBy('subject_name');
+            ->keyBy('subject_name');
 
         $absensi = $masterSubjects->map(function ($ms) use ($attendances) {
-            $total_alfa = isset($attendances[$ms->name]) ? $attendances[$ms->name]->count() : 0;
+            $total_alfa = isset($attendances[$ms->name]) ? $attendances[$ms->name]->total_alfa : 0;
             $sisa_nyawa = 3 - $total_alfa;
             return [
                 'subject' => $ms->name,
@@ -111,14 +115,18 @@ class DashboardController extends Controller
             'student' => $student,
             'class_semester' => $class ? ((int) $class->semester_ke) : 1,
             'qris_image' => $class ? $class->qris_image : null,
-            'semua_mahasiswa' => Student::orderBy('name', 'asc')->get(),
-            'semua_tugas' => Assignment::when(!$isAdmin, function ($q) {
-                return $q->where('is_validated', true);
-            })->orderBy('deadline', 'asc')->get(),
-            'semua_modul' => LearningModule::when(!$isAdmin, function ($q) {
-                return $q->where('is_validated', true);
-            })->latest()->get(),
-            'transaksi_kas' => CashLedger::with('student')->latest()->get(),
+            'semua_mahasiswa' => Student::where('class_id', $student->class_id)->orderBy('name', 'asc')->get(),
+            'semua_tugas' => Assignment::where('class_id', $student->class_id)
+                ->when(!$isAdmin, function ($q) {
+                    return $q->where('is_validated', true);
+                })->orderBy('deadline', 'asc')->get(),
+            'semua_modul' => LearningModule::where('class_id', $student->class_id)
+                ->when(!$isAdmin, function ($q) {
+                    return $q->where('is_validated', true);
+                })->latest()->get(),
+            'transaksi_kas' => CashLedger::with('student')
+                ->where('class_id', $student->class_id)
+                ->latest()->get(),
             'notifikasi' => Notification::where('student_id', $student->id)->latest()->take(20)->get()
         ]);
     }
