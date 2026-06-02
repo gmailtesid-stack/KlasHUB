@@ -20,4 +20,7 @@ interface ApiInterface {
     fun updateDeviceToken(
         @Field("player_id") playerId: String
     ): Call<Void>
+
+    @GET("kh/api/attendance")
+    fun getAttendance(): Call<AttendanceResponse>
 }

@@ -43,3 +43,15 @@ data class CashTransaction(
     val description: String,
     val transaction_date: String
 )
+
+data class AttendanceResponse(
+    @SerializedName("absensi_saya") val myAttendances: List<AttendanceStat>
+)
+
+data class AttendanceStat(
+    val subject: String,
+    @SerializedName("total_alfa") val totalAlfa: Int,
+    val nyawa: Int,
+    @SerializedName("status_nilai") val status: String,
+    @SerializedName("is_banned") val isBanned: Boolean
+)

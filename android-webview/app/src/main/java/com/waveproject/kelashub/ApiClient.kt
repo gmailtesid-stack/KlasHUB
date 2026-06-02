@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
-    private const val BASE_URL = "https://kelashub.vercel.app/"
+    private const val BASE_URL = "https://klas-hub.vercel.app/"
     private var retrofit: Retrofit? = null
 
     // Simple in-memory cookie storage

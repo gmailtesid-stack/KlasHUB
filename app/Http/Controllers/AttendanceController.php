@@ -65,4 +65,39 @@ class AttendanceController extends Controller
         ClassAttendance::where('id', $request->id)->update(['is_validated' => true]);
         return response()->json(['success' => true]);
     }
+
+    public function getAttendance()
+    {
+        $student = Auth::user();
+        $masterSubjects = \App\Models\MasterSubject::orderBy('name')->get();
+
+        $attendances = ClassAttendance::where('student_id', $student->id)
+            ->where('status', 'Alfa')
+            ->where('is_validated', true)
+            ->get()
+            ->groupBy('subject_name');
+
+        $absensi = $masterSubjects->map(function ($ms) use ($attendances) {
+            $total_alfa = isset($attendances[$ms->name]) ? $attendances[$ms->name]->count() : 0;
+            $sisa_nyawa = 3 - $total_alfa;
+            return [
+                'subject' => $ms->name,
+                'total_alfa' => $total_alfa,
+                'nyawa' => $sisa_nyawa < 0 ? 0 : $sisa_nyawa,
+                'status_nilai' => $sisa_nyawa <= 0 ? 'DICEKAL (Nilai E)' : 'AMAN',
+                'is_banned' => $sisa_nyawa <= 0
+            ];
+        });
+
+        $isAdmin = in_array($student->role, ['ketua_kelas', 'super_admin']);
+        $pendingAttendances = [];
+        if ($isAdmin) {
+            $pendingAttendances = ClassAttendance::where('is_validated', false)->get();
+        }
+
+        return response()->json([
+            'absensi_saya' => $absensi,
+            'pending_attendances' => $pendingAttendances
+        ]);
+    }
 }
