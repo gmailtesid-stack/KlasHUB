@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background"
+    android:padding="20dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kembali"
+            android:backgroundTint="@color/card_bg"
+            android:textColor="@color/white"
+            android:layout_marginEnd="16dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:text="INPUT DANA KAS"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/rgType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+        <RadioButton
+            android:id="@+id/rbIncome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pemasukan"
+            android:textColor="@color/white"
+            android:checked="true"
+            android:buttonTint="@color/primary"/>
+        <RadioButton
+            android:id="@+id/rbExpense"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pengeluaran"
+            android:textColor="@color/white"
+            android:buttonTint="@color/primary"/>
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/etAmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nominal (Misal: 50000)"
+        android:textColorHint="@color/text_secondary"
+        android:textColor="@color/white"
+        android:inputType="number"
+        android:backgroundTint="@color/primary"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Keterangan (Misal: Bayar Wi-Fi)"
+        android:textColorHint="@color/text_secondary"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/primary"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Tanggal (YYYY-MM-DD)"
+        android:textColorHint="@color/text_secondary"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/primary"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/btnSubmit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SIMPAN TRANSAKSI"
+        android:backgroundTint="@color/primary"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:padding="16dp"/>
+
+    <ProgressBar
+        android:id="@+id/progressInput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:visibility="gone" />
+</LinearLayout>

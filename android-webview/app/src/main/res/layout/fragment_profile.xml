@@ -67,10 +67,22 @@
         android:layout_weight="1"/>
 
     <Button
+        android:id="@+id/btnAdminPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Buka Panel Admin (Pengurus)"
+        android:backgroundTint="@color/primary"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:padding="16dp"
+        android:layout_marginBottom="12dp"
+        android:visibility="gone" /> <!-- Hanya dimunculkan via logic kotlin bagi selain mahasiswa -->
+
+    <Button
         android:id="@+id/btnLogout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Logout (Info User)"
+        android:text="Keluar Sistem (Logout)"
         android:backgroundTint="@color/danger"
         android:textColor="@color/white"
         android:textStyle="bold"

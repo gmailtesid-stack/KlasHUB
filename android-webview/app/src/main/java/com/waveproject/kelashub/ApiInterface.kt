@@ -29,4 +29,23 @@ interface ApiInterface {
 
     @GET("kh/api/profile")
     fun getProfile(): Call<ProfileResponse>
+
+    @GET("kh/api/pending-validations")
+    fun getPendingValidations(): Call<PendingValidationResponse>
+
+    @FormUrlEncoded
+    @POST("kh/validate")
+    fun validateData(
+        @Field("id") id: Int,
+        @Field("type") type: String
+    ): Call<Void>
+
+    @FormUrlEncoded
+    @POST("kh/cash")
+    fun addCash(
+        @Field("amount") amount: Double,
+        @Field("type") type: String,
+        @Field("description") description: String,
+        @Field("transaction_date") transactionDate: String
+    ): Call<Void>
 }

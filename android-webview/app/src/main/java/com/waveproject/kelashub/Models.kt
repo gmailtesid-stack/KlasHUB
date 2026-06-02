@@ -75,3 +75,14 @@ data class ScheduleData(
 data class ProfileResponse(
     val student: Student
 )
+
+data class PendingValidationResponse(
+    val pending: List<PendingValidationItem>
+)
+
+data class PendingValidationItem(
+    val id: Int,
+    val type: String,
+    val title: String,
+    val description: String
+)

@@ -21,6 +21,7 @@ class ProfileFragment : Fragment() {
     private lateinit var tvRole: TextView
     private lateinit var tvInitials: TextView
     private lateinit var progress: ProgressBar
+    private lateinit var btnAdminPanel: Button
     private lateinit var btnLogout: Button
 
     override fun onCreateView(
@@ -33,11 +34,16 @@ class ProfileFragment : Fragment() {
         tvRole = root.findViewById(R.id.tvRole)
         tvInitials = root.findViewById(R.id.tvInitials)
         progress = root.findViewById(R.id.progressProfile)
+        btnAdminPanel = root.findViewById(R.id.btnAdminPanel)
         btnLogout = root.findViewById(R.id.btnLogout)
 
         btnLogout.setOnClickListener {
             startActivity(Intent(requireContext(), LoginActivity::class.java))
             requireActivity().finish()
+        }
+        
+        btnAdminPanel.setOnClickListener {
+            startActivity(Intent(requireContext(), AdminActivity::class.java))
         }
 
         fetchData()
@@ -56,6 +62,9 @@ class ProfileFragment : Fragment() {
                     tvRole.text = student.role.uppercase().replace("_", " ")
                     if (student.name.isNotEmpty()) {
                         tvInitials.text = student.name.take(1).uppercase()
+                    }
+                    if (student.role != "mahasiswa") {
+                        btnAdminPanel.visibility = View.VISIBLE
                     }
                 } else if (response.code() == 401) {
                     startActivity(Intent(requireContext(), LoginActivity::class.java))

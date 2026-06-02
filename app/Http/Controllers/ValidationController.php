@@ -51,4 +51,34 @@ class ValidationController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function getPendingValidations()
+    {
+        $this->authorizeKetuaKelas();
+
+        $pending = collect([]);
+
+        foreach (CashLedger::where('is_validated', false)->get() as $item) {
+            $pending->push(['id' => $item->id, 'type' => 'cash', 'title' => 'Uang Kas: Rp. ' . $item->amount, 'description' => $item->description]);
+        }
+
+        foreach (ClassAttendance::with('student')->where('is_validated', false)->get() as $item) {
+            $studentName = $item->student ? $item->student->name : 'Unknown';
+            $pending->push(['id' => $item->id, 'type' => 'attendance', 'title' => 'Absen: ' . $studentName, 'description' => $item->status . ' - ' . $item->subject_name]);
+        }
+
+        foreach (AcademicSchedule::where('is_validated', false)->get() as $item) {
+            $pending->push(['id' => $item->id, 'type' => 'schedule', 'title' => 'Jadwal: ' . $item->subject_name, 'description' => $item->day . ' (' . $item->time_start . '-' . $item->time_end . ')']);
+        }
+
+        foreach (Assignment::where('is_validated', false)->get() as $item) {
+            $pending->push(['id' => $item->id, 'type' => 'assignment', 'title' => 'Tugas: ' . $item->title, 'description' => 'Deadline: ' . $item->deadline]);
+        }
+
+        foreach (LearningModule::where('is_validated', false)->get() as $item) {
+            $pending->push(['id' => $item->id, 'type' => 'module', 'title' => 'Modul: ' . $item->title, 'description' => $item->type]);
+        }
+
+        return response()->json(['pending' => $pending]);
+    }
 }
