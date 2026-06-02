@@ -23,6 +23,7 @@ class ProfileFragment : Fragment() {
     private lateinit var progress: ProgressBar
     private lateinit var btnAdminPanel: Button
     private lateinit var btnLogout: Button
+    private var currentUserRole: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,7 +44,9 @@ class ProfileFragment : Fragment() {
         }
         
         btnAdminPanel.setOnClickListener {
-            startActivity(Intent(requireContext(), AdminActivity::class.java))
+            val intent = Intent(requireContext(), AdminActivity::class.java)
+            intent.putExtra("USER_ROLE", currentUserRole)
+            startActivity(intent)
         }
 
         fetchData()
@@ -63,6 +66,7 @@ class ProfileFragment : Fragment() {
                     if (student.name.isNotEmpty()) {
                         tvInitials.text = student.name.take(1).uppercase()
                     }
+                    currentUserRole = student.role
                     if (student.role != "mahasiswa") {
                         btnAdminPanel.visibility = View.VISIBLE
                     }

@@ -48,4 +48,14 @@ interface ApiInterface {
         @Field("description") description: String,
         @Field("transaction_date") transactionDate: String
     ): Call<Void>
+
+    @FormUrlEncoded
+    @POST("kh/attendance")
+    fun requestIzin(
+        @Field("attendances[0][student_id]") studentId: Int,
+        @Field("attendances[0][status]") status: String,
+        @Field("subject_name") subjectName: String,
+        @Field("date") date: String,
+        @Field("notes") notes: String
+    ): Call<Void>
 }

@@ -15,11 +15,25 @@ class AdminActivity : AppCompatActivity() {
             finish()
         }
 
-        findViewById<Button>(R.id.btnNavValidation).setOnClickListener {
+        val btnNavValidation = findViewById<Button>(R.id.btnNavValidation)
+        val btnNavInputKas = findViewById<Button>(R.id.btnNavInputKas)
+        
+        btnNavValidation.visibility = View.GONE
+        btnNavInputKas.visibility = View.GONE
+
+        val role = intent.getStringExtra("USER_ROLE") ?: ""
+        if (role == "ketua_kelas" || role == "super_admin") {
+            btnNavValidation.visibility = View.VISIBLE
+            btnNavInputKas.visibility = View.VISIBLE
+        } else if (role == "bendahara") {
+            btnNavInputKas.visibility = View.VISIBLE
+        }
+
+        btnNavValidation.setOnClickListener {
             startActivity(Intent(this, ValidationActivity::class.java))
         }
 
-        findViewById<Button>(R.id.btnNavInputKas).setOnClickListener {
+        btnNavInputKas.setOnClickListener {
             startActivity(Intent(this, InputKasActivity::class.java))
         }
     }

@@ -28,6 +28,11 @@ class AttendanceFragment : Fragment() {
         rvAttendance = root.findViewById(R.id.rvAttendance)
         progress = root.findViewById(R.id.progressAttendance)
 
+        val btnAjukanIzin = root.findViewById<Button>(R.id.btnAjukanIzin)
+        btnAjukanIzin.setOnClickListener {
+            startActivity(Intent(requireContext(), IzinActivity::class.java))
+        }
+
         rvAttendance.layoutManager = LinearLayoutManager(requireContext())
         adapter = AttendanceAdapter(listOf())
         rvAttendance.adapter = adapter
