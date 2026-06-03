@@ -107,4 +107,8 @@ interface ApiInterface {
     fun uploadQris(
         @Part qrisImage: okhttp3.MultipartBody.Part
     ): Call<ApiResponse>
+
+    @FormUrlEncoded
+    @POST("kh/class")
+    fun registerClass(@FieldMap body: Map<String, String>): Call<ApiResponse>
 }
