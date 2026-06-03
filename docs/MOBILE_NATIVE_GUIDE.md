@@ -1,69 +1,48 @@
-# 📱 Panduan Ekosistem Khusus: KelasHUB Mobile Native Kotlin
+# Kitab Fabrikasi Klien Eksternal Android Kotlin (*The Native Mobile Integration Guide*)
 
-Dokumentasi terpisah ini didedikasikan sepenuhnya untuk mengupas tuntas arsitektur Aplikasi Seluler (APK Android) KelasHUB. Berfokus pada siklus hidup pengembangan (*Development Lifecycle*), mesin kompilasi, serta ikatan infrastruktur hibrida yang menyangga aplikasi *Native Kotlin* ini.
+Target Infrastruktur: Android SDK API Level 26+ (Minimum Android 8.0 Oreo).
+Perangkat Perkakas Mutlak: *Android Studio Koala / LadyBug 2024.1+* dengan JDK 17 Compiler.
 
----
-
-## 1. 🌐 Ikhtisar Infrastruktur Pendukung Aplikasi (The Web Backbone)
-Aplikasi Android ini tidak berjalan di ruang hampa. Kecepatan dan keamanannya disokong oleh ekosistem awan raksasa di balik layar:
-
-* **Github**: Platform kontrol versi (Version Control) utama yang mengamankan kolaborasi source code antara arsitektur web dan mobile.
-* **Vercel (Edge Functions)**: Engine penyedia API (*Application Programming Interface*). Vercel menyuplai lalu lintas data JSON dengan sifat adaptif (Serverless) merespon *HTTP Requests* Retrofit dari HP Mahasiswa.
-* **TiDB Cloud (Distribusi MySQL)**: Jantung persisten tanpa batas, menyimpan data base64 PDF, log buku kas, dan *Device Push Token* (UUID). Semua lalu lintas ditahan oleh perisai enkripsi SSL `cacert.pem`.
+Di dalam ekosistem Hybrid Injeksi *KelasHUB*, modul sisi seluler `android-webview/` **TIDAK LAGI MENGADOPSI WEBVIEW.HTML** Pasif layaknya rilis jadul! Ini adalah proyek 100% *Murni Android Kotlin Native Architecture*. Panduan ini membahas alur injeksi kode yang diperbaiki. 
 
 ---
 
-## 2. 🛠️ Persenjataan Developer (Lingkungan Pengembangan Editor)
-Kode ini dibangun menggunakan dua senjata utama yang berjalan berdampingan (AI & Tradisional IDE):
+## 1. Tulang Punggung Model-View-ViewModel (Jetpack MVVM)
+Setiap Layar Aplikasi (Aktivitas Login, NavDash) menjauhi panggilan data kotor *(Fat Activity Constraint)*.
 
-### A. Antigravity AI Code Editor
-* **Peran**: Asisten rekayasa algoritma dan perombakan arsitektur skala besar (Massive Refactoring). Digunakan untuk menyelesaikan integrasi logika OneSignal, mengatasi bug Sinkronisasi Gradle, serta mengotomasi perancangan jembatan API JSON Retrofit di Android. 
-* **Keunggulan**: Memperbaiki ribuan lint error dan kebuntuan kompilasi Android dalam waktu singkat tanpa merusak struktur MVVM. Kode agen AI diatur pada panduan khusus (`mobile/AGENTS.md`).
+1. **Retrofit API Interfaces (Client Model)**:
+   Akar tarikan ditaruh di `ApiClient.kt`. Karena koneksi server kita di Vercel menggunakan *State Cookie (Sessions PHP)* (Bukan Bearer Auth Statis!), Klien Android **HARUS** dipasangi penangkap Cookie. Lihat fungsi ekstensi Singleton CookieJar Kustom di File `ApiClient.kt` milik WaveProject:
+   ```kotlin
+   // Menyeret cookie login ke SharedPreferences agar
+   // seluruh Endpoint GET dashboard tervalidasi. (Wajib Ada)
+   ```
 
-### B. Android Studio (Flamingo / Giraffe / Terbaru)
-* **Peran**: *Native Compiler* & *UI Profiler*. Lingkungan resmi Google untuk manufaktur paket instalator akhir.
-* **Fungsi Kritis**: Menerjemahkan visual *Jetpack XML Layouts* (Material Design), mengeksekusi kompilator Kotlin v1.9, dan mem-buang bundel `.APK` / `.AAB` untuk distribusi massal.
-
----
-
-## 3. 🎯 Arsitektur Utama Kotlin Android
-Di dalam folder `/android-webview`, kode beroperasi mengacu pada prinsip arsitektur modern Android:
-* **Networking (Retrofit2 + OkHttp)**: Bertanggung jawab mengirim tarikan sinkron asinkron JSON. Mengadopsi teknologi *Cookie Jar* untuk mencegah sesi otentikasi login Android mahasiswa terputus dari Cookie Stateless Vercel PHP.
-* **Asynchrony (Kotlin Coroutines)**: Jauh lebih ringan dibandingkan Thread Java kuno, Coroutine bertugas menyinkronkan Token Android HP ke Backend dalam rutinitas tanpa membekukan layar (UI Freeze/ANR lags).
-* **View Systems (XML Material)**: Kami membuang konsep WebView lawas yang membungkus web HTML! Seluruh tampilan (contoh: RecycleView Daftar Hadir) dicetak secara hakiki menggunakan elemen Native Android untuk *Smooth Scrolling* pada 60-120 fps.
+2. **Fragments vs Activites (Render Material UI)**
+   Kami mengarahkan pemakaian antarmuka RecyclerView `Fragment` pada bilah Bawah Navigasi (*Bottom Navigation Tabs*). Seluruh pewarnaan (XML Styles/Colors) dipaksa mematuhi skema Hitam Siluman Zinc (`#09090b` hingga `#18181b`) demi homogenitas rupa Front-end Tailwind Vercel Web.
 
 ---
 
-## 4. 🔔 Mesin Latar Belakang (SDK Push Notification)
-Dua pilar komunikasi nirkabel digabungkan untuk memastikan Mahasiswa dipaksa menerima peringatan Alfa / Ujian:
+## 2. Inisiasi Peledak Radar Gawai (OneSignal Push Sync)
+Modul ini merupakan *Killer Feature* dari arsitektur *Decoupled Push* milik KelasHUB.
 
-### Google Firebase Cloud Messaging (FCM Base)
-Merupakan fondasi urat saraf OS Android yang memberikan jalan masuk bagi koneksi *Push Server-to-Client* tanpa menghabisi baterai gawai (Optimasi fitur *Doze Mode* CPU).
+**A. Injeksi ID Manifest App**  
+Dalam berkas `AndroidManifest.xml` hingga ke tingkat Gradle Build App Module (`build.gradle.kts` tingkat `android-webview/app/`), dependensi Google Cloud Service OneSignal dimasukkan ke blok Dependencies:
+> `implementation("com.onesignal:OneSignal:[LATEST_VERSION]")`
 
-### OneSignal SDK (v5.x Push Platform)
-SDK OneSignal berada di garda terdepan mengelola manajemen Firebase FCM (Menyuntikkan identifikasi User/Device yang elegan).
-1. **Boot Initialization**: `MainApplication.kt` membangunkan SDK OneSignal seketika ikon aplikasi dihantam *(Cold Start)*.  
-2. **Sinkronisasi Otomatis**: `MainActivity.kt` mencuri Kode ID Khusus HP (Player ID). Mengunggah token secara transparan lewat Endpoint khusus Backend Vercel `POST /kh/device-token`.
-3. **Penerimaan Getar Realtime**: Pada detik yang sama Sang Ketua merilis Tugas Makalah di Web Vercel, OneSignal melepaskan sinyal ke Firebase, membuat ponsel menjerit < 1 detikan (Tembusan Notifikasi Lock-screen Otonom).
-
----
-
-## 5. 🚀 Panduan Manual Produksi (Build Compilation Flow)
-
-Untuk menggandakan *Source Code* ini menjadi file instalator (`APK`) resmi, jalankan prosedur kompilasi lokal berikut di Terminal (Gunakan peranti Android Studio):
-
-```bash
-# 1. Bersihkan sisa limbah kompilasi pabrik
-./gradlew clean
-
-# 2. Sinkronisasikan ketergantungan modul eksternal (Retrofit, OneSignal)
-./gradlew dependencies
-
-# 3. Kunci dan Kompilasi menjadi Rilis Android APK Siap-Pakai yang Optimal (Shrinked & Minified)
-./gradlew assembleRelease
-```
-*Lokasi Panen (Output)*: File berformat `.apk` akan bersarang empuk *(Landing Zone)* di tapak direktori `app/build/outputs/apk/release/app-release.apk`. Bagikan file ini untuk di-install massal pada orientasi Android mahasiswa!
+**B. Pengkhianatan Hening (The Silent Upload)**  
+Saat `MainActivity.kt` bangkit paska login (Cek Skema Coroutines SDK OneSignal), Kode Kotlin secara otomatis mengorek parameter Alamat Gawai Kriptografis Unik (UUID).  
+UUID Tanda Pengenal OneSignal ini ditembak dan disimpan tanpa suara via rute Retrofit Android ini: `POST https://klas-hub.vercel.app/kh/device-token`. Sinkronisasi rampung! Ponsel Mahasiswa ini pun telah tertaut ke awan KelasHUB tanpa opsi mencabutnya!
 
 ---
-*Didedikasikan kepada penggiat Sistem Administrator Mobile KelasHUB. Hentikan meniru tampilan Web ke HP kosong (WebView); Rangkullah keagungan Native Performance.*
-*— WaveProject.ID (v2.3 Kotlin Era).*
+
+## 3. Kompilasi Persenjataan Mesin Awan (Local Release Blueprint)
+
+Kompilasi (Generate APK) Android dilarang dieksekusi secara awam (Debugging-mode default).
+
+1. Tentukan Ujung Tombak Server: Buka `/app/src/main/java/com/waveproject/kelashub/ApiClient.kt`. Ubah Constanta `BASE_URL` ke Produksi Vercel Asli (Bila rilis Publik), Hindari alamat `10.0.2.2:8000` emulator lokal!
+2. Buka terminal Root CMD mengambang, Tembak injersi skrip pembersihan dan Kompilator Rilis Final:
+   ```powershell
+   ./gradlew clean
+   ./gradlew assembleRelease
+   ```
+3. Menunggu (Kalkulator Keadilan). Karena dependensi besar Jetpack Material3 UI dan OkHttp Retrofit. Komputasinya butuh CPU konstan RAM PC Development. Skrip mungkin memakan durasi absolut **~3 Menit** sampai Artefak `app-release.apk` siap dilempar ke Publik / Play-Store / Group Aplikasi Mahasiswa!

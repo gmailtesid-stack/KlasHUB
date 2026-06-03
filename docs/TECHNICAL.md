@@ -1,72 +1,88 @@
-# Blueprint Fondasi Rekursif (Deep Technical Architecture) 
+# 🧠 Arsitektur Teknis Sistem Mendalam (System Architecture Deep Dive)
 
-**Sistem Utama (Core System):** Puncak Ekosistem KelasHUB (Hybrid Web & Mobile v2.3.0)  
-**Jenis Dokumen:** Dokumentasi Otopsi Jaringan & Pembedahan Komponen (Source Code System Design)
+**Konteks Layanan Aplikasi**: KelasHUB Hybrid (Vercel Core - TiDB Data - Kotlin Clients)  
+**Terakhir Diulas**: Rilis *Sprint v2.3.0*
 
----
+Dokumen rujukan ini merinci kerangka belakang mikroskopis (under the hood) KelasHUB. Diperuntukkan secara mutlak bagi perekayasa perangkat lunak Tingkat Lanjut (*Senior Engineers*). 
 
-## 🏗️ 1. Filosofi Jantung "The Hybrid Stateless Monolith"
-
-Platform KelasHUB berevolusi melompat melampaui struktur tradisi *Laravel 13* standar. Sistem Vercel hari ini bukanlah sekedar perender grafik web statis; ia bekerja siang dan malam membelah kepribadian sistem operasi menjadi DUA Muka Mesin (Two-Faced Architecture) secara paralel (Hibrida Canggih).
-
-### 1.1 Sisi Wajah Kesatu: Rendering Web Murni (Desktop Dashboard Layer)
-Ketika sesi dikirim oleh peramban (Chrome/PC), Laravel mengarahkan alur melintasi rute *Web Middleware*.
-- Komponen *DOM View* diproses secepat kilat (via cache memori `/tmp/`).
-- Kerangka antarmuka HTML digambar ulang oleh gaya pewarnaan kelam utilitas *Zinc-900 TailwindCSS*.
-- Puncak interaktivitas ditangani **Tanpa Perlu Memuat Ulang Layar (No Reload)** berkat kehebatan *Alpine.js* (Transisi Elemen X-Data Modal dan Menu Accordion Beranimasi Halus).
-Lapis ini diracik dan dipertahankan **Ketat** untuk aktivitas Administrasi berdaya masif bagi Ketua dan Sekretaris yang membutuhkan kekuatan Komputer Desktop/Laptop.
-
-### 1.2 Sisi Wajah Kedua: Pabrik API Hibrida Murni JSON (Mobile Endpoint Layer)
-Ketika transmisi `User-Agent` HTTP mengangkut Header `application/json` dan tersambung lewat Client *Retrofit-OkHttp Kotlin Android*, Sistem laravel secara magis beralih perawakan sebagai *RESTful API Gateway* yang dingin.
-- Sistem JSON Route sama sekali mendepak *Return View() Blade*. 
-- Skema penguasaan Data di-serialize melalui Respon JSON *Chunked/Terenkripsi*, khusus di desain berukuran bit data mungil agar kuota data jaringan 4G/LTE milik Handphone Mahasiswa tidak terkuras, sekaligus membuat performa App Android melesat merender UI (Native Layout Kotlin).
-
-*(Catatan Arsitek: Semua peramban, baik web murni atau aplikasi Mobile, dilekatkan tali pengikat keamanan terenkripsi mutlak lewat mekanisme **Encrypted Session Cookie Auth**, menjamin sifat Stateless Server Vercel yang tak mengonsumsi Memori VM Lokal)*
+Menembus dinding batasan perangkat keras awan gratis (*Free Tier Cloud*), arsitektur monolith web diracik untuk berganti-ganti wajah menyesuaikan diri sebagai **HTML Dashboard** dan/atau **API JSON Socket** secara instan (Stateful Hibrida) bergantung pada siapa yang memanggilnya.
 
 ---
 
-## 🗄️ 2. Persistensi Pangkalan Data Komputasi Cloud (TiDB Engine)
+## 1. Anatomi Fondasi "The Hybrid Stateless Monolith"
 
-Backend dipaksa menelan lalu lintas transaksi tanpa henti di MySQL 8 TiDB. Konektornya bukan konektor standar; ini adalah keajaiban kustomisasi TLS sejati.
+Alur komputasi dipaksa bertransformasi ekstrem ketika berjalan di **Vercel Edge Network**: Segala aktivitas RAM Node.js & PHP dibunuh *(Terminated)* per ~10-detik batas Request Timeout. Ekosistem wajib beroperasi bagaikan prajurit Amnesia *(Pure-Stateless)* namun melayani dua panglima yang kontradiktif (Browser Web & Aplikasi Android Kotlin Murni).
 
-### 2.1 Enkripsi Paksa Kustom SSL (`CustomMySqlConnector.php`)
-Di dunia arsitektur serverless, OS Mesin tidak mengenal istilah file CA Cert lokal.
-- **Mukjizat Rute `/tmp/`**: Daripada memecahkan koneksi karena Error _SSL Verification TiDB_, Kode `App\Database\CustomMySqlConnector` secara siluman menggali memori Kernel Linux (*Fly Memory Extraction*), menanam sertifikat `cacert.pem` instan per *(1-Detik Nafas Execution Life-span)*, memperbolehkan perputaran persetujuan jaringan *Handshake TCP* tanpa penolakan Pihak Ketiga. 
+### A. Rendering Monolitik Asinkron (Web Layer)
+Target platform Administrator Kampus *(Desktop)*. 
+- **Arsitektur Tampilan Dapur (Blade-Tailwind-Alpine Fusion)**: Halaman dilukis satu kali di belakang awan (*Server-Side Rendered Blade*). Setelah jendela dipancarkan, semua interaksi (Popup Tambah Tugas, Filter Warna, Hover Button) bergerak di-injeksi otonom oleh kode **Alpine.js v3** sehingga situs terasa *100% Reload-free SPA* (Singel Page App). Estetika antarmuka mengacu mutlak ke gelap *Stealth Zinc-900 (TailwindCSS v4)*.
 
-### 2.2 Relik Kuno File Storage Melawan Injeksi String (Base64)
-Sistem Cloud *Read-Only* Vercel benci akan upload File dari Form HTML tradisional! 
-Setiap kali Sekretaris mengantarkan PDF (Upload Modul Kuliah), Laravel tidak mencoba menaruh ke blok storage lokal yang tertutup, melainkan mesin segera melumerkan membelah partikel Data Biner (*Binary Code*) tersebut ke enkripsi Teks Mutlak *(Base64 Coding)* dan menyuntik ke Kolong raksasa `LONGTEXT` di Skema Relasional *learning_modules*. Dokumen itu menyatu bersama barisan Database menjadi abadi tak terpisahkan.
+### B. Mutasi Soket API Android (Payload JSON Murni)
+- **Transformasi Otonoma Instan**: Vercel Router menyuntikkan alat deteksi. Jika sistem menyadari muatan Header `Accept: application/json` dari injeksi gawai Retrofit Android, **Kernel Laravel merontokkan segala produksi kode pandang (Views Balikan HTML)** dan langsung berubah menembak balik *Collection JSON Endpoint Mentah*. Arsitektur revolusioner ini menghemat memori pembuatan peladen microservices terpisah.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Ad as Admin (Desktop Web)
+    actor Mh as Mahasiswa (Android App)
+    participant Edge as Vercel Edge Runtime (Laravel 11.x)
+    
+    %% Alur Desktop
+    Ad->>Edge: GET /dashboard (Accept: text/html)
+    Note over Edge: Render Blade HTML + Inject Alpine.js V-DOM
+    Edge-->>Ad: HTTP 200 OK (Rendered UI Monolithic)
+    
+    %% Alur Mobile API
+    Mh->>Edge: POST /kh/api/login (Accept: application/json)
+    Note over Edge: Abort Views. Process Authentication & Serialize JSON.
+    Edge-->>Mh: HTTP 200 OK (Set-Cookie + User JSON Payload)
+```
 
 ---
 
-## 🔐 3. Lapis Lapis Perlindungan Siber Multi-Kelas (Cyber Armor)
+## 2. Paradigma Penyelesaian Kutukan Vercel Storage & OOM Limit
 
-### 3.1 Dinding Partisi Hantu (Eloquent Global Scopes: 'BelongsToClass')
-KelasHUB merekonstruksi pemecahan *Super-Multi-Tenant* sejati.  
-Tiap obyek relasional ditikam mantra *(Trait BelongsToClass)*. Apabila Hekel (Mahasiswa Penjahat Siber) di Kelas A, memaksa masuk URL dan Meretas Database ke Rute Identitas *(Endpoint Parameter Check)* = `ID ABSEN KELAS Z`.  
-SQL Server pada sekian nanodetik memblokade via injeksi paksa Query rahasia *(Implicit Tenant Injections)*:  
-`...WHERE id = Kelas_Z_Id AND tenant_class = AUTH_Sesi_User_A (Menghasilkan Output Zero/Kosong).` 
+### Konflik Resolusi Kematian RAM *(OOM - Out of Memory)*
+Ketika Bendahara berambisi membundel Ekspor 30,000 Transaksi Arus Uang ke File Excel, `Eloquent ORM model::all()` akan menyulap Data SQL MySQL menjadi barisan koleksi Obyek besar di Memory Linux. **RAM 128MB Vercel akan meledak saat itu juga (Error 500 Out of Memory Limit Exceeded).**
 
-### 3.2 Lapisan Besi Middleware Frame Anti-Pembajak (CheckRole & SecurityHeaders)
-Guna menggugurkan ancaman Eksekusi Pancingan Frame Click-jacking *Super-Admin Console*:
-- Skrip Header mutlak diikat *X-Frame-Options DENY* demi memveto penyisipan web palsu peniru KelasHUB di luar Ekosistem Domain Utama kita.
-- Portal akses rute dijepit palang penyaring gerbang *CheckRoleKelasHub.php* sebelum sempat kode Controller berskala berat dieksekusi. 
+**Rekayasa Penyelematan Data Arus-Keping (0-RAM Stream Exporter Engine)**:
+Pengembang mendesain ulang controller panggil (Bypass Eloquent Module). Kode menjejalkan MySQL Raw Data Streams dengan metode `DB::Table()->lazy()` yang memotong SQL 500 baris, mengonversinya menjadi balok teks CSV per karakter koma, kemudian melontarkannya langsung lewat penyangga `php://output` *(Browser download flush buffer)*. Nol persen memori RAM sistem terbeban!
+
+### Konflik Kelumpuhan Diska Lokal (File Read-Only Ban)
+Sistem Penyimpanan statis PDF Tugas Universitas lumpuh karena OS Vercel tidak akan pernah mengizinkan fail disimpan secara abadi. Sesudah mati tertidur, semua PDF mahasiswa musnah dalam kuburan direktori `/storage/app`.
+
+**Rekayasa Pelarian Awan (Base64 Cloud RDBMS Injection)**:  
+Makalah unggahan *(Multipart File)* diambil-alih sebelum masuk memori diska. Serpihan struktur *Biner* (.pdf) diobrak-abrik dan disuntik (Encoded) ke pembuluh String raksasa **`Base64`**. Formasi Huruf Acak jutaan abjad ini disimpan damai selamanya membatu di TiDB MySQL Kolom `LONGTEXT`. Tautan hilang 404 hancur musnah. Solusi permanen dan abadi.
 
 ---
 
-## 📱 4. Ekstensi Gelombang Radar Modul Jaringan Eksternal Kotlin Native
+## 3. Isolasi Dinding Tenant Tingkat-Multi Siber (IDOR Shielding Level 4)
 
-Inilah rahasia pengirim perintah paksa menembus notifikasi perangkat pengguna.
+Bahaya kerentanan Insecure Direct Object Reference (IDOR) amat fatal di aplikasi SaaS multikampus *(Cross-Tenant Server Model)*. Modifikasi permintaan `GET /delete/19` milik Mahasiswa kelas Z berpotensi me-reset Kelas A yang bersebelahan.
 
-### 4.1 Pemecah Kebuntuan Ketergantungan Ekstensi Latar (The Async Out-of-band Pushing)
-Kita mencapak total Framework Aplikasi lama penunda (*Background Jobs Framework Laravel* karena ketiadaan daemons antrian Vercel).
-- Arsitektur menembakkan Pukulan Payload JSON `include_subscription_ids` dengan transmisi Guzzle HTTP Cepat ke RestAPI *OneSignal Push Gateway* v2. Pukulan tembus langsung diterjang ke Jutaan Ekosistem *Firebase Android Device Registry (FCM)*, yang menggentarkan Handset Target (Ping Alarm HP) seketika tanpa melumpuhkan detik Respon Thread Eksekusi API kelas pusat Laravel! (Durasi Latensi Intersistem < 800-MS).
+**Penyelesaian Global Trait Injection Enforcement**:
+Setiap entitas Operasional (Kehadiran, Tugas, Laporan Kas, Jadwal), saat menginisialisasi pembacaan memori (Model `boot()` lifecycle), secara kaku diijeksikan *Trait Modul Pelindung Scopes Database*. Arsitektur Laravel akan menyematkan perintah kueri MySQL `WHERE 'class_id' = Identitas_Sesi_User_Login` ke semua pintu perintah DB.
+Mustahil sebuah celah membiarkan penyusup memanggil obyek luar teritorinya. Eksekutor pelindung berposisi di dalam Jantung Model Skema Eloquent (Server Level Filtering).
 
-### 4.2 Traksi Otonom Pemulihan Lacak Jaringan (The Auto-Homing Token Sinkronisasi)
-Mengingat OS Android Gemar membekukan koneksi Token OneSignal lawas sesudah aplikasi terbuang cache nya (System Doze State Wipe).
-- Koroutin (Native Kotlin Flow Threads) dalam Modul Startup Android *(`MainActivity.kt` - `syncOneSignalToken()`)* menampung operasi pendenyutan detak (Heartbeat Sync). Memverifikasi apakah String *Player Identifier UUID* HP saat ini meleset sinkron di tabel Database SQL. Jika meleset, Token kembali direkatkan ke pusat server. Notifikasi yang buta terjamin hidup berpuluh generasi berikutnya tanpa ampun.
+```mermaid
+graph TD
+    User(Penyusup / Mahasiswa Nakal) -.->|Inject URL ?id=50 (Bukan Punya Dia)| Gateway(Edge Route)
+    Gateway --> Middleware[Auth Cookie Validation]
+    Middleware --> Control[Resource Controller Action]
+    Control -->|Minta 1 Data Temuan| ORM[Model Scope Boot 'BelongsToClass']
+    ORM -->|Penyisipan Otomatis Paksa| SQLQuery["Query Tersembunyi: SELECT * FROM cash.. WHERE ID=50 AND CLASS_ID=Identitas Kelas Nakal!"]
+    SQLQuery -->|Mutlak Nol Hasil| Shield[/Throw HTTP 404 / 403 Forbidden Access/]
+    
+    style Shield fill:#e11d48,stroke:#333,stroke-width:2px,color:#fff
+    style ORM fill:#059669,stroke:#333,stroke-width:2px,color:#fff
+```
 
---- 
+---
 
-_Catatan Arsitektur Epilog_: Arsitektur Hybrid Hibrida yang Anda wararisi saat ini (SaaS Vercel-Edge) ini membuktikan kedigdayaan efisiensi Web Modern. Ini menghempas teori aplikasi serverless monolitik tidak akan mendobrak kemapanan Aplikasi Ponsel Canggih. Inversi Total. Kemenangan pada Kesederhanaan.  
-**Sertifikasi Arsitektural Code-base - Rilis Final Q2 2026.**
+## 4. Mekanika Pelatuk Penyiaran Asinkron Radar (OneSignal Mobile Push Broadcast)
+
+Modul **NotificationService.php** merupakan reaktor terpisah penyedia fungsi guncangan radar tanpa jeda (*Zero-Delay Background Signals*) untuk Mahasiswa Kotlin Klien Android.
+
+1. **Jalur Bawah Otomasi**: Mahasiswa tidak mengetik atau mendaftar UID Notifikasi. Sesaat Ikon App ditekan pada Android HP mereka, *OneSignal Backend Daemon SDK V5* menyantol dan menyeret *(Generate)* Tanda Unik UUID (Player-ID).
+2. **Asinkron Token Injeksi (POST /kh/device-token)**: UUID tersebut diselundupkan dan disinkronisasi paksa melintasi *Router JSON* KelasHUB dan dikunci disebelah nomor induk Nama User di SQL Cloud.
+3. **Pemicu Darurat**: Pejabat merlis "Daftar Denda". Mesin Vercel menangguhkan balasan antarmuka Web beberapa sepersekian detik untuk meluncurkan Panggilan Transmisi *Rest API Guzzle Curl POST HTTP* keluar awan berisikan peluru Payload Kumpulan *(include_subscription_ids)* UUID Mahasiwa Kelas. API OneSignal membombardir Cloud Messaging Service Android merobek diam layar gawai serentak!

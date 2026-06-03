@@ -1,113 +1,37 @@
-# Dokumentasi Injeksi Data Dummy KelasHUB (V2.3.0)
+# Dokumen Injeksi Ledakan Data Mentah (The Dummy Bomb Seeder Guide)
 
-Dokumen ini menjelaskan secara teknis bagaimana data dummy dalam skala besar (1.500+ record) berhasil disuntikkan ke dalam sistem **KelasHUB** yang beroperasi di arsitektur Serverless Vercel dan Remote Database TiDB Cloud.
+Karena perisai isolat Data Multi-Tenant KelasHUB *(BelongsToClass Global Scopes)* begitu agresif, melakukan audit arsitektur desain (Quality Assurance Front-end UI) tanpa injeksi Ribuan Set Data secara massif sangatlah memberatkan pihak penguji. 
 
-## 1. Tantangan Arsitektur Serverless
-Pada arsitektur Vercel (khususnya paket *Hobby/Free*), semua *Serverless Functions* memiliki batasan waktu eksekusi maksimal **10 detik**.
-Proses penyuntikkan data (Dummy Seeding) membutuhkan waktu eksekusi yang lama (minimal 3-5 detik hanya untuk proses *hashing password* 30 user menggunakan `Hash::make`), dan juga latensi bolak-balik (I/O HTTP) untuk mengirim sebanyak 1.500 baris ke database TiDB yang berada di Region AWS Singapore.
+Dokumentasi ini membongkar panduan pengoperasian *DummyClassSeeder.php* tanpa memicu insiden Time-Out pada Arsitektur Jaringan Vercel Web Server.
 
-Jika memaksakan eksekusi Seeder melalui *endpoint* Vercel (misal menggunakan koneksi HTTP REST `Invoke-RestMethod`), Vercel API Gateway akan memutus paksa koneksi secara sepihak dan melempar *Error 504 (Gateway Timeout)*. 
+---
 
-## 2. Metodologi Eksekusi (Bypass Vercel Timeout)
-Untuk menghindari limitasi 10 detik Vercel, kita melakukan **Remote Direct Execution**.
-Karena database `TiDB` bisa diakses dari mana saja menggunakan URI MySQL, eksekusi dilakukan lokal (*on-disk execution*) menggunakan Terminal PowerShell yang menjalankan mesin PHP-Artisan lokal, yang kemudian melakukan kontak I/O statis namun berantai ke *Remote Database TiDB*.
+## 1. Peringatan Keamanan Kritis Vercel (Timeout Fatalities)
 
-**Perintah yang dieksekusi melalui PowerShell (Lokal):**
+JANGAN menyalurkan (Execute) skrip ini melewati panggilan rute API `POST` standar yang dipancing lewat Browser Anda (Contoh: `/api/start-seeder`). Memompa 1000 Mahasiswa dengan Hash Sandi *Bcrypt PHP* yang berat, akan mencekik Komputasi Server Vercel yang dipacu hidup melayani di dalam 10 detik. Jika dilakukan lewat Browser / Postman URL: Anda bakal berhadapan di Error Merah Bisu **`504 Gateway Deployment Timeout`**.
+
+### 1a. Manuver Pintu Darurat (Terminal Direct TCP Tunnel)
+Penggelembungan Ribuan Profil Bohongan **WAJIB** dieksekusi secara lokal dari LapTop/Komputer Insinyur *(Development Machine)* via Protokol Baris Komando murni CLI yang menembak TCP Tembok Peladen MySQL secara absolut *(Bebas Bypassed dari Batas Jembatan Vercel)*:
+
 ```bash
-php artisan db:seed --class="Database\Seeders\DummyClassSeeder"
+php artisan db:class --class="Database\Seeders\DummyClassSeeder"
 ```
-Proses ini memakan waktu kurang lebih **12-15 Detik** hingga selesai (Sukses melewati batas 10 Detik milik Vercel).
+
+*CLI (Command-Line PHP)* akan berjalan merangkul konektivitas jaringan, kadang mengendap waktu eksekusi sampai 18 Detik komputasi hashing massal berjalan, tapi tak akan pernah di-interupsi server!
 
 ---
 
-## 3. Struktur Detail Data Dummy Yang Disuntikkan
+## 2. Struktur Bom Biologis Populasi Mahasiswa Pemandu
 
-Eksekusi ini menghasilkan lingkungan testing *"Production-Ready"* dalam 1 Kelas saja (mengamankan kelas lain dari bentrok data).
+Perintah Diatas melahirkan Populasi Semu Terisolasi pada 1 Tenant: **Kelas Universitas "Teknik Informatika - TPLE-013"** (Semester 2). Kelas palsu ini merajut seluruh jaringannya dan menghindari bentrokan *(Crash FK Reference Constraint)* dengan tabel kampus lain. Barisan yang dilahirkan meliputi:
 
-- **Informasi Kelas:** Teknik Informatika - TPLE-013 (Semester 1, Tahun Ajaran 2025/2026).
-- **Entitas Mahasiswa (30 Akun):**
-  - **1 Ketua Kelas** (NIM: `231011400001` | Password: `231011400001KK`)
-  - **1 Sekretaris** (NIM: `231011400002` | Password: `231011400002SK`)
-  - **1 Bendahara** (NIM: `231011400003` | Password: `231011400003BD`)
-  - **27 Mahasiswa Biasa** (NIM berurut: `0004` hingga `0030`, Password identik dengan NIM).
-- **Konfigurasi Akademi:**
-  - 8 Mata Kuliah Master (SKS & Dosen Pengampu lengkap).
-  - 8 Blok Jadwal Kuliah (Offline dan Online via Zoom).
-  - 10 Tugas (Tugas Individu, Kelompok, dan Kuis dengan Status Validasi bervariasi).
-  - 11 Modul Materi Pembelajaran Lengkap.
-  - 960+ Histori Kehadiran Absensi yang dialokasikan di 4 pertemuan.
-- **Konfigurasi Finansial:**
-  - 32 Histori Pemasukan (Status Valid/Menunggu Validasi) dan Pengeluaran Biaya Kelas.
-- **Notifikasi Push (153 Record):** Logika Broadcast Simulasi tugas kelompok dari sekretaris dan Validasi kas.
+* **Injeksi Kepengurusan Tingkat Atas:** 
+  1. Sang Diktator Otoritas Ketua: Nomor Induk `231011400001` (Katakunci Darurat: `231011400001KK`).
+  2. Menteri Keuangan (Bendahara): Nomor Induk `231011400003` (Katakunci Darurat: `231011400003BD`).
+  3. Menteri Administrasi (Sekretaris): Nomor Induk `231011400002` (Sandi: `231011400002SK`).
+* **Konsumer Jelata Android Kotlin:**
+  Akan lahir **27 Mahasiswa Biasa**. Mengadopsi Identitas (NIM) melesat beranak-pinak dari NIM: `0004` melaju ke angka `0030`. (Sandi disatukan serentak `password123`).
+* **Serangan Kehidupan Asrama (Data Sampah Realistis):**
+  Mengimpor struktur Jadwal Vektor di UI Android dengan menyinggung Modul Matriks, lalu melemparkan **960 Rangkaian Status Kehadiran (Attendances)** secara rapi direntangkan membuntuti 8 hari Kalender Kuliah dengan metode DB `array_chunk($attendancesData, 200)` agar baris Data tak memprovokasi Penolakan Koneksi (*MySQL Package Too Long Error*). 
 
----
-
-## 4. Source Code Utama: `DummyClassSeeder.php`
-
-Berikut adalah inti logika Injeksi Data (Seeder) yang dipakai:
-
-```php
-<?php
-namespace Database\Seeders;
-
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon;
-
-class DummyClassSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $now = Carbon::now();
-        $semester = 1;
-
-        // 1. Handling Class ID Existing/Pembuatan Baru
-        $existingClass = DB::table('academic_classes')->where('code', 'TPLE-013')->first();
-        if ($existingClass) {
-            $classId = $existingClass->id;
-            // Purge semua data usang milik class ini saja
-            DB::table('students')->where('class_id', $classId)->delete();
-            DB::table('academic_schedules')->where('class_id', $classId)->delete();
-            DB::table('assignments')->where('class_id', $classId)->delete();
-            DB::table('master_subjects')->where('class_id', $classId)->delete();
-            DB::table('cash_ledgers')->where('class_id', $classId)->delete();
-            DB::table('class_attendances')->where('class_id', $classId)->delete();
-            DB::table('notifications')->where('class_id', $classId)->delete();
-        } else {
-            $classId = DB::table('academic_classes')->insertGetId([
-                'name' => 'Teknik Informatika - TPLE-013',
-                'code' => 'TPLE-013',
-                'academic_year' => '2025/2026',
-                // ...
-            ]);
-        }
-
-        // 2. Insert Mahasiswa + Hashing Passwords (Heavy Load)
-        // [Data mahasiswa disiapkan dalam bentuk Array $studentRows]
-        // ... (30 Mahasiswa) ...
-
-        // 3. Insert Master Subjects dengan logika Avoid Duplicate Constraint
-        foreach ($subjects as $sub) {
-            DB::table('master_subjects')->updateOrInsert(
-                ['name' => $sub['name']], // Unique Identifier Constraint
-                [
-                    'sks' => $sub['sks'],
-                    // ... Parameter lainnya
-                    'class_id' => $classId
-                ]
-            );
-        }
-
-        // 4. Batch Processing Data Kehadiran (960 Absensi)
-        // Vercel sering melempar timeout error apabila query MySQL dilakukan 1-by-1 di loop 1000 iterasi.
-        // Dipecah dan disuntikkan secara bulk chunk:
-        foreach (array_chunk($attendances, 200) as $chunk) {
-            DB::table('class_attendances')->insert($chunk);
-        }
-    }
-}
-```
-
-## Kesimpulan
-Pendekatan ini memisahkan batas kewenangan antara Vercel sebagai Delivery Edge Node (untuk User HTTP Request) dan Mesin Lokal Administratif sebagai Ingestion Node (Database Seeder), memastikan bahwa basis data bisa terus beroperasi dengan beban tinggi di TiDB tanpa dihukum (penalty timeout) oleh batas 10-detik Vercel.
+Menjalankan perintah skrip *Seeding Dummy* tersebut me-reset total (*Clean Slate Purging* `DB:table(students)->delete`) populasi siluman pada kelompok TPLE-013 yang dulu-dulu *(Garbage Pre-Clean Validation)* tanpa mencederai Anggota Tenant Prodi lain! Cukup pencet satu tombol CLI.

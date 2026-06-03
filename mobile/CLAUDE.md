@@ -1,34 +1,24 @@
-# Panduan Perintah Robotisasi AI (CLAUDE.md) — KelasHUB Mobile
+# AI Agent Instructions for WaveProject Mobile Engineering
 
-Petunjuk ini didesain secara spesifik sebagai basis rujukan (*Context Grounding*) untuk alat Automasi AI seperti Claude atau agen koding lainnya. Terhubung komprehensif ke `AGENTS.md` (Spesifikasi Teknis Detail).
+**CONTEXT:** You are operating inside the `/android-webview` repository.
+**ENVIRONMENT:** Strict native Android Kotlin ecosystem.
+**PROHIBITED ACTION:** Do NOT attempt to integrate Cordova, Ionic, or rewrite components to HTML/JS WebViews.
 
-## 🚀 Perintah Konstruksi dan Pengujian Operasional (Gradle Executions)
+## Your Prime Directive:
+You are assisting in building the **KelasHUB Android Client App**. This client communicates with a Vercel-hosted Laravel 11 Backend via REST JSON API (See `docs/API.md` out-of-bounds).
 
-Jalankan serangkaian terminal shell command berikut untuk kompilasi modul Android Native KlasHUB. Agen harus beralih eksekusi ke ranah (direktori) `android-webview/` sebelum menjalankan perakitan.
+### Rule 1: Architecture Enforcement (MVVM & Retrofit)
+- All network activities must be mapped inside `app/src/main/java/com/waveproject/kelashub/ApiInterface.kt`. 
+- No hardcoded HTTP requests scattered inside UI classes (Activities/Fragments).
+- Adhere strictly to the defined data classes in `Models.kt` to prevent GSON parsing crashes. If backend changes a boolean to Integer (e.g., `is_validated = 1`), ensure mapping handles it correctly.
 
-### Membangun File Perakitan Mode Uji (Debug APK)
-```bash
-./gradlew assembleDebug
-```
-*Output Artifact*: `app/build/outputs/apk/debug/app-debug.apk`
+### Rule 2: UI/UX Aesthetic Standardization
+- **Never suggest bright themes.** This app enforces a *Zinc 900 Stealth Dark Mode* aesthetic.
+- Components must rely on Android Jetpack XML `Material Components` (Material 3).
+- Colors must be extracted from `res/values/colors.xml`. Avoid hardcoding `#HexCodes` in layout XML files.
 
-### Membersihkan Sisa Residu Cache Kompilasi Lama
-Apabila terhambat kesalahan konflik *resource XML* atau perubahan konfigurasi, wajib mendeletasi cache dengan keras:
-```bash
-./gradlew clean
-```
+### Rule 3: Do Not Hallucinate Vercel Solutions
+If a network error (e.g., 504 Gateway Timeout or CORS block) occurs, **DO NOT** attempt to "fix" it by writing PHP code on the Android side or suggesting we migrate to a Node.js Express server. Your domain of control ends at Kotlin Retrofit Request generation. Tell the user to fix the Backend API Endpoint instead.
 
-### Penyelarasan Pustaka Komponen (Dependensi Eksternal Sinkron)
-Memeriksa integritas tautan download library dari Maven atau Google Repo:
-```bash
-./gradlew dependencies
-```
-
-## 🧩 Instruksi Paradigma Pengerjaan Otonom AI Code Assistant
-Bagi instrumen Asisten Koding (AI) apa pun yang mendiagnosa dan menyentuh berkas KelasHUB Kotlin:
-1. **Dilarang Keras Melibatkan WebView Modern**. Kode sepenuhnya berorientasi arsitektur Model-View-ViewModel (MVVM) dan XML Material Native. Jika User memohon modifikasi antarmuka, edit `res/layout/*.xml` (Bukan tag HTML View).
-2. **Eksekusi Kompatibilitas Versi Java**. Asumsikan kompilasi terikat lurus ke Java 17 atau Java 11 (Sinkron dengan instruktur JVM Gradle Wrapper pada repo ini).
-3. **Penyandian String dan Identifikasi Rahasia**. Kode sandi konstan seperti URL `https://klas-hub.vercel.app` atau `ONESIGNAL_APP_ID` jangan diobfuscate paksa jika tidak diminta oleh user secara harfiah. 
-4. **Memecah Kebuntuan Impor Library Ganda**. Saat mengkreasi Activity maupun fragmen, jangan campurkan pustaka paket AndroidX berlainan seri (Cth: View Binding dan Data Binding usang). Tetaplah memandu arus *findViewById* (atau jika telah diunggah ke ViewBinding, manfaatkan binding adapter).
-
-@AGENTS.md — Untuk pembedahan kerangka jaringan API.
+### Rule 4: The OneSignal Lifeline
+If touching user login mechanisms (`MainActivity.kt` / `LoginActivity.kt`), absolutely ensure the `OneSignal.getUser().getPushSubscriptionId()` sync function is left completely intact. Removing this breaks the Zero-Delay asynchronous push network pipeline.
