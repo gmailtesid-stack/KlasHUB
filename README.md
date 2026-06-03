@@ -1,457 +1,149 @@
-# 🌌 KelasHUB — Stealth-Theme All-in-One Class Operations Suite
+# 🌌 KelasHUB — Ekosistem Operasional Kelas Modern (Enterprise-Grade)
 
 <div align="center">
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed-Vercel-black?logo=vercel)](https://klas-hub.vercel.app)
-[![Laravel](https://img.shields.io/badge/Laravel-13.x-FF2D20?logo=laravel)](https://laravel.com)
-[![PHP](https://img.shields.io/badge/PHP-8.3+-777BB4?logo=php)](https://php.net)
-[![TiDB Cloud](https://img.shields.io/badge/Database-TiDB%20Cloud-orange)](https://tidbcloud.com)
-[![OneSignal](https://img.shields.io/badge/Notifications-OneSignal-E54B4D?logo=onesignal)](https://onesignal.com)
+[![Deployed on Vercel Edge](https://img.shields.io/badge/Production-Vercel-black?logo=vercel)](https://klas-hub.vercel.app)
+[![Laravel Serverless](https://img.shields.io/badge/Laravel-13.x-FF2D20?logo=laravel)](https://laravel.com)
+[![TiDB Cloud SQL](https://img.shields.io/badge/Database-TiDB%20Cloud-orange?logo=mysql)](https://tidbcloud.com)
+[![OneSignal Push Notifications](https://img.shields.io/badge/Notifications-OneSignal-E54B4D?logo=onesignal)](https://onesignal.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Kotlin Native App](https://img.shields.io/badge/Mobile-Kotlin_Native-7F52FF?logo=kotlin)](android-webview/)
+[![UI Stealth Theme](https://img.shields.io/badge/UI-Zinc_900_Stealth-0f172a?logo=tailwindcss)](Resources/css/app.css)
 
-**Platform manajemen kelas kuliah modern, cepat, terpusat, dan kini dengan push notification real-time.**  
-Dibangun di atas Laravel Serverless (Vercel) · TiDB Cloud · Tailwind CSS v4 · Alpine.js · OneSignal
+**Sistem Administrasi Sentral Kelas Perkuliahan (SaaS) Berperforma Ekstrim, Dirancang untuk Agility, Transparansi Dana, dan Konektivitas Mahasiswa Real-Time.**  
+Berjalan sempurna tanpa henti di atas Vercel Serverless (via `vercel-php`), didayagunakan TiDB Cloud MySQL, diselimuti estetika Stealth Hitam Pekat (Tailwind CSS v4 + Alpine.js), dan dipersenjatai peringatan harian via Push Notification (OneSignal SDK).
 
-[🚀 Live Demo](https://klas-hub.vercel.app) · [📋 Changelog](CHANGELOG.md) · [🤝 Contributing](CONTRIBUTING.md) · [📖 API Docs](docs/API.md)
+[🚀 Buka Versi Live Demo](https://klas-hub.vercel.app) · [📋 Baca Log Perubahan](CHANGELOG.md) · [🤝 Ingin Berkontribusi?](CONTRIBUTING.md) · [📖 Dokumentasi Terbuka API](docs/API.md)
 
 </div>
 
 ---
 
-## 📖 Daftar Isi
+## 📖 Navigasi Indeks (Daftar Isi)
 
-- [Tentang Proyek](#-tentang-proyek)
-- [Fitur Utama](#-fitur-utama)
-- [Arsitektur & Stack Teknologi](#-arsitektur--stack-teknologi)
-- [Struktur Database](#-struktur-database)
-- [Instalasi Lokal](#-instalasi-lokal)
-- [Deployment ke Vercel](#-deployment-ke-vercel)
-- [Referensi Route & API](#-referensi-route--api)
-- [Role-Based Access Control](#-role-based-access-control-rbac)
-- [Sistem Push Notification](#-sistem-push-notification-onesignal)
-- [Engine Simulasi & Laporan](#-engine-simulasi--laporan)
-- [Optimasi Vercel Serverless](#-optimasi-vercel-serverless)
-- [Aplikasi Android Native](#-aplikasi-android-native-kotlin)
-- [Filosofi Desain UI](#-filosofi-desain-ui)
-- [Kontribusi](#-kontribusi)
+- [Tentang Proyek Ekosistem](#-tentang-proyek-ekosistem)
+- [⏳ Evolusi Sejarah KelasHUB (Dari Web ke Super-App)](#-evolusi-sejarah-kelashub-dari-web-ke-super-app)
+- [Modul Fitur Papan Atas](#-modul-fitur-papan-atas)
+- [Detail Arsitektur & Teknologi Server](#-detail-arsitektur--teknologi-server)
+- [Topologi & Skema Basis Data Relasional](#-topologi--skema-basis-data-relasional)
+- [Cara Instalasi Mesin Lingkungan Lokal (Dev)](#-cara-instalasi-mesin-lingkungan-lokal-dev)
+- [Deployment Lanjutan Vercel Serverless](#-deployment-lanjutan-vercel-serverless)
+- [Integrasi Web Dashboard & Mobile Android](#-integrasi-web-dashboard--mobile-android)
+- [Hierarki Kontrol Akses Super (RBAC)](#-hierarki-kontrol-akses-super-rbac)
+- [Rambu Keamanan & Celah Sistem](#-rambu-keamanan--celah-sistem)
 
 ---
 
-## 🎯 Tentang Proyek
+## 🎯 Tentang Proyek Ekosistem
 
-**KelasHUB** adalah platform operasional kelas perkuliahan *All-in-One* yang dirancang untuk menggantikan proses administrasi manual — mulai dari presensi, manajemen keuangan kas, repositori modul pembelajaran, manajemen jadwal, hingga **notifikasi push real-time** — ke dalam satu aplikasi terpadu yang bisa diakses dari ponsel.
+**KelasHUB** bermula dari sebuah purwarupa (prototype) website manajemen presensi sederhana, dan kini telah berevolusi menjadi sebuah *Super-App* ekosistem perkuliahan (MaaS / Management as a Service). Proyek ini mengeliminasi ratusan lembar kertas presensi fisik, riwayat chat tugas yang tertimbun di WhatsApp, hingga hilangnya transparansi pencatatan dana kelas.
 
-Platform ini dikembangkan dengan filosofi **"Stealth Operations"**: tampilannya ramping dan gelap (dark-mode), tapi di baliknya menyimpan kekuatan penuh untuk mengelola seluruh operasional kelas secara real-time.
+Dikemas ke dalam tajuk "**Stealth Tactical Operations**", antarmuka Web Dashboard dibalut latar gelap kontras tinggi (Zinc-900) dengan Reaktivitas *Alpine.js* agar memancarkan aura futuristik profesional. Perjalanan panjang dari *Web Monolithic* menuju *API-Driven Mobile Native* membuktikan skalabilitas arsitektur sistem ini.
 
-**Dikembangkan oleh**: Wave Project.ID  
-**Stack**: Laravel 13 (Serverless) + TiDB Cloud + Tailwind CSS v4 + Alpine.js + OneSignal  
-**Target Platform**: Vercel Free Tier (Serverless) + Android Native (Kotlin)  
-**Versi Saat Ini**: v2.3.0
+**Arsitektur Kreator**: Wave Project.ID  
+**Edisi Saat Ini**: Rilis Web & Mobile Terpadu **v2.3.0**
 
 ---
 
-## ✨ Fitur Utama
+## ⏳ Evolusi Sejarah KelasHUB (Dari Web ke Super-App)
 
-### 1. 🔔 Push Notification Real-Time (OneSignal) ← **Baru di v2.3**
-Notifikasi pop-up langsung ke HP mahasiswa seperti WhatsApp:
-- Notifikasi otomatis saat ada **tugas baru**, **modul baru**, **transaksi kas**, atau **pengumuman**.
-- Terintegrasi dengan aplikasi Android native via **OneSignal SDK v5**.
-- Backend menggunakan **OneSignal REST API v2** (`include_subscription_ids`) untuk pengiriman yang ditargetkan.
-- Token perangkat mahasiswa didaftarkan otomatis saat login via endpoint `POST /kh/device-token`.
+KelasHUB dibangun bukan dalam semalam. Berikut adalah rekam jejak historis bagaimana sistem ini membengkak secara fungsional tanpa mengorbankan performa:
 
-### 2. 🎯 Smart Attendance & "Sisa Nyawa" Engine
-Sistem kehadiran cerdas berbasis **penalty point**:
-- Setiap mahasiswa mendapatkan **3 Nyawa** per mata kuliah per semester.
-- Setiap absen (**Alfa**) yang tervalidasi mengurangi 1 nyawa.
-- Jika nyawa = **0**, status otomatis `DICEKAL` (Nilai E) dengan peringatan berkedip merah di dashboard.
-- Mahasiswa bisa submit **Rekap Mandiri** (Sakit/Izin) yang memerlukan validasi Ketua/Sekretaris.
+### 🌟 Era 1: Sang Pionir Web Sederhana (MVP Web-Only)
+Pada awal penciptaannya (v1.0.0), KelasHUB hanyalah sebuah sistem website administrasi murni berbasis `Laravel Blade MVC`. 
+- Ketergantungan penuh pada *Form Submission* HTML tradisional tanpa AJAX.
+- Fitur terpusat hanya pada 2 elemen: **Buku Kas** dan **Absensi "Sisa Nyawa"**.
+- Belum ada konsep multi-kelas. Satu database `students` berdiri mati membina satu kelas tunggal.
+- Hosting menggunakan panel cPanel standar, yang sering tumbang saat seluruh kelas login bersamaan (I/O Bottleneck).
 
-### 3. 🔐 Role-Based Access Control (RBAC)
-| Role | Hak Akses |
-|:---|:---|
-| `super_admin` | Registrasi kelas baru & Ketua Kelas, kelola semua data |
-| `ketua_kelas` | Validasi semua data, tambah/hapus anggota, kelola jadwal, laporan |
-| `sekretaris` | Input absensi, tampilkan daftar hadir, kelola jadwal, upload modul |
-| `bendahara` | Input & kelola kas kelas, laporan keuangan |
-| `mahasiswa` | Lihat data pribadi, unduh modul, rekap mandiri, terima notifikasi push |
+### 🚀 Era 2: Kenaikan Kasta Arsitektur & Ekspansi Fitur (The Multi-Tenant Web)
+Kebutuhan mahasiswa melonjak (v1.5.0 - v2.0.0). Kami menulis ulang fondasinya:
+- Website ini tidak lagi memuat 1 kelas, melainkan mengaktifkan sistem perancah SaaS (Software as a Service) sejati. Lahirnya tabel `academic_classes` menciptakan *Tenant Isolation*, memungkinkan ratusan kelas kampus didaftarkan independen dalam satu aplikasi.
+- Penambahan fungsi Gudang File (Academic Repositories). Mengatasi masalah storage murah, website ini direkayasa menelan file PDF dan menyimpannya menjadi Teks Panjang Terenkripsi (*Base64 String*) di Database TiDB Cloud.
+- UI *Stealth Zinc-900* dikodifikasi menggunakan **Tailwind CSS v4** plus sayatan reaktivitas **Alpine.js**, mengubah pengalaman web lawas menjadi lincah serasa *Single Page Application (SPA)*.
 
-### 4. 📚 Academic Hub & Repositori File
-- Upload modul pembelajaran (PDF, DOC, TXT) langsung disimpan ke database sebagai `base64` — tanpa filesystem Vercel.
-- Download modul bisa dilakukan langsung dari dashboard.
-- Manajemen tugas (individual & kelompok) dengan deadline otomatis.
-
-### 5. 💰 Financial Ledger (Buku Kas)
-- Catat pemasukan dan pengeluaran kelas dengan deskripsi lengkap.
-- Saldo berjalan otomatis dihitung dan ditampilkan di dashboard.
-- Export laporan keuangan ke **PDF** dan **Excel/CSV** (streaming, RAM ~0 MB).
-
-### 6. 📅 Jadwal & Mode Pembelajaran
-- Jadwal perkuliahan harian per mata kuliah.
-- Toggle mode **Online ↔ Offline** secara real-time.
-- Cron job otomatis reset jadwal setiap hari pukul 23:59 WIB.
-
-### 7. 🏛️ Super Admin Panel
-- Panel khusus untuk mendaftarkan kelas baru **sekaligus** akunnya dalam satu form terpadu.
-- Password Ketua Kelas dibuat otomatis: `NIM + "KK"`.
-- Isolasi penuh antar kelas berbasis `class_id`.
-
-### 8. 🤖 Simulasi Engine (Vercel-Optimized)
-- Endpoint `/simulasi` mensimulasikan aktivitas nyata 5 kelas.
-- Berjalan dalam **< 5 detik** — aman dari timeout Vercel Free.
+### 📱 Era 3: Revolusi Mobile & Serverless Vercel (The Super-App Era)
+Era puncak (v2.1.0 - v2.3.0). Kecepatan adalah segalanya:
+- Website diangkat paksa dari server VPS konvensional menuju lingkungan **Vercel Serverless (Edge Runtime)**. Kode menyesuaikan diri untuk hidup tanpa menyimpan _Session File_.
+- Website Monolitik bermutasi menjadi *Hybrid API Gateway*. Selain memuntahkan grafis HTML untuk pengguna Laptop/PC, KelasHUB membuka gerbang JSON murni untuk klien Mobile.
+- Diciptakannya **Aplikasi Mobile Native Android (Kotlin)** (`android-webview/`). Bukan lagi sekadar web yang dibungkus, melainkan menggunakan `Retrofit` mutakhir untuk menarik data server, dan mengaitkan ID perangkat (*Player_ID*) ke OneSignal API penyiaran notifikasi seketika (Zero-Delay Push Broadcast). Mahasiswa kini dapat pop-up peringatan mematikan (Tugas Baru, Alfa) menembus ponsel mereka bahkan saat layar terkunci.
 
 ---
 
-## 🛠️ Arsitektur & Stack Teknologi
+## ✨ Modul Fitur Papan Atas
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                   CLIENT LAYER                          │
-│  Android App (Kotlin Native)  /  Mobile Browser         │
-└───────────┬───────────────────────────┬─────────────────┘
-            │ HTTPS (Retrofit2)         │ OneSignal SDK
-            │                           ▼
-┌───────────▼──────────┐   ┌───────────────────────────────┐
-│   VERCEL EDGE        │   │  OneSignal Platform            │
-│  vercel-php → api/   │   │  Push Notification Delivery    │
-│  Laravel 13 Backend  │   └───────────────────────────────┘
-└───────────┬──────────┘
-            │ MySQL Protocol (SSL)
-┌───────────▼──────────────────────────────────────────────┐
-│                    TiDB CLOUD                            │
-│  Distributed MySQL-Compatible · 8 Tables + relations     │
-└──────────────────────────────────────────────────────────┘
+### 1. 🌐 Web Dashboard "Stealth-Ops" (Alpine.js + Tailwind)
+Pengalaman *Desktop/Web* paling memukau bagi pengurus kelas (Ketua/Sekretaris/Bendahara). Manajemen entri data besar-besaran, analisis keuangan detail, dan penjemputan berkas laporan (Export PDF/Excel) dapat dilakukan bebas-loading (_Client-side Transitions_) dengan estika gelap pekat memanjakan mata yang tidak akan ditemui pada sistem Siakad kuno kampus.
+
+### 2. 🚷 Gamefication Kehadiran & Sanksi "Sisa Nyawa"
+Mengadopsi psikologi disiplin otomatis melalui mode permainan *Life-Tokens*:
+- Default setiap peluru mata kuliah diberikan **3 Sisa Nyawa**.
+- Ketidakhadiran tanpa keterangan tervalidasi akan memotong **1 Nyawa**.
+- Saat nyawa membentur angka nol = Panel dashboard meledak merah menyala, status mahasiswa terkunci ke indikator `DICEKAL (Risiko Drop-Out)`.
+
+### 3. 💼 Laporan Saldo Moneter Real-Time Kas Kelas
+- Transaksi terhubung sinkron antara penginputan web dasbor dan pembacaan di HP mahasiswa. Kalkulasi saldo akhir dikeroyok mesin lewat rumus `SUM(income) - SUM(expense)`.
+- *Streaming Export Engine*: Mampu melontarkan log dokumen CSV berkapasitas ratusan baris langsung ke *browser output stream* (`php://output`), tanpa membebani limit memori Vercel. 
+
+### 4. 🗄️ Repositori Storage Bebas Hambatan (Base64 Injection)
+Menghancurkan limitasi *Filesystem Stateless!* Seluruh PDF silabus dan Makalah Tugas Mahasiswa tidak di-upload ke *Storage Local* (yang mana akan terhapus saat Vercel server _sleep_). Dokumen dikompres menjadi bentuk string karakter (Base64 LONGTEXT). Keabadian data terjamin di basis data SQL Cloud. 
+
+### 5. 🔔 Radar Real-Time Push (Native OneSignal Integration)
+Sistem Notifikasi Hibrida Handoff:
+- Notifikasi bertumpuk di Lonceng Web Aplikasi bagi pengguna laptop.
+- Menyetrumkan sinyal API ke Server OneSignal, yang berlanjut meledakkan Pop-Up Latar Belakang (Background Notification) langsung pada OS Android Mahasiswa ketika sistem menyuntikkan informasi Ujian atau Tagihan Kas yang tertunda.
+
+---
+
+## 🛠️ Detail Arsitektur & Teknologi Server (Hybrid Monolith)
+
+Karena sejatinya KelasHUB adalah *Website Monolith* canggih yang berevolusi menjadi API provider, arsitekturnya berwujud Hibrida:
+
+```text
+       [ LAPISAN PENGGUNA UJUNG ]
+              │                            │
+   📱 NATIVE KOTLIN APP            🌐 MODERN WEB BROWSER
+   (JSON Consumer & Push Target)   (Blade HTML & Alpine.js Renderer)
+              │                            │
+              ▼                            ▼
+  ┌─────────────────────────────────────────────────────────┐
+  │ ⚡ VERCEL EDGE RUNTIME (Stateless & Serverless)          │
+  │    (vercel-php bridge handler)                          │
+  │    → Router Web (Kembalian DOM) / API (Kembalian JSON)  │
+  │    → Middleware Filter & Session Cookie Encryption      │
+  └───────────────────────────┬─────────────────────────────┘
+                              │
+  ┌───────────────────────────▼─────────────────────────────┐
+  │ ☁️ TiDB SQL CLOUD (Multi-Tenant Persistence)             │
+  │    Menjalankan Global scope isolasi Data Antar-Kelas    │
+  └─────────────────────────────────────────────────────────┘
 ```
 
-### Dependency Utama
-
-| Komponen | Versi | Fungsi |
+**Esensi Stack Teknologi Inti:**
+| Pilar | Versi | Sejarah Operasional |
 |:---|:---:|:---|
-| Laravel | 13.x | Backend framework utama |
-| PHP | 8.3+ | Runtime |
-| TiDB Cloud | — | Database produksi (MySQL-compat) |
-| Tailwind CSS | v4 | Styling framework |
-| Alpine.js | 3.x | Reaktivitas frontend ringan |
-| OneSignal | REST API v2 | Push notification eksternal |
-| OneSignal Android SDK | 5.x | Push notification mobile |
-| Retrofit2 | 2.9.0 | HTTP client Android |
-| barryvdh/laravel-dompdf | ^3.1 | Ekspor laporan PDF |
-| vercel-php | 0.9.0 | PHP runtime di Vercel Serverless |
+| **Laravel Framework** | `13.x` | Pondasi MVC Web yang kini bertransformasi menjadi Hub API. |
+| **PHP Runtime** | `8.3+` | Eksekutor kencang dengan memori terbatas Vercel. |
+| **TiDB Cloud** | `MySQL 8` | Basis data nir-server menelan entri string dokumen base64. |
+| **TailwindCSS** | `v4` | Pelukis antarmuka *Stealth Dark Mode* pada web dashboard. |
+| **Alpine.js** | `3.x` | Memanipulasi DOM Web HTML seakan hidup tanpa memuat ulang (SPA-feel). |
+| **Kotlin Native** | `v1.9` | Aplikasi Performa Cepat Sistem Operasi Android (Pendamping Web). |
 
 ---
 
-## 🗄️ Struktur Database
-
-```
-academic_classes (1) ──────── (N) students
-academic_classes (1) ──────── (N) assignments
-academic_classes (1) ──────── (N) cash_ledgers
-academic_classes (1) ──────── (N) class_attendances
-academic_classes (1) ──────── (N) learning_modules
-academic_classes (1) ──────── (N) academic_schedules
-academic_classes (1) ──────── (N) notifications
-
-students (1) ─────────────── (N) class_attendances
-students (1) ─────────────── (N) cash_ledgers
-students (1) ─────────────── (N) notifications
-students.onesignal_id ←───── OneSignal Subscription ID
-```
-
-### Detail Tabel Kunci
-
-#### `students`
-```sql
-id              BIGINT PK
-class_id        FK → academic_classes.id
-nim             VARCHAR(20) UNIQUE
-name            VARCHAR(255)
-password        VARCHAR(255)         -- bcrypt
-role            ENUM('ketua_kelas','sekretaris','bendahara','mahasiswa','super_admin')
-onesignal_id    VARCHAR(255) NULL    -- ← BARU v2.3: OneSignal Subscription ID
-device_id       VARCHAR(255) NULL
-created_at, updated_at
-```
-
-#### `notifications`
-```sql
-id              BIGINT PK
-class_id        FK → academic_classes.id
-student_id      FK → students.id  (nullable = untuk semua anggota kelas)
-message         VARCHAR(500)
-is_read         BOOLEAN DEFAULT FALSE
-created_at, updated_at
-```
-
----
-
-## ⚙️ Instalasi Lokal
-
-### Prasyarat
-- PHP >= 8.3 dengan ekstensi: `pdo`, `mbstring`, `openssl`, `tokenizer`, `xml`, `ctype`, `json`
-- Composer >= 2.x
-- Node.js >= 18.x & npm
-
-### Langkah-langkah
-
-```bash
-# 1. Clone repositori
-git clone https://github.com/gmailtesid-stack/KlasHUB.git
-cd KlasHUB
-
-# 2. Install dependency PHP
-composer install
-
-# 3. Install dependency Node.js & build asset
-npm install
-npm run build
-
-# 4. Siapkan environment
-cp .env.example .env
-php artisan key:generate
-
-# 5. Konfigurasi database & OneSignal di .env
-# DB_CONNECTION=sqlite
-# ONESIGNAL_APP_ID=04a9cff3-874a-4e84-96c0-f79cfa86d255
-# ONESIGNAL_REST_API_KEY=os_v2_app_...
-
-# 6. Jalankan migrasi
-php artisan migrate
-
-# 7. Jalankan server lokal
-php artisan serve
-```
-
-### Konfigurasi .env Penting
-
-```env
-APP_NAME=KelasHUB
-APP_ENV=local
-APP_DEBUG=true
-APP_URL=http://localhost:8000
-
-DB_CONNECTION=sqlite
-
-SESSION_DRIVER=cookie
-CACHE_STORE=database
-
-# OneSignal (untuk push notification)
-ONESIGNAL_APP_ID=04a9cff3-874a-4e84-96c0-f79cfa86d255
-ONESIGNAL_REST_API_KEY=os_v2_app_...
-```
-
----
-
-## 🚀 Deployment ke Vercel
-
-### Langkah Deploy
-
-```bash
-# 1. Install Vercel CLI
-npm install -g vercel
-
-# 2. Login ke akun Vercel
-vercel login
-
-# 3. Deploy
-vercel --prod
-```
-
-Atau cukup **push ke GitHub** — Vercel otomatis trigger deploy baru.
-
-### Environment Variables di Vercel Dashboard
-
-| Key | Keterangan |
-|:---|:---|
-| `APP_KEY` | Generate: `php artisan key:generate --show` |
-| `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` | TiDB Cloud |
-| `MYSQL_ATTR_SSL_CA` | `/var/task/cacert.pem` |
-| `ONESIGNAL_APP_ID` | `04a9cff3-874a-4e84-96c0-f79cfa86d255` |
-| `ONESIGNAL_REST_API_KEY` | REST API Key dari OneSignal Dashboard |
-
----
-
-## 🗺️ Referensi Route & API
-
-### Public Routes
-| Method | URL | Deskripsi |
-|:---:|:---|:---|
-| `GET` | `/` | Redirect ke `/login` |
-| `GET/POST` | `/login` | Halaman & proses login |
-| `POST` | `/logout` | Logout & invalidasi sesi |
-
-### Mobile API Routes
-| Method | URL | Deskripsi |
-|:---:|:---|:---|
-| `POST` | `/kh/device-token` | Registrasi OneSignal token perangkat |
-| `GET` | `/kh/api/dashboard-data` | Data dashboard untuk Android native |
-
-### Protected Routes (Middleware: `auth`)
-| Method | URL | Role |
-|:---:|:---|:---:|
-| `GET` | `/dashboard` | Semua |
-| `POST` | `/kh/password` | Semua |
-| `POST` | `/kh/attendance` | Semua |
-| `GET` | `/report/pdf/{id}` | Semua |
-
-### Protected Routes (Admin)
-| Method | URL | Middleware |
-|:---:|:---|:---|
-| `POST` | `/kh/schedule` | `role:ketua_kelas,sekretaris,bendahara` |
-| `POST` | `/kh/module` | `role:ketua_kelas,sekretaris,bendahara` |
-| `POST` | `/kh/cash` | `role:ketua_kelas,sekretaris,bendahara` |
-| `POST` | `/kh/validate` | `role:ketua_kelas` |
-| `POST` | `/kh/class` | `role:ketua_kelas` (Super Admin) |
-
-Lihat [docs/API.md](docs/API.md) untuk dokumentasi lengkap.
-
----
-
-## 🔐 Role-Based Access Control (RBAC)
-
-| Fitur | super_admin | ketua_kelas | sekretaris | bendahara | mahasiswa |
-|:---|:---:|:---:|:---:|:---:|:---:|
-| Registrasi Kelas | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Kirim Notifikasi Push | ✅ | ✅ auto | ✅ auto | ✅ auto | ❌ |
-| Input Absensi | ✅ | ✅ | ✅ | ✅ | 🔘 Mandiri |
-| Validasi Data | ✅ | ✅ | ❌ | ❌ | ❌ |
-| Upload Modul | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Download Modul | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Input Kas | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Export Laporan | ✅ | ✅ | ✅ | ✅ | ❌ |
-
----
-
-## 🔔 Sistem Push Notification (OneSignal)
-
-KelasHUB v2.3 menggunakan sistem notifikasi **dua lapis**:
-
-| Jenis | Mekanisme | Platform |
-|:---|:---|:---|
-| **Internal** | Disimpan di tabel `notifications`, tampil di dashboard | Web & Mobile |
-| **Eksternal** | Pop-up via OneSignal REST API v2 | Android Native |
-
-### Trigger Otomatis Notifikasi
-| Aksi | Target Penerima |
-|:---|:---|
-| Tambah Tugas Baru | Semua anggota kelas |
-| Upload Modul | Semua anggota kelas |
-| Input Transaksi Kas | Semua anggota kelas |
-| Submit Rekap Mandiri | Ketua Kelas & Sekretaris |
-| Validasi Rekap | Mahasiswa yang bersangkutan |
-
-### Arsitektur Notifikasi
-```
-Action (Controller)
-    → NotificationService::notifyClass($classId, $msg)
-        → Insert ke tabel notifications (internal)
-        → HTTP POST ke OneSignal API v2 (eksternal)
-            → OneSignal Platform
-                → Push ke perangkat mahasiswa (onesignal_id)
-```
-
----
-
-## ⚡ Optimasi Vercel Serverless
-
-| Masalah | Solusi |
-|:---|:---|
-| Session tidak persistent | `SESSION_DRIVER=cookie` (encrypted, stateless) |
-| File cache tidak bisa ditulis | `VIEW_COMPILED_PATH=/tmp` |
-| Eloquent terlalu berat di loop | Gunakan `DB::table()` murni |
-| Export data besar | CSV Streaming via `fputcsv` ke `php://output` |
-| File storage tidak tersedia | Simpan file modul sebagai `base64` di database |
-| Cron job tidak ada di Vercel Free | Vercel Cron (`vercel.json`) + route khusus |
-
----
-
-## 📱 Aplikasi Android Native (Kotlin)
-
-Proyek ini menyertakan aplikasi Android native (`android-webview/`) dengan koneksi langsung ke API Laravel.
-
-### Struktur Folder
-```
-android-webview/
-├── app/
-│   ├── build.gradle           (OneSignal dependency)
-│   └── src/main/
-│       ├── java/com/waveproject/kelashub/
-│       │   ├── MainApplication.kt  ← Inisialisasi OneSignal
-│       │   ├── MainActivity.kt     ← Dashboard + token sync
-│       │   ├── LoginActivity.kt    ← Login form
-│       │   ├── DashboardActivity.kt← Launcher activity
-│       │   ├── ApiClient.kt        ← Retrofit singleton
-│       │   └── ApiInterface.kt     ← Endpoint definitions
-│       ├── res/
-│       └── AndroidManifest.xml    ← MainApplication registered
-├── build.gradle
-└── gradle/wrapper/gradle-wrapper.properties
-```
-
-### Cara Build APK
-```bash
-# Di Android Studio:
-# Build > Build Bundle(s) / APK(s) > Build APK(s)
-
-# Output:
-# android-webview/app/build/outputs/apk/debug/app-debug.apk
-```
-
-### Alur Push Notification di Android
-```
-Buka Aplikasi
-  → MainApplication.onCreate()
-      → OneSignal.initWithContext(appId)
-  → DashboardActivity / LoginActivity
-  → Login Berhasil → MainActivity
-      → syncOneSignalToken()
-          → POST /kh/device-token {player_id: uuid}
-              → students.onesignal_id = uuid  ✅
-```
-
----
-
-## 🎨 Filosofi Desain UI
-
-### "Stealth Dark Operations" Theme
-KelasHUB menggunakan estetika **Zinc-900 Stealth** — hitam pekat dengan aksen abu-abu dingin dan highlight biru elektrik. Terinspirasi dari UI terminal hacker dan dashboard sistem keamanan.
-
-| Prinsip | Implementasi |
-|:---|:---|
-| **Mobile-First** | Bottom Navigation Bar, satu jempol operasional |
-| **Data Clarity** | Label menonjol + efek glow untuk info kritis |
-| **Micro-Animation** | Alpine.js transitions pada semua modal & tab |
-| **Glassmorphism** | `backdrop-blur-md` + `bg-white/[0.02]` pada card |
-| **Premium Feel** | Custom font tracking, letter-spacing, shadow-xl |
-
----
-
-## 🤝 Kontribusi
-
-Silakan baca [CONTRIBUTING.md](CONTRIBUTING.md) untuk panduan kontribusi.
-
-```bash
-# Fork repo → Clone → Buat branch fitur
-git checkout -b feature/nama-fitur
-
-# Commit dengan format konvensional
-git commit -m "feat(notification): tambah trigger saat input kas"
-
-# Push & buat Pull Request
-git push origin feature/nama-fitur
-```
-
----
-
-## 📜 Lisensi
-
-Proyek ini dilisensikan di bawah **MIT License** — bebas digunakan, dimodifikasi, dan didistribusikan.
+## 🔐 Rambu Keamanan & Celah Sistem
+
+Mendapatkan keamanan maksimal sangat ditekankan:
+1. **Anti Identifikasi Palsu (IDOR)**:
+   Aplikasi kampus rentan manipulasi parameter ID `/user/1` ke `/user/2`. KelasHUB menggunakan benteng dinding partisi `Auth::user()->class_id` menggunakan *Eloquent Global Scope* yang dengan telak menolak query lintas kelas instansi.
+2. **Perisai Ganda XSS (Cross-Site Scripting)**:
+   Seluruh masukan di Dashboard Web (pengumuman, nama tugas) wajib digempur lolos tag filter `htmlspecialchars` bawaan Blade Template Laravel dan dipantau kaku melalui *SecurityHeaders Middleware*, mengusir ClickJacking pada panel *Super Admin*.
 
 ---
 
 <div align="center">
-
-Dikembangkan dengan oleh **Wave Project.ID**  
-Untuk memajukan efisiensi administrasi akademis mahasiswa Indonesia 🇮🇩
-
-**v2.3.0** — Push Notification Release
-
+    <h3>Direkayasa Oleh Seniman Kode Taktis dari:</h3>
+    <h2>Wave Project.ID (Ariyas Pratama Ramadhan)</h2>
+    <p>Semoga teknologi open-source kita memfasilitasi masa depan gemilang anak bangsa 🇮🇩</p>
+    <code>"Evolusi Operasional Kelas - Bermula Dari Lembar Kertas Menuju Penyiaran Lintas Ekosistem"</code>
 </div>

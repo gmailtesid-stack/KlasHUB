@@ -1,181 +1,150 @@
-# Panduan Kontribusi — KelasHUB
+# Panduan Arsitektur & Kontribusi Terbuka (Contributing Guide) — KelasHUB
 
-Terima kasih atas minat Anda untuk berkontribusi pada **KelasHUB**! 🎉  
-Panduan ini menjelaskan cara berkontribusi dengan efektif pada platform v2.3.0+.
-
----
-
-## 📋 Daftar Isi
-- [Kode Etik](#-kode-etik)
-- [Cara Melaporkan Bug](#-cara-melaporkan-bug)
-- [Cara Mengajukan Fitur](#-cara-mengajukan-fitur)
-- [Alur Kontribusi Kode](#-alur-kontribusi-kode)
-- [Standar Penulisan Kode](#-standar-penulisan-kode)
-- [Konvensi Commit](#-konvensi-commit)
+Selamat bergabung ke dalam garis pertempuran Repositori **KelasHUB**! 🎉  
+Jika Anda berada di sini, Anda siap menyentuh titik-titik krusial ekosistem sistem yang secara radikal berevolusi: **Dari Platform Website Monolitik Biasa (v1.0), Bermutasi Menjadi Gerbang Hybrid API, dan Meluber Lewat Native Android Client (v2.3)**.  
+Keunikan hibrida aplikasi ini menuntut Anda, sang Insinyur, menaati kompilasi standar eksekusi ekstrem agar Web Render (Alpine.js Dashboard) dan Konsumsi Layar API Mobil (Retrofit) di Cloud Vercel tidak mengalami tabrakan fatal (Crash).
 
 ---
 
-## 🤝 Kode Etik
-
-Proyek ini mengikuti standar komunitas open-source yang inklusif dan saling menghormati. Perlakukan semua kontributor dengan profesional dan supportif.
+## 📋 Tata Index Kontribusi Teknis
+- [Etika Kolaborasi Sosial Jaringan](#-etika-kolaborasi-sosial-jaringan)
+- [Algoritma Pelaporan Insiden Bersejarah (Bug & Celah)](#-algoritma-pelaporan-insiden-bersejarah-bug--celah)
+- [Protokol Validasi Proposal Arsitektur Baru](#-protokol-validasi-proposal-arsitektur-baru)
+- [Alur Version Control & Percabangan Fitur](#-alur-version-control--percabangan-fitur)
+- [Manifesto Penulisan Kode Beririsan Lintas-Dunia (Web vs Mobile)](#-manifesto-penulisan-kode-beririsan-lintas-dunia-web-vs-mobile)
+  - [Aturan Perilaku Edge RAM Vercel (PHP)](#aturan-perilaku-edge-ram-vercel-php)
+  - [Doktrin Pertahanan Aplikasi Siber](#doktrin-pertahanan-aplikasi-siber)
+  - [Tata Krama Web DOM Renderer (Blade & Alpine.js)](#tata-krama-web-dom-renderer-blade--alpinejs)
+  - [Standar Operasional Robot Android (Kotlin)](#standar-operasional-robot-android-kotlin)
+- [Kewajiban Tata Bahasa Commit History](#-kewajiban-tata-bahasa-commit-history)
 
 ---
 
-## 🐛 Cara Melaporkan Bug
+## 🤝 Etika Kolaborasi Sosial Jaringan
 
-1. Pastikan bug belum dilaporkan di [Issues](https://github.com/gmailtesid-stack/KlasHUB/issues).
-2. Buat Issue baru dengan template berikut:
+Proyek perangkat lunak kampus edukasi berskala open-source ini adalah tempat peleburan ide. Dilarang meremehkan usulan atau kode pengembang muda. Hantaman verbal merendahkan, diskriminasi pada isu pelaporan kerentanan (blame culture), akan berakibat pada putusan penghapusan (*Ban*) tanpa musyawarah. Selalu tinggalkan komentar pada kode warisan (Legacy code).
+
+---
+
+## 🐛 Algoritma Pelaporan Insiden Bersejarah (Bug & Celah)
+
+Jika Anda melihat kebobolan Keamanan Multi-Tenant (Seumpama: IDOR akses Mahasiswa Kelas C sukses masuk meretas absen teman Kelas A via injeksi form Request), segera lempar laporan *Direct Vulnerability Report* Rahasia! 
+
+Untuk Cacat Sistem (Bug) Web Front-End / Parsing Data Error di Mobile Android:
+1. Yakinkan Diri: Pastikan riwayat pencarian Issue di Repo tidak menduplikasi masalah *(No Copy-Cat Reports)*.
+2. Buat Issue berstruktur dengan melampirkan kronologi dari 2 Sisi Dunia sistem ini:
 
 ```markdown
-**Deskripsi Bug:**
-[Jelaskan bug secara singkat]
+**Vonis Gangguan:** (Cth: Gagal memuat Modul File dari Kotlin Retrofit, tapi Web Unduh Berhasil)
 
-**Langkah Reproduksi:**
-1. Login sebagai '...'
-2. Klik '...'
-3. Lihat error di '...'
+**Konteks Sejarah & Analitik Bug:**
+[Jelaskan apakah ini bug warisan pasca migrasi web API JSON atau rute terputus]
 
-**Perilaku yang Diharapkan:**
-[Apa yang seharusnya terjadi]
+**Aksi Percobaan Ulang (Repro):**
+1. Eksekusi Login Via Emulator Kotlin di Role 'Mahasiswa'.
+2. Sisi Web Administrator mencoba menekan tombol Upload tipe file (Base64 Injection).
+3. Modul melempar kembalian Json `Null` pada HP target!
 
-**Screenshot / Log:**
-[Tambahkan jika ada]
+**Reaksi Alam Bawah (Kenyataan & Ekspektasi):**
+Web Browser mencetak `HTTP 200 OK` HTML File, tetapi Android mem-parse Syntax Exception. (Harap JSON turun dengan kolom URL Base64 yang Valid).
 
-**Environment:**
-- OS: [Windows / macOS / Linux]
-- Browser / Platform: [Chrome / Android App]
-- Versi PHP: [8.3.x]
-- Versi App: [2.3.0]
+**Jejaring Tangkapan Layar (Network SS):**
+[Buktikan lewat Console Chrome Inspect Element atau Logcat Android Studio]
 ```
 
 ---
 
-## 💡 Cara Mengajukan Fitur
+## 💡 Protokol Validasi Proposal Arsitektur Baru
 
-1. Diskusikan idenya terlebih dahulu via [GitHub Discussion](https://github.com/gmailtesid-stack/KlasHUB/discussions).
-2. Jika disetujui, buat Issue dengan label `enhancement`.
-3. Tunggu konfirmasi sebelum mulai mengerjakan.
+JANGAN langsung menciptakan PULL REQUEST bila Anda bersikeras merombak jantung database sistem, menaikkan librari pihak-ketiga besar (Bloatware), atau mengubah letak skenario arsitektur Monolitik menjadi Microservice liar.
+1. Bukalah gelanggang persetujuan via *Github Discussion / Request For Comments (RFC)*. 
+2. Buktikan argumen bahwa integrasi ide Anda (mis. Penyimpanan Beralih Munggunakan Cloud Object Storage S3, daripada Base64 string Database eksisting KelasHUB) itu hemat anggaran RAM.
+3. Setelah palu Maintainer diketuk Hijau, baru buka branch `Enhancement`.
 
 ---
 
-## 🔄 Alur Kontribusi Kode
+## 🔄 Alur Version Control & Percabangan Fitur
+
+Ikuti skenario percabangan fitrah *Feature Toggling Isolator*: 
 
 ```bash
-# 1. Fork repositori ke akun Anda
+# 1. Bajak Repositori secara Kloning Forking
+git clone https://github.com/[AKUN_ANDA]/KlasHUB.git
 
-# 2. Clone fork Anda
-git clone https://github.com/YOUR_USERNAME/KlasHUB.git
-cd KlasHUB
-
-# 3. Tambahkan remote upstream
+# 2. Pantau aliran induk pembaruan tim
 git remote add upstream https://github.com/gmailtesid-stack/KlasHUB.git
 
-# 4. Sync dengan main branch terbaru
+# 3. Kuras perbaruan dari nadi Induk (Produksi Puncak Main)
 git checkout main
 git pull upstream main
 
-# 5. Buat branch fitur baru
-git checkout -b feat/nama-fitur-singkat
+# 4. Kredensial Isolasi Pekerjaan: Percabangan Tersendiri
+git checkout -b feat/redesain-web-alpine-navigation
 
-# 6. Kerjakan perubahan Anda
+# 5. --- TULIS MANUVER KODE ANDA TANPA MENGGANGGU FUNGSI LAIN ---
 
-# 7. Commit dengan format konvensional
+# 6. Susun sejarah Commit secara Presisi Konvensional
 git add .
-git commit -m "feat(notification): tambah trigger notifikasi saat validasi data"
+git commit -m "feat(web-ui): perombakan layout animasi navigasi sisi Dashboard Alpine"
 
-# 8. Push ke fork Anda
-git push origin feat/nama-fitur-singkat
+# 7. Unggah isolasi ke langit Fork Anda
+git push origin feat/redesain-web-alpine-navigation
 
-# 9. Buat Pull Request ke branch main di repo utama
+# 8. Lepaskan permintaan (Pull Request)
 ```
 
 ---
 
-## 📝 Standar Penulisan Kode
+## 📝 Manifesto Penulisan Kode Beririsan Lintas-Dunia (Web vs Mobile)
 
-### PHP / Laravel
-- Ikuti **PSR-12** coding standard.
-- Gunakan **Query Builder** (`DB::table()`) untuk operasi dalam loop atau batch — bukan Eloquent — demi efisiensi RAM Vercel.
-- Selalu tambahkan `where('class_id', $classId)` pada setiap query untuk isolasi data antar kelas.
-- Tangani exception dengan `try-catch` pada semua method controller.
+Kehebatan KelasHUB hari ini adalah menahan beban menjadi **Website Blade Engine Render Sekaligus Restful API Provider** bersamaan pada lingkungan komputasi tak bernyawa *(Stateless Edge)* Vercel. 
 
-```php
-// ✅ Benar
-$data = DB::table('assignments')
-    ->where('class_id', $classId)
-    ->orderBy('created_at', 'desc')
-    ->get();
+### 🛡️ Aturan Perilaku Edge RAM Vercel (PHP)
+Jangan tertipu! Mesin Vercel Edge Serverless itu miskin RAM (128mb - 256mb) dan rakus Limit Siklus **<10 Detik Timeout**.
+- Jauhi pemakaian fitur Database ORM Eloquent di iterasi luar biasa tinggi (`Collection->map()` pada ratusan tagihan kas). Bergantunglah pada mesin asali *Native Data Query* `DB::table(...)`.
+- Larangan Ekstrim *File Write Constraint*: Jangan paksa direktori `/logs` atau `Storage/app/public` untuk merekam sesi/upload file lokal! Anda wajib menjatuhkan (export) file lewat *Streaming `php://output`* (Seperti di Reporting Laporan Kas CSV PDF) atau memutilasi Berkas di-*encoding (Base64 Database)*. Modifikasi Sesi Sistem dipaksa mati-matian menggunakan tipe pertahanan `Encrypted SESSION_COOKIE_DRIVER`. 
 
-// ❌ Hindari di loop/batch
-$data = Assignment::where('class_id', $classId)->get();
-```
+### 🔐 Doktrin Pertahanan Aplikasi Siber
+- Lapis Multidimensi Multi-Tenant: Setiap barisan kueri pengais Data dari Database **TIDAK BOLEH** hanya diam tanpa Scope. Apabila anda memakai Raw Kueri, *WAJIB INJEKSI* filter penangkis `->where('class_id', $classId)`. Ini nyawa bagi privasi laporan antar Universitas/Kelas terisolasi! 
+- Proteksi Filter Silang Request: Lindungi rute rawan dengan Middleware Tameng `CheckRoleKelasHub.php`.
 
-### Notifikasi
-- **Wajib** menggunakan `NotificationService` untuk semua pengiriman notifikasi. Jangan panggil OneSignal API langsung dari Controller.
+### 🎨 Tata Krama Web DOM Renderer (Blade & Alpine.js)
+Evolusi Front-End Desktop/Web kami bukanlah era reaktif murni (Bukan NextJS/Vue/React). Ini perpaduan brutal Monolit Blade Engine bertemu reaktivitas asinkron Alpine.js:
+- Semua model tombol dinamis (Modal Popup Tambah Absen, Animasi Hover) hidup lewat perintah atribut hantu (Directive) `x-data`, `x-show`, `x-transition`. JANGAN mengotori file menggunakan ekstensi `document.getElementById` panjang layaknya pemrograman jQuery tahun 2011.
+- Lukisan Visual Website dikanvaskan memanggil properti kelas *TailwindCSS V4* murni (Zinc-900 Slate Palette).
 
-```php
-// ✅ Benar
-app(NotificationService::class)->notifyClass($classId, 'Ada tugas baru!');
-
-// ❌ Hindari
-Http::post('https://onesignal.com/...', [...]);  // dari dalam Controller
-```
-
-### Blade / Frontend
-- Gunakan `x-data` Alpine.js untuk reaktivitas, bukan JavaScript inline.
-- Semua modal harus bisa ditutup dengan klik di luar (`@click.outside`).
-- Pertahankan Zinc-900 color palette untuk konsistensi tema.
-
-### Database / Migrasi
-- Selalu sertakan method `down()` yang benar pada setiap migrasi.
-- Beri nama migrasi dengan format: `YYYY_MM_DD_HHMMSS_deskripsi_singkat.php`
-- Tambahkan `class_id` FK ke tabel baru jika berkaitan dengan data per-kelas.
-
-### Android (Kotlin)
-- Semua API call harus melalui `ApiClient.apiInterface`.
-- Token sinkronisasi (OneSignal) harus dipanggil ulang setiap kali user masuk ke `MainActivity`.
+### 📱 Standar Operasional Robot Android (Kotlin)
+Kode mobile Kotlin kita berdiri merdeka. Panggil API jembatan Web lewat terowongan **Retrofit + OkHttp**. 
+- Kunci Cookie Sistem Autentikasi web Vercel mesti diisap erat-erat kedalam _Persistent Cookie Jar Object_ di `ApiClient.kt`. Hilangnya cookie ini memicu Android OS diblokir tendangan `HTTP 401 Unauthorized` terus menerus dari Web Engine!
+- *Worship the Token*: Lapis kode `MainActivity` ditugaskan spesifik untuk menembakkan (push-trigger) Token *OneSignal Identifier HP (Player UUID)* kapan saja App dirasa bangkit dari tidur, melempar data ke rute API `POST /kh/device-token`. (Jangan sampai User HP melewatkan bel getar penagihan kas!).
 
 ---
 
-## 📌 Konvensi Commit
+## 📌 Kewajiban Tata Bahasa Commit History
 
-Gunakan format **Conventional Commits**:
+Untuk proyek bersejarah dengan migrasi sebesar ini, konvensi pesan (Commit Lexicon) adalah kompas pemandu *Debugging* tim lain.
 
-```
-<type>(<scope>): <deskripsi singkat>
-```
+Tipe Struktur Baku: `<jenis_aksi>(<modul/area>): <Deskripsi Pukulan Telak... (Tanpa Tutup Titik)>`
 
-### Tipe Commit yang Valid
-
-| Tipe | Kapan Digunakan |
+| Awalan Leksikal (Tipe) | Kapan Senjata ini Ditarik? |
 |:---|:---|
-| `feat` | Fitur baru |
-| `fix` | Perbaikan bug |
-| `refactor` | Perubahan kode tanpa menambah/memperbaiki fitur |
-| `docs` | Perubahan dokumentasi saja |
-| `style` | Format, spasi (tanpa ubah logika) |
-| `test` | Menambah atau memperbaiki test |
-| `chore` | Update dependency, konfigurasi |
-| `perf` | Peningkatan performa |
+| `feat` / `fitur` | Mencetak Sejarah Fungsi Baru! (Web Route Baru, Native Screen Activity). |
+| `fix` / `bugfix` | Menghembuskan nafas menyadarkan blokir error 500 Crash Pengecualian Sistem (Patch). |
+| `refactor` / `renovasi`| Pemolesan keindahan memori mesin (Logic Optimization) tanpa mengubah efek DOM UI layar. |
+| `docs` | Menitikberatkan dokumentasi rahasia (*Manual Koding, API Postman Docs*, komentar). |
+| `sec` | Injeksi penguatan zirah Siber. Detoksifikasi parameter URL peretas, Injeksi *X-Frame Headers*. |
+| `perf` | Rekayasa mesin peras SQL demi efisiensi detik (Dari 12 Detik Timeout ➞ 0.4 Detik Kilat). |
 
-### Contoh Commit yang Benar
-
-```bash
-feat(notification): tambah NotificationService dengan OneSignal v2
-fix(android): perbaiki null check pada syncOneSignalToken
-docs(api): update dokumentasi endpoint /kh/device-token
-chore(android): update OneSignal SDK ke versi terbaru
-perf(export): ganti Eloquent dengan DB::table pada ekspor CSV
-```
+**Pengeksekusian Elegan:**
+> `refactor(web-report): menggeser mesin Eloquent All ke arah DB::table Streaming menekan I/O Memory RAM Serverless`  
+> `feat(android-sync): koroutin penangkapan pembaruan token Player OneSignal` 
 
 ---
 
-## 🧪 Sebelum Submit Pull Request
+## 🧪 Ceklis Pra-Pull Request (Validasi Terakhir)
 
-Pastikan:
-- [ ] Kode tidak memiliki syntax error (`php artisan route:list`)
-- [ ] Migrasi berjalan bersih (`php artisan migrate:fresh`)
-- [ ] Tidak ada query tanpa `where('class_id')` pada tabel multi-kelas
-- [ ] Semua endpoint baru dilindungi middleware `auth`
-- [ ] Fitur yang memerlukan notifikasi sudah menggunakan `NotificationService`
-- [ ] Format kode sudah sesuai PSR-12 (`./vendor/bin/pint`)
+- [ ] Tidak ada penulisan skrip simpan disk Server Vercel statis (Semuanya Base64 Data / Cookies)! 
+- [ ] Pemeriksaan Otentikasi Lapis Siber: Permintaan DB disuntik `$class_id` Filter Global Tenant.
+- [ ] Web Render: Modal interaksi menggunakan eksekusi `x-show` Alpine.js bukan vanilla JS document-query. 
+- [ ] Mesin SDK Terminal Android `gradlew app:assembleDebug` dapat mencetak APK tanpa kegagalan Gradle Sync.
+- [ ] Standarisasi Rapih Format PHP MVC divalidasi ketaatan spasi lewat skrip `./vendor/bin/pint`.

@@ -1,153 +1,75 @@
-# Product Requirement Document (PRD): KelasHUB — All-in-One Class Operations Suite
+# Product Requirement Document (PRD): KelasHUB v2.3.0 (Enterprise Specification)
 
-**Versi**: 2.3 (Push Notification Release)  
-**Status**: Live / Production  
-**Author**: Ariyas Pratama Ramadhan By WaveProject.ID  
-**Bahasa**: Indonesia  
-**Tanggal**: 30 Mei 2026
+**Status Tinjauan (Review Status)**: TERKUNCI & MENCAPAI TAHAP PRODUKSI (LOCKED & IN PRODUCTION)  
+**Tahun Finansial / Kalender Siklus**: Q2 2026 - Sprint v2.3.0  
+**Dokumen Arsitek Utama**: Tim Pengembang KelasHUB & WaveProject.ID  
+**Klasifikasi Dokumen**: Rahasia Pabrikator (Confidential Operational Blueprint)
 
 ---
 
-## 1. Ringkasan Eksekutif (Executive Summary)
-**KelasHUB** adalah solusi *enterprise-grade* untuk manajemen operasional kelas perkuliahan yang mengintegrasikan sistem kehadiran (attendance), buku kas (finance), repositori modul (LMS), manajemen jadwal, dan kini **sistem notifikasi push real-time** dalam satu platform terpadu. Proyek ini didesain khusus untuk berjalan secara efisien di infrastruktur *Serverless* dengan arsitektur *Multi-Tenant Isolation*, memungkinkan skalabilitas lintas kelas dengan biaya operasional minimal (*Low-Cost, High-Impact*).
+## 1. Abstrak Penyatuan Platform (The Unified Platform Vision)
+**KelasHUB** v2.3.0 adalah titik puncak penyatuan visi dari sebuah sistem manajemen Kelas (Web Monolitik Klasik) yang menembus batas batas menjadi Super-App ekosistem lintas batas (*Web and Mobile Native Ecosystem*). Platform dibangun sebagai solusi *enterprise-grade* untuk manajemen operasional presensi, buku kas finansial, dan pengumpulan (LMS) Repository, di bawah kompartemen kebal (*Multi-Tenant Isolation*) Serverless.
 
-## 2. Latar Belakang & Analisis Masalah
-### 2.1 Konteks Masalah
-Manajemen kelas di perguruan tinggi seringkali menghadapi kendala fragmentasi data:
-- **Presensi Manual**: Risiko kecurangan (titip absen) dan sulitnya rekapitulasi real-time.
-- **Transparansi Dana**: Pengelolaan uang kas yang tidak terdokumentasi dengan baik sering menimbulkan konflik.
-- **Aksesibilitas Modul**: Modul kuliah yang tersebar di aplikasi chat seringkali sulit dicari kembali.
-- **Keterlambatan Informasi**: Mahasiswa tidak mendapatkan notifikasi real-time saat ada tugas baru, pengumuman, atau perubahan jadwal.
-- **Infrastruktur**: Kebutuhan sistem yang handal namun terkendala budget server konvensional.
+---
 
-### 2.2 Sasaran Produk
-1. **Sentralisasi**: Satu pintu untuk semua kebutuhan administrasi kelas.
-2. **Akuntabilitas**: Sistem "Sisa Nyawa" untuk mendisiplinkan kehadiran secara otomatis.
-3. **Efisiensi Biaya**: Optimasi penuh pada *Vercel Free Tier* dan *TiDB Cloud*.
-4. **Mobilitas**: Desain *Mobile-First* dengan implementasi *Android Native (Kotlin)*.
-5. **Notifikasi Real-Time**: Push notification pop-up ke perangkat mahasiswa via OneSignal.
+## 2. Kausalitas Evolusi Sejarah Sistem (*The Historical Mandate*)
 
-### 2.3 Timeline Perkembangan (Product Evolution)
-- **Fase 1 (v1.0 - Jan 2024)**: MVP. Rilis dasar Attendance, Cash Ledger, dan RBAC dasar.
-- **Fase 2 (v1.4 - May 2026)**: Hardening & Feature Expansion. Penambahan Learning Modules, Master Subjects, dan optimasi Base64 storage.
-- **Fase 3 (v2.0 - May 2026)**: Scale to SaaS. Implementasi Multi-Tenant, Super Admin Panel.
-- **Fase 4 (v2.3 - May 2026)**: Real-Time Notifications. Integrasi OneSignal push notification ke Android native.
+### 2.1 Mengapa Bukan Sekedar "Aplikasi Web Biasa" Lagi?
+- **Fase Awal (Era v1.0.0)**: Awal mulanya, KelasHUB murni sebuah *Website Dashboard Laravel PHP*. Ia menyajikan rekayasa Blade HTML form. Seluruh kegiatan wajib digerakkan mahasiswa depan Laptop atau peramban HP. Keluhan membludak: Mahasiswa kerap alfa atau melewatkan tugas saat mereka tidak dengan sadar "membuka" website tersebut. Komunikasi krusial gagal terkirim seketika.
+- **Kesimpulan Cacat Web**: Sistem presensi gamefication (Sisa Nyawa) menuntut peringatan interupsi paksa yang agresif (*Out-of-band Interrupts*). Sebuah antarmuka Web statis tidak bisa memaksa HP bergetar saat layar HP terkunci di kantong celana.
 
-## 3. Matriks Pengguna & Persona (User Personas)
-Sistem menggunakan *Role-Based Access Control* (RBAC) yang ketat pada tabel `students`:
+### 2.2 Tonggak Transformasi Strategis (The Hybrid Shift) 
+Di sinilah kami membangun arsitektur hibrida. Vercel backend PHP tidak kami buang, melainkan kinerjanya digandakan:
+1. **Desktop Admin Web Engine (Tetap Dipertahankan)**: Menggunakan teknologi UI reaktif Tailwind CSS & Alpine.js bagi *Layar Lebar Desktop* (Super Admin & Ketua) untuk pengelolaan transaksi massal (Upload PDF raksasa, Audit Ribuan Log Transaksi) dengan kenyamanan layar lebar (PC/Laptop).
+2. **Native Kotlin Client Engine (Fase Baru Pertempuran v2.3)**: Kami melahirkan repo `/android-webview`. Aplikasi ini dirajut via Retrofit API Client. Bergerak lincah karena hanya memanggil Json dari Server. Dampak terbesarnya: Mengawini Identitas Mahasiswa Android UUID terhadap Signal *OneSignal Push Registration*. Menyelesaikan batas keterasingan komunikasi secara radikal!
 
-| Role | Deskripsi Persona | Tanggung Jawab Utama |
+---
+
+## 3. Titik Resolusi Solusi Kunci Aplikasi (Solution Key Drivers)
+
+### Resolusi A: Engine Finansial Transparan ("Kas-Kaca")
+- Laporan Web Streaming Output (CSV): Transformasi data dari ratusan ribu baris tabel finansial keluar menjadi file fisik CSV tanpa pernah menyebabkan memori server jebol berkat *php://output streaming*.
+
+### Resolusi B: Arsitektur Penghakiman Kedisiplinan Sistematis ("Tiga Sisa Nyawa")
+- Gamifikasi absensi. Nilai dasar disetujui (3 *Lifetime Tickets*). Absen tanpa kejelasan = Peringatan pop-up melaju deras memacu detak HP mahasiswa seketika! Titik nol absensi akan menyebabkan akun ter-*locked* merah (Status DICEKAL). 
+
+### Resolusi C: Penetrasi Ekstrim Jaringan Info ("Zero-Delay Notif")
+- Terbelahnya ekosistem Web ke Mobile Native Android melahirkan Push Notification yang bergetar secara asinkron dalam durasi di bawah **800 miliseconds** (Kecepatan Injeksi Serverless OneSignal REST API).  Materi Tugas, Berkas Tagihan Bendahara, Modul baru: Seluruh interupsi ditujukan menganggu kedamaian layar ponsel jika terdapat agenda kelas. 
+
+### Resolusi D: Kehampaan Fisik Server ("0 Maintenance")
+- Pengubahan penyimpanan Fisik Modul dan Foto *(Media Repository)* menjadi penyimpanan abadi Enkripsi Karakter *LongText Base64* TiDB SQL Cloud. Menyeka segala bentuk kendala server-crash karena limit penyimpanan lokal (*Read-Only Stateless Disks* pada tier Free Vercel).
+
+---
+
+## 4. Analisis Matriks Hak Otorisasi Lintas Ekosistem
+
+Pengkategorian Kasta Akses Terpisah:
+| Stratifikasi Peran | Media Eksekusi Akses | Fungsional Dominasi (Dominant Core Routine) |
 |:---|:---|:---|
-| **Super Admin** | Pengelola Platform | Registrasi kelas baru secara atomik, audit sistem. |
-| **Ketua Kelas** | Administrator Kelas | Validasi data, manajemen anggota, kontrol mode hari kuliah. Menerima notifikasi saat mahasiswa submit izin. |
-| **Sekretaris** | Operasional Akademik | Input kehadiran, upload modul, manajemen jadwal. |
-| **Bendahara** | Operasional Finansial | Manajemen buku kas, pelaporan keuangan. |
-| **Mahasiswa** | Pengguna Akhir | Dashboard personal, download modul, submit rekap mandiri, **menerima push notification** tugas/pengumuman/kas baru. |
-
-## 4. Spesifikasi Fungsional (Functional Specifications)
-
-### 4.1 Modul Smart Attendance & Engine "Sisa Nyawa"
-Sistem kehadiran berbasis pinalti untuk otomatisasi sanksi akademis.
-- **Aturan Bisnis**: Default 3 Nyawa per mata kuliah. `Alfa` (Validated) → kurangi 1 Nyawa. Life = 0 → Status `DICEKAL`.
-- **Fitur Validation**: Rekap mandiri mahasiswa tidak valid hingga disetujui Sekretaris/Ketua Kelas.
-- **Integrasi Notifikasi**: Pengajuan rekap mandiri memicu notifikasi push ke Ketua Kelas.
-
-### 4.2 Modul Financial Ledger (Buku Kas)
-Sistem pencatatan transaksi kelas yang auditabel.
-- Input debet/kredit dengan deskripsi dan tanggal transaksi.
-- Saldo berjalan dihitung otomatis via `SUM(income) - SUM(expense)`.
-- Ekspor ke PDF (Formal) dan CSV Streaming.
-- **Integrasi Notifikasi**: Transaksi kas baru memicu notifikasi push ke anggota kelas.
-
-### 4.3 Modul Academic Hub (LMS Repository)
-Pusat penyimpanan materi perkuliahan dengan strategi `Base64` storage di database (menghindari keterbatasan Vercel stateless filesystem).
-- Support file (PDF, DOCX, TXT) dan link eksternal.
-- **Integrasi Notifikasi**: Upload modul baru memicu notifikasi push ke seluruh kelas.
-
-### 4.4 Modul Push Notification (OneSignal)
-Sistem notifikasi dua lapis: Internal (riwayat di dashboard) dan Eksternal (pop-up di HP).
-- **Backend**: `NotificationService` memanggil OneSignal REST API v2 dengan `include_subscription_ids`.
-- **Mobile**: SDK OneSignal di aplikasi Android meregistrasi `onesignal_id` ke endpoint `/kh/device-token`.
-- **Kondisi Trigger**: Tugas baru, modul baru, transaksi kas, dan rekap mandiri.
-
-### 4.5 Modul Multi-Tenant Registration
-Alur pembuatan kelas baru yang terintegrasi (Unified Form) — satu klik membuat record `academic_classes` dan akun `ketua_kelas` secara atomik.
-
-## 5. User Journey & User Stories
-
-### 5.1 User Story: Notifikasi Tugas Baru
-> **Sebagai Mahasiswa**, saya ingin mendapatkan notifikasi pop-up di HP saya saat ada tugas baru agar saya tidak ketinggalan deadline.
-
-**Kriteria Penerimaan:**
-1. Sekretaris input tugas baru via form di dashboard.
-2. Backend memanggil `NotificationService::notifyClass()`.
-3. OneSignal API mengirim push notification ke semua perangkat anggota kelas yang terdaftar.
-4. Pop-up muncul di HP mahasiswa meskipun aplikasi tidak sedang dibuka.
-
-### 5.2 User Journey: Registrasi Token Perangkat
-1. Mahasiswa login ke aplikasi Android.
-2. `MainApplication` menginisialisasi OneSignal SDK.
-3. `MainActivity` memanggil `syncOneSignalToken()` saat dashboard dimuat.
-4. Token dikirim ke backend via `POST /kh/device-token`.
-5. Backend menyimpan token di kolom `onesignal_id` tabel `students`.
-
-### 5.3 User Journey: Akses Modul
-1. Mahasiswa login ke aplikasi.
-2. Membuka tab "Modul Pembelajaran".
-3. Memilih mata kuliah.
-4. Menekan tombol "Download" → Sistem melakukan dekripsi Base64 dan melayani file ke browser.
-
-## 6. Spesifikasi Non-Fungsional
-
-### 6.1 Performance & Scalability
-- **Serverless Limits**: Semua endpoint harus merespon dalam < 10 detik (Vercel Free Timeout).
-- **RAM Footprint**: Query Builder (`DB::table`) untuk proses batch, membatasi RAM < 256MB.
-- **Notifikasi Async**: Pengiriman OneSignal dilakukan via HTTP request, tidak memblok response utama.
-
-### 6.2 Security & Data Integrity
-- **Tenant Isolation**: Setiap query wajib menyertakan scope `class_id`.
-- **Session**: `SESSION_DRIVER=cookie` untuk mendukung sifat stateless Serverless.
-- **API Key**: `ONESIGNAL_REST_API_KEY` disimpan aman di Vercel Environment Variables.
-
-## 7. Arsitektur Teknis
-### 7.1 Backend Stack
-- **Core**: Laravel 13.x | **Runtime**: PHP 8.3 (Vercel PHP Bridge) | **Database**: TiDB Cloud
-
-### 7.2 Frontend Stack
-- **Framework**: Tailwind CSS v4 | **Reactivity**: Alpine.js | **Reporting**: Barryvdh/Laravel-DomPDF
-
-### 7.3 Android Integration
-- **Native Kotlin**: `MainActivity.kt`, `LoginActivity.kt`, `DashboardActivity.kt` dengan Retrofit2 HTTP client.
-- **Push Notification**: OneSignal Android SDK v5.x.
-- **Token Sync**: `syncOneSignalToken()` di `MainActivity` mengirim token ke `/kh/device-token`.
-
-## 8. Skema Database (Kunci Utama)
-- **`academic_classes`**: Entitas tertinggi (ID, Name, Code, Department).
-- **`students`**: Relasi (class_id, nim, role, **onesignal_id** ← baru di v2.3).
-- **`class_attendances`**: Relasi (student_id, class_id, status, is_validated).
-- **`cash_ledgers`**: Relasi (student_id, class_id, amount, type).
-- **`learning_modules`**: Relasi (class_id, file_content, mime_type).
-- **`notifications`**: Log notifikasi internal (class_id, student_id, message, is_read).
-
-## 9. Konfigurasi Environment (Wajib)
-
-| Key | Deskripsi |
-|:---|:---|
-| `ONESIGNAL_APP_ID` | ID Aplikasi OneSignal untuk pengiriman push |
-| `ONESIGNAL_REST_API_KEY` | REST API Key OneSignal (disimpan aman di Vercel) |
-| `APP_KEY` | Laravel Encryption Key |
-| `DB_HOST`, `DB_DATABASE`, dst. | Koneksi TiDB Cloud |
-
-## 10. KPI & Metrik Kesuksesan
-1. **Akurasi Data**: 100% kesesuaian saldo fisik dengan saldo di aplikasi.
-2. **Notifikasi Delivery**: > 95% push notification berhasil terkirim ke perangkat terdaftar.
-3. **Token Coverage**: > 80% mahasiswa aktif perangkatnya terdaftar dalam 1 minggu pertama penggunaan.
-4. **Reliability**: Zero downtime pada event "War Modul".
-
-## 11. Roadmap Masa Depan
-- **Phase 5**: AI-Powered Chatbot untuk rekap otomatis materi perkuliahan dari modul PDF.
-- **Phase 6**: Dashboard visual analytics untuk tren kehadiran per semester.
-- **Phase 7**: Pindah penyimpanan file ke S3 Storage jika volume data meningkat drastis.
+| **Super Admin Platform** | Murni Web Laptop / Desktop | Cipta Opsi Ruang Kelas Sekali Jadi (Atomic Commit Class). Pembaruan silang akses (Cross Tenant bypass). |
+| **Ketua Kelas** | Web Laptop + Mobile App | Memancarkan Otorisasi Hakim Validasi secara konstan. Merespon pemecatan data dan pengubahan peran (Role Switch). |
+| **Sekretaris & Bendahara** | Web Laptop + Mobile App | Ekskusi Modul pembelajaran Base64 *(Sekretaris)* dan Injeksi arus debet/kredit Kas *(Bendahara)*. |
+| **Mahasiswa Umum** | Murni Native Mobile Handphone | Pengguna Ujung (*Endpoint Entity*). Menerima ledakan Notif Hati-Hati Alfa. Memantau keuangan secara konstan. Membaca transparasi nilai dan materi secara portabel di HP. |
 
 ---
-**Standard Industri Compliance**: Dokumen ini disusun mengikuti struktur standar *Product Management* industri teknologi tingkat lanjut.
+
+## 5. Kriteria Teknis Penyelesaian Evolusioner 
+
+### 5.1 Infrastruktur TiDB SQL vs Vercel Timeout Hybrid
+* **[Jaminan Standar Arsitektur]**: Web Console harus merespon HTML tanpa delay (Client-Transitions Alpine). Bersamaan itu, Rute API Android harus melontarkan String Json Array < 2 detik pada data besar (10.000 log history) lewat optimasi Kueri Tabel Tanpa Model (Raw Queries). 
+
+### 5.2 Perlindungan Isolasi Siber Ekstrim (Cross-Tenant Multi-Tenancy Defenses) 
+* **[Kriteria Validasi Evolusioner]**: Setelah sistem membelah antara Web dan Android App, injeksi ID Serang (*Attacker Packet*) meningkat. Seluruh gerbang model Eloquent wajib mengenakan *Global Scope Tenant ($classid)*, memblokir pencurian identitas mutlak dari pergeseran aplikasi API REST eksternal.
+
+### 5.3 Kontinuitas Jantung Sinkronisasi Token Mobile Kotlin
+* **[Jaminan Operasional Akhir]**: Pada rilis ini, Sistem API wajib menerima UUID *OneSignal Identifier* tiap rute App dibuka pada `POST /kh/device-token`. Bila siklus ini tewas, mahasiswa akan buta terputus dari pengumuman Notifikasi seumur hidup siklus Instalasi perangkat tersebut.
+
+---
+
+## 6. Proyeksi Evolusi SaaS (Feature Roadmap Jangka Panjang)
+
+1. **AI Native Scanner (Q3 2027)**: Modul *Optical Character Recognition (OCR)* AI dalam Aplikasi Android, merubah bidikan Foto Catatan Papan Tulis Kelas langung menyalin ke dalam dokumen teks Repository Modul di Dashboard.
+2. **Katalis Cloud Skala Berat (2028)**: Jika evolusi Base64 Database mencapai ukuran tabel multi-gigabytes TiDB Limit Teratas, pergeseran repositori CDN (Cloudflare R2 API) mutlak harus direkonstruksi total.
+3. **Penyambungan Telekomunikasi Lintas Server**: Modul Cadangan Penyebaran Telegram / WhatsApp Bot menduplikasi alarm push OneSignal via antarmuka WhatsApp Bussiness.
+
+*Penutup Dokumen Final Produksi Evolusioner - Mengakhiri Spesifikasi Bisnis Evolusi KelasHUB v2.3.0*

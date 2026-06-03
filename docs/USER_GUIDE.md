@@ -1,107 +1,70 @@
-# Panduan Pengguna (User Guide): KelasHUB
+# Panduan Pengguna Ganda (User Utility Guide): Ekosistem KelasHUB 
 
-**Proyek**: KelasHUB — All-in-One Class Operations Suite  
-**Author**: Ariyas Pratama Ramadhan By WaveProject.ID  
-**Versi**: 2.3.0  
-**Bahasa**: Indonesia  
-**Tanggal**: 30 Mei 2026
+**Sistem:** KelasHUB Hibrida Era Baru v2.3 (Menyatukan Desktop Web & Mobile Native)
+**Kualifikasi Akses Pembaca:** Publik (Seluruh Tingkatan Mahasiswa & Kepengurusan Kampus)
 
----
+Selamat datang di Panduan KelasHUB! 
+Aplikasi yang Anda sentuh hari ini bukanlah sekring peninggalan web statis jaman dulu (v1.0). Melainkan sebuah Super-Ecosystem Hibrida lintas peramban yang menembus batas web. KelasHUB merajut dunia komputer laptop dengan getaran instan Handphone Anda.
 
-## 1. Pengenalan
-Selamat datang di **KelasHUB**, platform operasional kelas modern yang dirancang untuk memudahkan manajemen perkuliahan, transparansi keuangan, distribusi materi, dan kini dilengkapi **notifikasi push real-time** langsung ke HP Anda.
-
-Fitur unggulan:
-- 📱 Notifikasi pop-up saat ada tugas baru, modul, atau pengumuman.
-- 📊 Dashboard personal dengan sistem **Sisa Nyawa** untuk memantau kehadiran.
-- 💰 Transparansi penuh kas kelas secara real-time.
+Pilihlah instrumen operasi berdasarkan posisi jabatan akademis Anda pada struktur Kepengurusan Kelas.
 
 ---
 
-## 2. Memulai — Download & Login Aplikasi
+## 🏗️ 1. Dua Wajah KelasHUB: Pilih Senjata Anda!
 
-### 2.1 Via Aplikasi Android (Direkomendasikan)
-1. Install file **APK** KelasHUB yang dibagikan oleh pengurus kelas.
-2. Buka aplikasi. Notifikasi push akan aktif secara otomatis sejak pertama kali dibuka.
-3. Login dengan NIM dan password Anda.
+### 🖥️ A. Taktik Layar Lebar: Jalur KelasHUB Website (Sangat Disarankan Bagi Administrator)
+Sejarah berdirinya KelasHUB bermula dari sebuah website, dan hingga kini, ketangguhan tampilan muka Web (`https://klas-hub.vercel.app`) tidak bisa digantikan. Anda, **Para Ketua, Sekretaris, dan Bendahara** diwajibkan menggunakan jalur Laptop/Peramban (Desktop) bila berurusan dengan ribuan data.
+- **Kelebihan**: Layar besar menggunakan antarmuka Gelap Pejam (*Zinc-900 Dashboard*). Navigasi tanpa-memuat-ulang (*Alpine.js transitions*) sekencang angin. Sangat nyaman untuk mengunggah belasan PDF Modul, memeriksa Tabel Rekapitulasi Kas yang padat tulisan biner, maupun mengetik penugasan panjang dosen.
+- **Penggunaan Asosiasi**: Ketik pada _Google Chrome_ atau browser PC Anda, masukkan login Nama Lengkap besar (KAPITAL) dan sandi sandi bawaan `(NIM-ANDA)KK` bagi kelas ketua.
 
-### 2.2 Via Browser
-1. Buka `https://klas-hub.vercel.app`
-2. Masukkan **Nama Lengkap** (huruf kapital) sebagai username.
-3. Masukkan password default dari Ketua Kelas.
-
-### 2.3 Mengganti Password
-Sangat disarankan untuk mengganti password default:
-1. Di sidebar (Desktop) atau menu Profil (Mobile), pilih **"Ganti Password"**.
-2. Masukkan password lama dan buat password baru (minimal 6 karakter).
+### 📱 B. Jalur Mobilitas Mutlak: Aplikasi Native Android (Mahasiswa Biasa)
+Menghilangkan kebingungan telat membalas *Chat Kampus WhatsApp*, fitur ini diperkenalkan pada gelaran ekspansi v2.3 KelasHUB. Mempersingkat operasi melalui instalasi **Aplikasi Android (.APK)**.
+- **Kelebihan Mobile**: Terdorong arsitektur instan, beban halaman Web digantikan data *Json Ringan* (Irit Kuota Mahasiswa!). Aplikasi tidak perlu terus terbuka, OS Backend akan *mengintervensi sistem HP target* menyemprotkan Pop-Up Layar Penuh pada Push Pengumuman Ujian secara sinkron 0.8 Detik.
+- **Peringatan Pemasangan**: Pasanglah Aplikasi ASLI dari grup mahasiswa kelas. Terpenting, biarkan saklar izin pelacak notifikasi aktif! (Jikalau ditolak, bel Anda putus mati koneksinya pada siaran Pusat OneSignal Cloud).
 
 ---
 
-## 3. Fitur Utama Mahasiswa
+## 🎓 2. Area Penjelajahan Akademis Mahasiswa
 
-### 3.1 🔔 Notifikasi Push
-Fitur **baru di v2.3** — Anda akan menerima pop-up di HP saat:
-- Ada **tugas baru** yang diunggah pengurus.
-- Ada **modul pembelajaran** yang dibagikan.
-- Ada **transaksi kas** yang berkaitan dengan Anda.
-- Pengajuan **rekap mandiri** Anda perlu divalidasi.
+### [A] Pengamat Kehidupan Akademik ("Pulse Pinalti Sisa Nyawa")
+Absensi kertas digantikan Algo otomatis pinalti Hukuman *(Sisa Tolerance Ticket)*. 
+- Tiap rentan mapel dipersenjatai kacamata default **3 Nyawa Toleransi**.
+- Saat pengurus mencatat kehadiran, satu status ALFA mutlak menyedot Satu (1) Angka kehidupan tersebut.
+- Sentuhan poin nol memicu Dasboard Web meledak peringatan dan App Mobile bergetar status: **DICEKAL (Pemblokiran Kritis)**.
+- *Rekap Penyelamatan Nyawa*: Lempar form pengajuan Alasan Izin Khusus secara sepihak untuk diverikasi warna hijau oleh Petinggi Kelas (Ketua/Sekretaris).
 
-> **Penting:** Pastikan Anda menggunakan **aplikasi Android**, bukan browser, agar fitur notifikasi berfungsi. Izinkan notifikasi saat pertama kali membuka aplikasi.
-
-### 3.2 🎓 Akademi Hub
-Menu pusat informasi akademik harian:
-- **Jadwal Kuliah**: Lihat mata kuliah hari ini, ruangan, dan dosen. Perhatikan indikator **OFFLINE** (biru) atau **ONLINE** (kuning).
-- **Tugas & Deadline**: Daftar tugas terdekat. Klik untuk melihat detail dan link pengumpulan.
-- **Kalender Deadline**: Pantau deadline dalam tampilan kalender visual sebulan ke depan.
-
-### 3.3 📚 Repositori Materi
-Tempat mengunduh modul atau melihat link referensi yang dibagikan:
-- Klik tombol **Download** untuk mengunduh modul langsung ke perangkat Anda.
-- Modul tersedia dalam format PDF, DOCX, TXT, atau link eksternal.
-
-### 3.4 💰 Finansial Kelas (Buku Kas)
-Transparansi penuh terhadap kas kelas:
-- **Saldo Saat Ini**: Total uang yang ada di bendahara.
-- **Riwayat Transaksi**: Setiap pengeluaran dan pemasukan yang telah divalidasi.
-
-### 3.5 ❤️ Presensi Tracker & "Sisa Nyawa"
-Fitur paling kritis di KelasHUB:
-- **Sisa Nyawa**: Setiap mata kuliah memberikan **3 Nyawa**. Setiap ketidakhadiran (Alfa) tervalidasi mengurangi 1 nyawa.
-- **Status DICEKAL**: Nyawa = 0 → Status **DICEKAL** (Risiko nilai E). Segera hubungi pengurus kelas jika ada kesalahan data.
-- **Rekap Mandiri**: Anda bisa menginput kehadiran sendiri, statusnya **PENDING** hingga divalidasi Ketua/Sekretaris. Pengurus akan mendapat notifikasi saat Anda submit.
+### [B] Repositori File Awan Abadi
+Dulu Anda memohon ulang pengiriman PDF ke dosen karena berkas memori internal kadaluwarsa WhatsApp hilang? Solusi repositori *Base64 Cloud Injections* Web kami menjawabnya. 
+Seluruh presentasi, file modul ujian yang pernah eksis diletakkan permanen (terenkripsi ke dalam database String biner raksasa TiDB). Tekan Ikon Unduh Biru dari layar sentuh; modul dihidupkan ulang dekripsinya dan dilempar utuh ke folder `Downloads/` gawai Anda!
 
 ---
 
-## 4. Panduan Khusus Pengurus (Admin)
+## 👑 3. Mode Pengendali Kasta Tinggi (Buku Manual Administrator)
 
-### 4.1 Ketua Kelas & Sekretaris
-- **Input Jadwal/Tugas/Modul**: Setiap input baru akan otomatis mengirim notifikasi push ke seluruh anggota kelas.
-- **Validasi Data**: Cek notifikasi di dashboard — setiap input dari mahasiswa harus disetujui agar muncul di laporan resmi.
-- **Manajemen Anggota**: Tambah mahasiswa baru atau ubah peran (misal: promosi ke Bendahara).
+Anda (Petinggi) direkomendasikan mengendalikan jalannya Kelas dari Monitor Web! Hindari Input transaksi ribuan data via Keyboard HP.
 
-### 4.2 Bendahara
-- **Catat Kas**: Masukkan pemasukan/pengeluaran melalui menu Finansial. Anggota kelas akan mendapat notifikasi otomatis.
-- **Export Laporan**: Unduh laporan dalam format **PDF** (formal) atau **Excel/CSV** dari tab Presensi.
+### Tab Otoritas Bendahara (Penyelamat Perhitungan Kas)
+* Transparansi Kelas Terbuka! Apabila Anda merilis Form Injeksi Angka Rupiah Masuk (Income), Dashboard Android teman semahasiswa secara realtime berubah angkanya (Sync Real Time). Lupakan debat kotor kalkulator kuno mahasiswa, cukup 1 pencetan klik untuk melempar Laporan Neraca Saldo formal bulanan (Excel CSV atau Salinan Kertas PDF Formal). 
 
-### 4.3 Super Admin
-- **Registrasi Kelas**: Gunakan form terpadu untuk mendaftarkan kelas baru sekaligus akun Ketua Kelas dalam satu langkah.
+### Tab Otoritas Sekretaris (Loud-Speaker Kelas)
+* Jika tugas dosen yang tenggat esok subuh diletakkan pada formulir "Penugasan Mahasiswa". *Push Action Module* dari Dashboard (Web) akan memicu siaran sinyal *(Payload Array Serverless OneSignal Cloud)* menyusup menyebarkan Broadcast getaran pemberitahuan mendesak melintasi gawai puluhan kawan sekelas anda serentak detik itu juga!
 
----
-
-## 5. FAQ (Tanya Jawab)
-
-**Q: Kenapa saya tidak dapat notifikasi?**  
-*A: Pastikan Anda menggunakan aplikasi Android (bukan browser) dan sudah mengizinkan notifikasi. Coba logout dan login ulang agar token perangkat diperbarui.*
-
-**Q: Kenapa tugas yang saya lihat berbeda dengan teman?**  
-*A: Pastikan Anda berada di Kelas yang benar. Hubungi Super Admin jika ada kesalahan.*
-
-**Q: Saya lupa password, bagaimana cara resetnya?**  
-*A: Hubungi Ketua Kelas. Ketua Kelas bisa mereset password anggota melalui panel admin.*
-
-**Q: Apakah aplikasi ini aman?**  
-*A: Ya. KelasHUB menggunakan enkripsi SSL/TLS berlapis, perlindungan session cookie, dan API Key notifikasi disimpan aman di server — tidak terekspos ke aplikasi.*
+### Mahkamah Agung Ketua Kelas (The Final Validation Court)
+Semua form permintaan absen Mahasiswa via Aplikasi Handphone *(App)* maupun *Web* = akan menggantung diam pada Status Abu-Abu *(Tertunda)*. 
+1. Di bilik Web Dasbord maupun HP anda, gelembung konter notifikasi membengkak angkanya.
+2. Anda harus mendaratkan Palu Validasi (Tekan Check-mark). Log akan terekam terkunci di database abadi. Kehadiran sukses dipangkas / diselamatkan.
 
 ---
 
-© 2026 **WaveProject.ID** | Dikembangkan oleh **Ariyas Pratama Ramadhan** | v2.3.0
+## 🆘 Troubleshooting Evakuasi (Insiden & Kegagalan Bawaan) 
+
+**Problem 1: Kawan Semangkuk Mengeluh: "Mengapa Notif Punya Saya Tidak Bunyi dan Layar Mati saat Ada PR Ujian?"**
+*Analisa Forensik Keras (Untuk Mahasiswa Bersangkutan):*
+- Kamu menekan tombol tolak saat App menuntut izin akses *Pop-up OneSignal* perdana dibuka? Masuk Halaman Pengaturan (Setting) OS Android -> Manajer Aplikasi -> Buka KelasHUB -> Angkat Centang Izin Pemberitahuan.
+- ID Sinyal Vercel Retrofit Cloud terputus (*Cache Out*). Bukalah laci Profil Pojok Atasan, Tarik Geser menu dan Logout dari sesi Android sejenak. Menyuntik (Login) akun kembali akan merekognisi mesin HP barumu terangkai di SQL Data Notif Kampus. Beres!
+ 
+**Problem 2: "Mengapa Dasboard Web Saya Lambat/Tidak Memunculkan Update Data Terbaru?"**
+*Solusi Hard-Cache Bursting:*
+Dikala pembaruan massal (Ribuan Transaksi Masuk), koneksi anda nyandet (*Client-Freeze*). Cukup perintahkan *Refresh Super Hard-Reset Browser PC* (Kombinasi `CTRL + SHIFT + R`). Sesi DOM *Alpine.js* memuat paksa bongkahan Data TiDB SQL murni mutakhir saat itu juga. 
+
+*— Selamat mengarungi ombak evolusi edukasi KelasHUB. Teruji tanpa kompromi! —*

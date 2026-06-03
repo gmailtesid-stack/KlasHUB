@@ -1,100 +1,58 @@
-# Dokumen Serah Terima Operasional (Operational Handover): KelasHUB
+# Dokumen Protokol Handover Aset Proyek (Buku Transisi) — KelasHUB Ekosistem
 
-**Proyek**: KelasHUB — All-in-One Class Operations Suite  
-**Diserahkan Oleh**: Ariyas Pratama Ramadhan By WaveProject.ID  
-**Penerima**: Tim Operasional / Pengelola Kelas  
-**Versi**: 2.3.0  
-**Tanggal**: 30 Mei 2026
+**Dokumen Serah-Terima Kekuasaan (Inrastructure Handover)** ini menuntun dan mendikte Petinggi Departemen Kampus (Divisi Pemeliharaan TI / DevOps / Maintainers Muda Mendatang) yang menanggung beban kelanjutan hidup operasional seluruh konstelasi KelasHUB paska turunnya *WaveProject.ID* dari kursi pengembangan utama platform.
 
 ---
 
-## 1. Pendahuluan
-Dokumen ini menandai penyerahan resmi sistem **KelasHUB v2.3.0** dari tim pengembangan (WaveProject.ID) ke tim operasional. Versi ini mencakup fitur push notification real-time via OneSignal dan aplikasi Android native berbasis Kotlin.
+## 📋 1. Inventarisasi Aset Mahakarya (Klaim Hibrida Dua Dunia)
+
+Porsi penyerahan kekuasaan ini membawahi pengalihan **2 Repositori Alam Beda Bahasa Secara Integral (Hybrid)** yang mempekerjakan Vercel PHP sebagai Gateway Tunggalnya!
+1. **Sektor Desktop (The Legacy But Still Beating Heart)**: Kode Utama Akar Folder Pangkalan Sistem PHP *Laravel v13*. Rute web pengemas *Template Engine Blade* dibungkus Alpine.js.
+2. **Sektor Mobile (The Native Sibling)**: Area pertahanan `/android-webview`. Aplikasi OS Kepingan Android (Kotlin-murni) menggunakan Jetpack XML *Material Architecture.*
+3. **Persistensi Ekosistem Database Serverless**: Cluster Awan penyimpanan tabel relasi MYSQL dari platform raksasa [TiDB SQL Engine].
+
+### Jaminan Garansi Kondisi Penyerahan (The Warranty Seal):
+* Proyek dilepas pada siklus akhir pembasuhan kutu versi: **Rilis Produksi (v2.3.0 Release Candidate)**.
+* Ekosistem telah melahap dan membunuh cacat keterasingan lintas Tenant *(Isolasi Multi-Kelas lewat perlindungan Global Trait Eloquent Murni)*. 
 
 ---
 
-## 2. Inventaris Sistem
+## 🔑 2. Ruang Kunci Brankas Rahasia Siber (Environment Vault Guide)
 
-### 2.1 Komponen Teknis
-| Komponen | Teknologi | Versi |
-|:---|:---|:---|
-| Backend | Laravel (PHP) | 13.x / PHP 8.3 |
-| Frontend | Tailwind CSS + Alpine.js | v4 / 3.x |
-| Database | TiDB Cloud (MySQL-compat) | — |
-| Hosting | Vercel Serverless | Free Tier |
-| Mobile App | Kotlin Android Native | API 24+ |
-| Push Notification | OneSignal SDK + REST API | v5.x / v2 |
+Keamanan infrastruktur Anda dipertaruhkan. Jauhi hasrat mengunggah (hardcode) Kunci Enkripsi (API Keys) di sela baris Controller GitHub! Seluruh DNA kehidupan Serverless Web ditelan masuk via penyimpanan kotak rahasia layar dasbor **Vercel Environment Variables Configurations**:
 
-### 2.2 Inventaris Artefak Dokumentasi
-| Dokumen | Lokasi |
+| Label Variabel Terlarang (Env Keys) | Reaksi Ledakan Kesalahan Fatal Bila Tersentuh Tanpa Rencana (Consequence) |
 |:---|:---|
-| PRD | `docs/PRD.md` |
-| Panduan Teknis | `docs/TECHNICAL.md` |
-| API Reference | `docs/API.md` |
-| User Guide | `docs/USER_GUIDE.md` |
-| Laporan Penutupan | `docs/CLOSURE_REPORT.md` |
-| Changelog | `CHANGELOG.md` |
+| `SESSION_DRIVER` | Wajib berkondisi statik kata tunggal: `cookie`. Jika iseng diganti `file`, ribuan sesi Web Dasbor mahasiswa serempak akan menolak terautentikasi tiap memuat muat laman ke-2 (Session Wiped Out per refresh). |
+| `DB_HOST`, `PORT`, Password SQL | Akses terowongan Ping PDO ke raksasa Cluster TiDB Cloud. Memplesetkan tanda baca akan berakibat kelumpuhan Tampilan "Loading Kosong". |
+| `MYSQL_ATTR_SSL_CA` | Target pendaratan perisai mutlak menunjuk urat akar Vercel Node Runtime: `/var/task/cacert.pem`. Mencabut injeksi file sertifikat CA TLS ini = *Access Denied PDO SQL Exception* (Mati Tertotal). |
+| `ONESIGNAL_APP_ID` | Identitas Radar Panel Aplikasi OneSignal Web Cloud (UUID Utama). Mengganti tanpa konfirmasi membuat Token Mobile Client ditolak saat Registrasi (*POST /device-token*). |
+| `ONESIGNAL_REST_API...` | API Token Master Gembok Belakang layar transmisi Guzzle HTTP. Jatuhnya ini kepada tangan mahasiswa iseng mengakibatkan Spam Push Jutaan kali tak terbatas. Jaga mati matian kunci *Server Auth* ini! |
 
 ---
 
-## 3. Manajemen Akses & Kredensial
+## 🛠️ 3. Pedoman Siklus Pemeliharaan Abadi (The Maintenance Cadence)
 
-> [!IMPORTANT]
-> Seluruh kredensial sensitif dikelola melalui **Vercel Environment Variables**. Jangan pernah hardcode credential di kode sumber.
+Keistimewaan migrasi Hibrida *(Zero-Server Deployments)* KelasHUB v2.3 membuat Anda bisa menutup terminal kontrol dan tidur tenang selama bulan tenang perkuliahan. Vercel OS akan mematikan diri sendiri dan mendaur RAM sisa sisa sampah transaksi tanpa campur tangan mesin NGINX klasik. 
 
-| Item | Deskripsi | Lokasi Pengaturan |
-|:---|:---|:---|
-| **Database** | Host, User, Pass, Port TiDB Cloud | Vercel Env |
-| **SSL CA** | `MYSQL_ATTR_SSL_CA` | `/var/task/cacert.pem` |
-| **App Key** | Laravel Encryption Key (`APP_KEY`) | Vercel Env |
-| **OneSignal App ID** | `ONESIGNAL_APP_ID` | Vercel Env |
-| **OneSignal REST Key** | `ONESIGNAL_REST_API_KEY` | Vercel Env |
-| **Super Admin** | Akses tertinggi | DB `students` (Role: super_admin) |
-| **OneSignal Dashboard** | Manajemen aplikasi push | `onesignal.com` |
+**Namun Cacat Fisik Basis Data Wajib Dikelola! (Tiap Rentang Semester Genap Akhir):**
+- Anda **dilarang membiarkan penumpukan log tak berguna**. Tabel Riwayat Sisa Peninggalan `learning_modules` tidak menyangga file PDF fisik lokal! Melainkan mengantongi bongkahan Batu Panjang *String Base64 Binary*. 
+- Membiarkan File Kuliah yang tak relevan teronggok 3-4 Tahun memancing ambruknya kuota Tabel Teratas SQL Free-Tier Database Anda. Hancurkan entitas PDF Makalah lama lewat antarmuka Sistem Manajemen Database C-Panel TiDB untuk melonggarkan Kapasitas!
+- *Cron Job Harian Vercel*: Skrip Vercel `reset-schedule` akan dieksekusi menembus End-Point Web tiap jam tengah malam menghapus tabel antrian Harian Kuliah ke nol hari berikutnya (Tidak perlu Setup Linux Crontab manual!).
 
 ---
 
-## 4. Prosedur Operasional Rutin
+## 📱 4. Tata Cara Publikasi Roket Mobile Kotlin (.APK Native Releases)
 
-### 4.1 Deployment (CI/CD)
-- Setiap *push* ke branch `main` pada GitHub akan otomatis memicu build dan deploy ke Vercel.
-- **Verifikasi**: Periksa tab "Deployments" di Vercel Dashboard jika terjadi kegagalan build.
+Bila Kelompok Tim Developer Baru hendak meluncurkan Revisi Pembaruan ke Mahasiswa: Sektor Pemeliharan Web dan Seluler Terpisah Ruang Perakitannya. Panduan mengemas Roket Mobile Android *(Bukan merilis halaman Web)*:
 
-### 4.2 Distribusi APK Android
-1. Build APK terbaru via Android Studio: **Build → Build Bundle(s)/APK(s) → Build APK(s)**.
-2. File output di: `android-webview/app/build/outputs/apk/debug/app-debug.apk`
-3. Distribusikan file APK ke mahasiswa melalui grup kelas.
-4. Mahasiswa perlu mengizinkan "Install dari sumber tidak dikenal" di pengaturan HP.
-
-### 4.3 Eskalasi Masalah
-Jika sistem mengalami error:
-1. Cek log di Vercel Dashboard → Logs.
-2. Cek kuota dan status database di TiDB Cloud.
-3. Jika notifikasi tidak terkirim: Pastikan `ONESIGNAL_APP_ID` dan `ONESIGNAL_REST_API_KEY` benar di Vercel Env.
-4. Jika token tidak terdaftar: Mahasiswa perlu logout → login ulang di aplikasi Android.
+1. Modul Aplikasi Android kita steril, murni, tulen: *No Flutter, No WebView kosong berbungkus C-Sharp, No React Native Bloats.* Hasilkan perbaikan menggunakan instrumen Google _Android Studio Jetpack Kotlin SDK_.
+2. Jika ada penambahan Modul UI API baru, sesuaikan pengumpulan Data Kontrak JSON Model pada `/api/ApiInterface.kt`. 
+3. *Waktunya Pengepakan Jeroan Mesin!* Eksekusi Terminal Komando di atas teritorial repo `android-webview/`:
+   - Meluncurkan Bundel Mode Produksi Terjilid: `./gradlew assembleRelease`
+4. Artefak Berwujud Android Package siap panen bakal bercokol (bertelur) aman tepat di: `app/build/outputs/apk/release/`. Distribusikan lewat portal siaran GitHub Release atau Group Papan Telegram Nasional.
 
 ---
 
-## 5. Daftar Periksa Serah Terima (Handover Checklist)
-
-| No | Item Peninjauan | Status |
-|:---:|:---|:---:|
-| 1 | Source code telah diperbarui di repositori utama. | [ ] |
-| 2 | Environment Variables (termasuk OneSignal) telah dikonfigurasi di Vercel. | [ ] |
-| 3 | Database sudah dimigrasi (`add_onesignal_id_to_students`). | [ ] |
-| 4 | APK Android v2.3.0 telah didistribusikan ke anggota kelas. | [ ] |
-| 5 | User Guide telah disosialisasikan ke seluruh anggota. | [ ] |
-| 6 | Kredensial Super Admin diserahkan secara privat. | [ ] |
-| 7 | Laporan closure dan rencana backup telah disetujui. | [ ] |
-
----
-
-## 6. Persetujuan
-Dengan menandatangani dokumen ini, kedua belah pihak menyepakati bahwa sistem telah sesuai spesifikasi dan siap dioperasikan secara penuh.
-
-**Pihak Pengembang**  
-*(Ariyas Pratama Ramadhan)*  
-**WaveProject.ID**
-
-**Pihak Penerima**  
-*(Ketua Kelas / Admin Operasional)*
+> Menutup Tirai Kendali. Mahakarya lintas-teknik pemrograman Web yang mendidik sistem menjadi hibrida api ganda. Sebuah relik arsitektur yang sangat diidamkan kampus berdana mahasiswa kecil yang enggan menyewa Insinyur System-Admin VPS tiap bulannya. Pertahankan Integritasnya.  
+>  — *Wakil Komando Serah Terima, (M. Ariyas / WaveProject.ID)* 

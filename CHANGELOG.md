@@ -1,7 +1,7 @@
-# Changelog — KelasHUB
+# Changelog Perjalanan Waktu (Historical Log) — KelasHUB
 
-Semua perubahan penting pada proyek ini akan didokumentasikan di sini.  
-Format mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1.0.0/).
+Dokumentasi jejak modifikasi arsitektur proyek ini dipetakan secara akurat dari titik Nol (Prototipe Website Manajemen Sederhana) yang perlahan menetas menembus limitasi awan (*Cloud Serverless*) dan berkembang-biak menjadi Entitas Native Android.  
+Format dokumen ini mengacu secara ketat pada [Keep a Changelog](https://keepachangelog.com/id/1.0.0/).
 
 ---
 
@@ -9,93 +9,64 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1.0.0/).
 
 ---
 
-## [2.3.0] — 2026-05-30
+## [2.3.0] — 2026-05-30 (The Zenith: Web Meets Mobile Native & Security Push)
 
-### Added
-- **Push Notification via OneSignal**: Integrasi penuh OneSignal REST API v2 untuk pengiriman notifikasi pop-up eksternal ke perangkat Android mahasiswa secara real-time.
-- **`NotificationService`** (`app/Services/NotificationService.php`): Service terpusat baru untuk mengirim notifikasi ke kelas (`notifyClass`), individu (`notifyStudent`), dan admin (`notifyAdmins`).
-- **Kolom `onesignal_id`** pada tabel `students` (migrasi `2026_05_30_195000_add_onesignal_id_to_students`): Menyimpan Subscription ID perangkat untuk pengiriman push notification yang ditargetkan.
-- **Endpoint `POST /kh/device-token`**: API baru untuk registrasi token perangkat dari aplikasi Android native saat mahasiswa login.
-- **`MainApplication.kt`** (`android-webview/`): Kelas Application baru untuk inisialisasi OneSignal SDK saat aplikasi Android pertama kali dijalankan.
-- **`syncOneSignalToken()`** di `MainActivity.kt`: Logika otomatis untuk mengirimkan OneSignal Subscription ID ke backend setelah dashboard dimuat.
+### Added (Penambahan Era Super-App)
+- **Ekosistem Penyiaran Lintas Platform (OneSignal Push)**: Rangkaian penyiaran REST API v2 dipasang dalam paru-paru Backend Laravel. Sistem kini tak hanya mengirim rekam jejak Web Internal, namun melempar pop-up latar belakang (Background Notif) menuju perangkat Hardware Android secara murni *Real-time*.
+- **Pintu Gerbang Endpoint Mobile (`POST /kh/device-token`)**: Penambahan Routing REST JSON tanpa UI. Web Monolith membenturkan fungsi Hibrida, memungkinkan kompilasi APK Android mengikatkan Sesi HTTP *cookie persisten* guna merelasikan Token UUID Android `onesignal_id` terhadap tabel Identitas Database TiDB.
+- **Transmisi Notifikasi `NotificationService`** (`app/Services/NotificationService.php`): Otak pengirim (Controller) terpisah (Decoupled). Bertugas menetapkan apakah Siaran Notif tertuju pada satu orang Mahasiswa Validasi (*notifyStudent*), atau memborbardir Broadcast seluruh anggota Web kelas tersebut (*notifyClass*).
+- File rahasia Modul Kotlin pada sub-direktori `/android-webview`: *MainApplication.kt* dan *MainActivity.kt* mendarat mulus mengoperasikan *Kotlin Coroutines* dalam menyinkron token OneSignal agar sejalan dengan siklus Boot perangkat Android.
 
-### Changed
-- `NotificationService` diperbarui dari Firebase (FCM) ke **OneSignal REST API v2** (`include_subscription_ids`) yang lebih modern dan akurat.
-- `ApiInterface.kt` ditambahkan endpoint `updateDeviceToken` untuk mendukung registrasi perangkat dari Android.
-- `AndroidManifest.xml` diperbarui untuk mendaftarkan `MainApplication` sebagai kelas Application utama.
-- `build.gradle` (modul `app`) ditambahkan dependensi `com.onesignal:OneSignal`.
-- `gradle/wrapper/gradle-wrapper.properties`: Batas waktu jaringan (`networkTimeout`) ditingkatkan dari 10 detik menjadi 120 detik untuk koneksi yang lebih stabil.
+### Fixed (Penambalan Pintu Darurat)
+- **Eksekusi Penutupan Eksploit Web IDOR**: Pengetatan kerangka kueri. Upaya mahasiswa memasukkan ID kelas fiktif pada *URL Get Request* diputus aliran aksesnya melalui traksi *Global Scope*.
+- **Penyuntikan Filter Header Ekstrem (SecurityHeaders.php)**: Menggusur ancaman eksploitasi pembajakan i-Frame UI *Clickjacking* di layar Browser pengguna, bersama mitigasi serangan skrip asing (XSS).
+
+### Changed 
+- Optimalisasi Timeout *Build Gradle* Android dinaikkan menjadi 120 detik, memberikan kelonggaran nafas pada kompilasi mesin lambat.  
 
 ---
 
-## [2.1.0] — 2026-05-21
+## [2.1.0] — 2026-05-21 (The Vercel Stateless Endurance)
 
 ### Added
-- **Simulasi Engine** (`SimulasiController`): Loop 4 detik yang mensimulasikan aktivitas nyata 5 kelas secara otomatis menggunakan `DB::table()` murni untuk hemat RAM Vercel.
-- **Export Engine** (`LaporanController`):
-  - `exportPdf($class_id)`: Menghasilkan laporan keuangan kas formal monokrom via `barryvdh/laravel-dompdf`.
-  - `exportExcel($class_id)`: CSV Streaming murni menggunakan `fputcsv` ke `php://output` — RAM ~0 MB.
-- **Tabel `notifications`**: Migrasi baru untuk menyimpan log aktivitas internal dan pesan simulasi.
-- **UjiKomprehensifController**: Engine pengujian satu-klik (endpoint `/test-full`) yang memverifikasi Tugas, Modul, Absensi, dan Kas dalam satu request.
-- Dokumentasi lengkap: `README.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `docs/API.md`.
-
-### Changed
-- **Unified Class Registration**: Panel Super Admin kini hanya memiliki satu form modal terpadu.
-- `SimulasiController` dioptimasi dari loop 60 detik menjadi 4 detik agar aman dari timeout Vercel Free Tier.
-
-### Removed
-- Hapus panel Super Admin lama (2 form terpisah) — total ~200 baris kode dibuang dari `main_mobile.blade.php`.
-
----
-
-## [2.0.0] — 2026-05-21
-
-### Added
-- **Sistem Multi-Kelas** (`academic_classes`): Tabel baru sebagai "rumah" data terisolasi per kelas.
-- **Kolom `class_id`**: Ditambahkan ke semua tabel operasional via migrasi batch.
-- **Unified Class Registration** (`storeUnifiedClass`): Endpoint atomik membuat record kelas dan akun Ketua Kelas sekaligus.
-- **Kolom `department` dan `contact`** pada tabel `academic_classes`.
-- **Role `super_admin`**: Ditambahkan ke enum `students.role`.
-- **Super Admin Panel** di dashboard: Tab khusus untuk manajemen lintas kelas.
-- Laporan presensi & keuangan: `ReportController` dengan 4 endpoint (PDF & Excel).
+- **Mesin Validasi Beban Berlebih** (`SimulasiController`): Endpoint injeksi simulasi pertempuran data di Backend. Web secara ajaib memusnahkan waktu tunggu panjang (Dari eksekusi 60s menjadi < 4s), demi memenuhi titah batas umur fungsi *Free Tier Vercel Serverless*.
+- **Alkimia Ekspor Pelaporan 0-RAM (Reporting Engine)** (`LaporanController`): 
+  - `exportPdf()`: Ekspor File Laporan format Pemerintahan berbasis `DomPDF` Monokromatik.
+  - `exportExcel()`: Evolusi manipulasi aliran unduh (Download Stream). Melontarkan seribu data Kas/Absen via *`php://output` CSV* secara telanjang demi menolak pengurasan Memory RAM Cloud VPS.
+- Integrasi Tabel Penyimpan Jejak Sejarah `notifications`. Papan notifikas Web (Lonceng Dashboard) tak lagi bergantung pada _Session Flash_ sementara.
 
 ### Fixed
-- **Crash 500 di Vercel** akibat infinite recursion pada trait `BelongsToClass` — trait dihapus dan relasi diimplementasikan langsung di controller.
-- Relasi `ketuaKelas` pada `AcademicClass` yang menyebabkan eager loading berulang.
+- **Pembantaian 500 Fatal Error (Limit Relasi Web)**: Arsitektur Model *Eloquent Trait BelongsToClass* pernah membuat siklus *Infinite Recursion Query* tatkala Web berusaha menggambar tabel Kelas beserta relasi Kepengurusan (`ketuaKelas`). Sistem terurai lewat pemisahan kueri manual *eager loading*.
 
 ### Changed
-- Tombol laporan (PDF/Excel) dipindahkan ke tab **Presensi Tracker**.
-- `getStudentDashboard` dioptimasi: query berat dipisahkan ke endpoint AJAX (`/kh/api/dashboard-data`).
+- **Peleburan UX Super Admin (Atomic Registry)**: Proses pembuatan Entitas Kelas dan Akun Super Ketua dijadikan satu nafas tarikan panjang *Database Transaction*. Interaksi layar Dashboard Web menyusut drastis, menghapus belasan form sampah peninggalan v1.0.
 
 ---
 
-## [1.5.0] — 2026-05-18
+## [1.5.0] — 2026-05-18 (The Repository Storage Rebirth)
 
 ### Added
-- **File content storage** langsung di database: Modul file disimpan sebagai `base64` LONGTEXT.
-- Kolom `file_content` dan `mime_type` pada tabel `learning_modules`.
+- **Revolusi Penyimpanan Nirvana Base64**: Penyimpanan *File Storage Local* (sistem konvensional) dikutuk karena lumpuh dan reset otomatis tatkala *mesin Vercel tertidur*. Kami memblokade Folder direktori uploads. Semua kiriman Tugas Mahasiswa maupun Makalah PDF Dosen (File Upload Interception) dikunyah dan disandingkan berwujud deretan String panjang eksotis (`Base64 Mime Code`) serta terkubur dalam rongga `LONGTEXT` di pusat Database MySQL. Cacat File-Hilang *(404 Not Found Broken Link)* tertumpas abadi.
 
 ---
 
-## [1.4.0] — 2026-05-16
+## [1.4.0] — 2026-05-16 (The Hardened Rule of Engagement)
 
 ### Added
-- Tabel `learning_modules` dengan dukungan tipe `file` dan `link`.
-- Tabel `master_subjects` sebagai referensi mata kuliah resmi.
-- Toggle `delivery_type` (Online/Offline) pada jadwal kuliah secara real-time.
-- Validasi data (`is_validated`) pada semua tabel operasional.
+- Standardisasi Nama Mata Kuliah: Hadirnya master tabel khusus `master_subjects`, menjinakkan kesalahan tipografi pengisian nama dosen di antarmuka Front-End Alpine.js.
+- Papan Transmisi Kuliah Real-Time Web (Toggle Online/Offline di Dashboard).
+- **Kultivasi Hukum Pidana Akademis `is_validated`**: Cikal bakal kedisiplinan sistem! Sebuah modul Tugas, Absensi Mandiri, hingga Penerimaan Kas baru akan tampil ber-status (Suspended/Tertahan/Abu-Abu) sebelum Sang Eksekutor Web (Ketua/Sekretaris) melancarkan Klik Validasi sahnya.
 
 ### Fixed
-- Deployment Vercel: Session driver diubah ke `cookie` (stateless), view cache ke `/tmp/`.
+- Pemisahan penyetoran Cache Blade (Compiled View Web) ke arah satu-satunya direktori hidup sistem Serverless `/tmp/`. Disusul *Session Cookie Strategy* murni (Gagalnya login Web di atasi total).
 
 ---
 
-## [1.0.0] — 2024-01-01
+## [1.0.0] — 2024-01-01 (Genesis: Lahirnya Visi Website Manajemen Terpusat)
 
 ### Added
-- Rilis awal KelasHUB.
-- Tabel dasar: `students`, `academic_schedules`, `assignments`, `cash_ledgers`, `class_attendances`.
-- Sistem kehadiran dengan "Sisa Nyawa" (3 nyawa per mata kuliah).
-- RBAC: `ketua_kelas`, `sekretaris`, `bendahara`, `mahasiswa`.
-- Dashboard mobile-first dengan Stealth Zinc-900 theme.
-- Android WebView wrapper (Kotlin).
+- Pencanangan Repositori *Minimum Viable Product (MVP)* Pertama KelasHUB. 
+- Murni beroperasi layaknya aplikasi **Website Konvensional** di era arsitektur MVC Laravel konvensional. Diciptakan saat penat akan masalah mahasiswa mencatat uang buku kas kelas di selembar kertas lusuh lecek!
+- Keutamaan Relasional Lima Pilar Pertama: `students`, `academic_schedules`, `assignments`, transaksi uang riil `cash_ledgers`, serta kejamnya palu absen `class_attendances`.
+- **Modul Sang Jati Diri Awal (Nyawa Permainan Absen)**: Penguncian otomatis skor Kedisiplinan Kehadiran *(The 3 Life Tolerance Penalty Rule)*. Hadirnya *Alfa* memakan *Life Status*, merugikan status kemahasiswaan menuju jurang `DICEKAL`.
+- Mengimplementasikan pewarnaan Antarmuka Pertama *(Zinc-900 Stealth Black)* dengan interaktivitas Blade Template Native untuk web browser. Merupakan rintisan (embrio awal) sebelum proyek nekat merengkuh ambisi *Mobile Native API App*.

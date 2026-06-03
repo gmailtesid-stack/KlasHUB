@@ -1,539 +1,143 @@
-# 📖 Dokumentasi API — KelasHUB
+# 📖 Kontrak Pusat Sistem API (Documentation & Routes Handbook) — KelasHUB
 
-Dokumen ini menjelaskan semua endpoint HTTP yang tersedia di KelasHUB, parameter yang diterima, dan contoh respons yang dikembalikan.
+Dokumen Ekstensif ini merupakan saksi kunci *Source of Truth (SOT)* bagi tim Perekayasa Skrip Ujung (*Front-End Browser* & *Android Kotlin Engineer*) dalam berkomunikasi menterjemahkan Bahasa Mesin sistem Backend KelasHUB v2.3.0.
 
-> **Base URL:** `https://klas-hub.vercel.app`  
-> **Autentikasi:** Session Cookie (login via `POST /login` terlebih dahulu)  
-> **Format Respons:** JSON untuk semua endpoint AJAX, HTML Redirect untuk form submission  
-> **Terakhir Diperbarui:** 30 Mei 2026 (v2.3.0)
+> **Pusat Gelombang Server Utama:** `https://klas-hub.vercel.app`  
+> **Konvensi Autentikasi Rahasia (The Unified Border):** Akses Identitas diamankan total berbasis Enkripsi *Stateless Session Cookie*. Jaringan Mobile Android `(Retrofit)` dipaksa mutlak mencantol perantara _CookieJar_ persisten dalam kanal jalurnya.  
+> **Perilaku Sisi-Ganda Server (Hybrid Responses):** Permintaan HTTP (Browser) berekstensi form terproses menumpahkan Pelimpahan (Redirect / DOM View 302). Permintaan Asinkron (*AJAX / OkHttp Mobile*) yang menyisipkan Header Request Target Valid `application/json` dengan setia menumpahkan susunan objek JSON.
 
 ---
 
-## 🔑 Autentikasi
+## 🔑 Akar Pohon Otentikasi Sentral
 
 ### `POST /login`
-Masuk ke sistem menggunakan nama lengkap dan password.
+Pintasan gerbang identifikasi Auth tunggal bagi seluruh Kasta Pengguna Ekosistem (Super Administrator hingga Anggota Ujung).
 
-**Body (form-data):**
+**Header Request (Prasyarat Mobile App)**
+- `Accept`: `application/json` (Memerintahkan Laravel mencegat sifat dasar pelimpahan Redirect peramban, memutar paksa respon menjadi Payload Berstatus).
+
+**Tumpuan Form Beban (form-data / url-encoded):**
+```text
+name     : "JOHN DOE MAHASISWA"        (Karakter Identitas, absolut case-sensitive wajib kapital)
+password : "231011403268**"            (Kunci rahasia sandi)
 ```
-name     : "ARIYAS PRATAMA RAMADHAN"   (Nama lengkap, case-sensitive)
-password : "231011403268**"            (NIM + "**" untuk Ketua, atau custom)
-```
 
-**Response:**
-- **Sukses:** Redirect → `GET /dashboard`
-- **Gagal:** Redirect kembali ke `/login` dengan error message
-
----
+**Evaluasi Kembalian Silang Platform:**
+- Web Browser sukses `200 OK HTML` melontarkan redirect mutlak rute `GET /dashboard`.
+- Modul Mobile (API Mode): Menghisap Sesi Token yang membekas (Encrypted Cookie) yang dilemparkan pada response header `Set-Cookie`.
+- Kasus Data Fatal `422 Unprocessable Entity`: Celah *Validation Guard* terlanggar (Sandi retak / NIM Salah eja karakter).
 
 ### `POST /logout`
-Invalidasi sesi aktif dan redirect ke halaman login.
-
-**Headers:** `_token: {CSRF_TOKEN}` (form hidden field)  
-**Response:** Redirect → `GET /`
+Pemusnahan brutal keping sesi (*Session Death-Spike*) ke pusat awan. Otomatis menghapuskan rekaman akses peramban dari siklus alam semesta aplikasi bersangkutan .
 
 ---
 
-## 📊 Dashboard
+## 📱 Saluran Transmisi OneSignal (Jantung Ekstensif Mobile)
 
-### `GET /dashboard`
-Halaman utama dashboard pengguna. Mengembalikan HTML view `dashboard.main_mobile`.
-
-**Data yang dikirim ke view:**
-| Variable | Tipe | Deskripsi |
-|:---|:---|:---|
-| `$student` | `Student` | Data pengguna yang login |
-| `$absensi` | `Collection` | Rekap sisa nyawa per mata kuliah |
-| `$saldo_kas` | `int` | Saldo kas berjalan (total income - expense) |
-| `$pemasukan_mingguan` | `int` | Total pemasukan minggu ini |
-| `$pengeluaran_mingguan` | `int` | Total pengeluaran minggu ini |
-| `$master_subjects` | `Collection` | Daftar semua mata kuliah |
-| `$jadwal_harian` | `Collection` | Jadwal kuliah yang aktif |
-| `$pending_count` | `int` | Jumlah data menunggu validasi (untuk admin) |
-| `$notifications` | `Collection` | Notifikasi internal terbaru (max 10) |
-| `$academic_classes` | `Collection` | Semua kelas (hanya Super Admin) |
-
----
-
-### `GET /kh/api/dashboard-data`
-Endpoint AJAX untuk refresh data dashboard tanpa reload halaman. Digunakan oleh aplikasi Android native.
-
-**Middleware:** `auth`, `role:ketua_kelas`  
-**Response JSON:**
-```json
-{
-  "students": [...],
-  "modules": [...],
-  "assignments": [...],
-  "cashTransactions": [...]
-}
-```
-
----
-
-## 📱 Mobile — Device Token
+Diciptakan secara berdedikasi melayani pertukaran informasi lalu-lintas lintas Sistem Operasi Kotlin.
 
 ### `POST /kh/device-token`
-Registrasikan atau perbarui OneSignal Subscription ID perangkat mahasiswa. Dipanggil otomatis oleh aplikasi Android setiap kali dashboard dimuat.
+*(Endpoint tak terlihat, dieksekusi asinkron seketika saat proses penggambaran halaman Activity Layar Dashboard Android dirakit)*
 
-**Middleware:** `auth`  
-**Body (application/x-www-form-urlencoded):**
-```
-player_id : "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-```
+**Prasyarat Kuki Terhubung:**
+- `Cookie: laravel_session=...`
 
-**Response JSON (Sukses):**
-```json
-{ "success": true, "message": "Device token updated." }
+**Muatan Variabel Taktis UUID:**
+```text
+player_id : "e8f6e72b-8a8c-xxxx-xxxx-xxxxxxxxxxxx"  (Penyandi Unik OneSignal Mobile Subscription ID)
 ```
 
-**Response JSON (Gagal - sudah sama):**
-```json
-{ "success": false, "message": "Token unchanged." }
-```
-
-**Catatan:** Field `player_id` menyimpan **OneSignal Subscription ID** (UUID v4) dari perangkat pengguna, yang digunakan oleh backend untuk mengirim push notification yang ditargetkan melalui `NotificationService`.
-
----
-
-## 🎓 Akademi — Jadwal & Mata Kuliah
-
-### `POST /kh/schedule`
-Tambah jadwal kuliah baru.
-
-**Middleware:** `role:ketua_kelas,sekretaris,bendahara`  
-**Body:**
+**Konfirmasi Tembakan JSON Status 200/201:**
 ```json
 {
-  "subject_name": "Rekayasa Perangkat Lunak",
-  "lecturer_name": "Dr. Ahmad Fauzi",
-  "day": "Senin",
-  "time_start": "08:00",
-  "time_end": "10:00",
-  "room": "Lab 301"
+  "success": true, 
+  "message": "Device token updated. Broadcaster siap menyalurkan Sinyal Tarik Push Latar Belakang Cepat."
 }
 ```
-**Response:** Redirect dengan flash message
+*Catatan Insinyur Utama*: Celah kueri berganda (`Update loop`) disingkirkan lewat pengekangan sinkronisasi kembar (Token identik). Logika menghasilkan respon palsu cerdas `Token Unchanged` agar memori mesin TiDB Cloud Database tak termakan habis dalam sekian Detik.
 
 ---
 
-### `POST /kh/schedule/toggle-delivery`
-Toggle mode Online/Offline untuk jadwal kuliah tertentu.
+## 💻 Sistem Transisi Hibrida Khusus UI Mobile Murni
 
-**Middleware:** `role:ketua_kelas,sekretaris,bendahara`  
-**Body:**
-```json
-{ "schedule_id": 5 }
-```
-**Response JSON:**
+### `GET /kh/api/dashboard-data`
+API Penghisap lintas entitas *(Model Cross-Join Extractor)*. Menggugurkan kelambatan transisi view dan menggulingkannya ke paket respon padat tunggal. Berfungsi khusus merender RecyclerView UI Android secepat aliran cahaya .
+
+**Batas Kuasa (Role Shield):** Dibuka lebar dengan pagar pelindung Global scope pembatas Tenancy.
+**Bongkahan Hasil Konfigurasi Array:**
 ```json
 {
-  "success": true,
-  "new_type": "online",
-  "message": "Mode berhasil diubah ke Online"
-}
-```
-
----
-
-### `POST /kh/master-subject`
-Tambah mata kuliah baru ke daftar master.
-
-**Middleware:** `role:ketua_kelas,sekretaris,bendahara`  
-**Body:**
-```json
-{
-  "name": "Kecerdasan Buatan",
-  "sks": 3,
-  "code": "06TPLE025",
-  "default_lecturer": "Prof. Dian Pratiwi"
-}
-```
-
----
-
-### `DELETE /kh/subject/{id}`
-Hapus mata kuliah dari daftar master.
-
-**Middleware:** `role:ketua_kelas,sekretaris,bendahara`  
-**Response JSON:**
-```json
-{ "success": true }
-```
-
----
-
-## 📋 Presensi
-
-### `POST /kh/attendance`
-Input absensi kelas untuk satu sesi perkuliahan.
-
-**Middleware:** `auth`  
-**Catatan:** Role `mahasiswa` hanya bisa input absensi untuk dirinya sendiri (Rekap Mandiri).
-
-**Body:**
-```json
-{
-  "subject_name": "Rekayasa Perangkat Lunak",
-  "date": "2026-05-21",
-  "notes": "Kelas pengganti",
-  "attendances": [
-    { "student_id": 1, "status": "Hadir" },
-    { "student_id": 2, "status": "Alfa" },
-    { "student_id": 3, "status": "Izin" }
+  "students_active": [
+    { "id": 14, "name": "BUDI A.", "nim": "234401", "onesignal_is_linked": true }
+  ],
+  "learning_modules_blob": [
+    { "id": 78, "title": "Bahan Uji Enkripsi v2", "type": "file", "download_url": "/kh/module/78/download" }
+  ],
+  "financial_ledgers": [
+    { "id": 105, "type": "income", "amount": 250000, "date": "2026-06-03", "student_name": "RIKA AMIRA" }
   ]
 }
 ```
 
-**Status yang valid:** `Hadir` | `Alfa` | `Sakit` | `Izin`
-
-**Response JSON:**
-```json
-{ "success": true }
-```
-
-> **Integrasi Notifikasi:** Setiap input absensi yang mengandung status `Izin`/`Sakit` secara otomatis memicu notifikasi push ke Ketua Kelas via `NotificationService`.
-
 ---
 
-## 📚 Repositori Modul
+## 🎓 Modul Transaksi Injeksi Administratif (Jadwal & Penugasan Berkas)
 
-### `POST /kh/module`
-Upload modul mata kuliah (file atau link URL).
+### `POST /kh/module` (Transmisi Enkripsi Modul Kuliah Raksasa Base64)
+Mentransfer file dalam enkripsi peredam bentuk String Karakter murni Base64 melayang ke TiDB Database.
+**Batasan Skala Upload File:** Limitasi Mutlak Maks 4.5 Megabyte (Hukum Limit Batas Memori Kerja Vercel Edge Serverless).
 
-**Middleware:** `role:ketua_kelas,sekretaris,bendahara`  
-**Content-Type:** `multipart/form-data`
+- *Tipe Pengikatan Tautan Link (Referensi Luar)*: Form menembakkan `type="link"`, `link_url="http:.."`.
+- *Peleburan Tipe File (Doc/Pdf)*: `type="file"`, `file=[Upload Format Stream Binar]`. (Backend menelannya ke *Logic Array Serialization* dalam nanodetik sebelum menyimpan kolom table).
 
-**Body (tipe `link`):**
-```
-type         : "link"
-subject_name : "Pemrograman II"
-title        : "Slide Pertemuan 5: OOP"
-link_url     : "https://drive.google.com/file/xxx"
-```
-
-**Body (tipe `file`):**
-```
-type         : "file"
-subject_name : "Pemrograman II"
-file         : [binary file, max 4MB, .pdf/.doc/.docx/.txt]
-```
-
-**Response JSON:**
+### `POST /kh/assignment` (Siaran Darurat Tenggat Tugas)
+Mencetak misi penugasan mahasiswa. Puncak fungsionalitas Endpoint menyusupkan fungsi `broadcastClass` melantai *(Push Event Signal Lintas Batas OS Aplikasi Ponsel seluruh grup terdaftar Mahasiswa HP Android).*
 ```json
 {
-  "success": true,
-  "module": {
-    "id": 101,
-    "title": "Slide Pertemuan 5: OOP",
-    "type": "link"
-  }
+  "subject_name": "Manajemen Sistem (07-TPK)",
+  "title": "Tugas Makalah Audit Terpusat",
+  "deadline": "2026-10-15 15:30:00",
+  "type": "individual"
 }
 ```
 
-> **Integrasi Notifikasi:** Upload modul baru secara otomatis mengirim push notification ke seluruh anggota kelas.
-
 ---
 
-### `GET /kh/module/{id}/download`
-Download atau akses modul berdasarkan ID.
-
-**Middleware:** `role:ketua_kelas,sekretaris,bendahara`  
-**Response:**
-- Tipe `link`: Redirect ke URL eksternal
-- Tipe `file`: Binary stream dengan header `Content-Disposition: attachment`
-
----
-
-## 📝 Tugas
-
-### `POST /kh/assignment`
-Input tugas baru untuk kelas.
-
-**Middleware:** `role:ketua_kelas,sekretaris,bendahara`  
-**Body:**
-```json
-{
-  "subject_name": "Basis Data II",
-  "title": "ER Diagram Studi Kasus",
-  "description": "Buat ER Diagram untuk sistem perpustakaan",
-  "deadline": "2026-05-28 23:59:00",
-  "material_link": "https://classroom.google.com/xxx",
-  "type": "individual",
-  "members": null
-}
-```
-
-**Tipe tugas:** `individual` | `kelompok`  
-**Response JSON:**
-```json
-{
-  "success": true,
-  "assignment": { "id": 30002, "title": "ER Diagram Studi Kasus" }
-}
-```
-
-> **Integrasi Notifikasi:** Tugas baru secara otomatis mengirim push notification ke seluruh anggota kelas.
-
----
-
-## 💰 Keuangan Kas
+## 💰 Gerbang Pencatatan Neraca Finansial (Sistem Kunci Bendahara)
 
 ### `POST /kh/cash`
-Catat transaksi keuangan kelas (masuk atau keluar).
-
-**Middleware:** `role:ketua_kelas,sekretaris,bendahara`  
-**Body:**
+**Prasyarat Hak Hierarki (Role RBAC):** Khusus Keturunan Petinggi Kelas `bendahara, ketua, sekretaris`. Mahasiswa akan dibom respons status kode kematian `403 Forbidden` jika nekad menendang rute pelacak uang.
 ```json
 {
-  "student_id": null,
+  "student_id": 19, 
   "type": "income",
-  "amount": 50000,
-  "description": "Iuran mingguan angkatan ke-5",
-  "transaction_date": "2026-05-21"
+  "amount": 20000,
+  "description": "Tagihan Beli Kado Ultah Dosen",
+  "transaction_date": "2026-06-03"
 }
 ```
 
-**Tipe transaksi:** `income` (pemasukan) | `expense` (pengeluaran)  
-**Response JSON:**
-```json
-{
-  "success": true,
-  "ledger": { "id": 3, "type": "income", "amount": 50000 }
-}
-```
+---
 
-> **Integrasi Notifikasi:** Transaksi kas baru secara otomatis mengirim push notification ke anggota kelas yang terdampak.
+## 🗃️ Ekstraksi Streaming Big-Data (Laporan Pencetak 0-RAM API)
+
+Mesin Cetak Kueri Tak Terbatas v1.5 Vercel Stateless (Direct Output Streaming Response - `php://output`).
+
+| Rute URL Mesin Generator | Wujud Transaksi Pembuangan Biner Cetak Tinta Data Akhir |
+|:---|:---|
+| `/report/pdf/{class_id}` | Biner Aliran *Download Dokumen PDF Resolusi Statis Formal* (Enjin perender DomPDF) |
+| `/report/excel/{class_id}` | Tumpahan aliran Streaming Skala raksasa ribuan Baris Entri Neraca Saldo CSV Data Asli |
+| `/kh/reports/attendance/excel` | Tabel Ekspor Sisa Nyawa dan Daftar Hadir Kelas (CSV) |
 
 ---
 
-## 👤 Manajemen Mahasiswa
-
-### `POST /kh/student`
-Daftarkan mahasiswa baru ke kelas.
-
-**Middleware:** `role:ketua_kelas,sekretaris,bendahara`  
-**Body:**
-```json
-{
-  "name": "BUDI SANTOSO",
-  "nim": "231011401500",
-  "role": "mahasiswa",
-  "class_id": 1
-}
-```
-
-**Password** dibuat otomatis = `nim`.
-
-**Response:** Redirect dengan flash message
-
----
-
-### `DELETE /kh/student/{id}`
-Hapus mahasiswa dari sistem.
-
-**Middleware:** `role:ketua_kelas,sekretaris,bendahara`  
-**Response JSON:**
-```json
-{ "success": true }
-```
-
----
-
-### `POST /kh/student/{id}/role`
-Ubah jabatan (role) seorang mahasiswa dalam kelas.
-
-**Middleware:** `role:ketua_kelas`  
-**Body:**
-```json
-{ "role": "sekretaris" }
-```
-
-**Role valid:** `ketua_kelas` | `sekretaris` | `bendahara` | `mahasiswa`  
-**Response JSON:**
-```json
-{ "success": true, "new_role": "sekretaris" }
-```
-
----
-
-## 🏛️ Super Admin — Manajemen Kelas
-
-### `POST /kh/class`
-Daftarkan kelas baru beserta Ketua Kelasnya dalam satu operasi atomik.
-
-**Middleware:** `role:ketua_kelas` (termasuk `super_admin`)  
-**Body:**
-```json
-{
-  "name": "ARIYAS PRATAMA RAMADHAN",
-  "nim": "231011403268",
-  "code": "06TPLE013",
-  "department": "Teknik Informatika",
-  "contact": "08123456789"
-}
-```
-
-**Efek:**
-1. Membuat record di `academic_classes`
-2. Membuat akun `students` dengan role `ketua_kelas`
-3. Password otomatis = `NIM + "KK"`
-
-**Response:** Redirect dengan flash success message
-
----
-
-## ✅ Validasi Data
-
-### `POST /kh/validate`
-Validasi (approve) data yang masih berstatus `is_validated = false`.
-
-**Middleware:** `role:ketua_kelas`  
-**Body:**
-```json
-{
-  "type": "attendance",
-  "id": 42
-}
-```
-
-**Tipe valid:** `attendance` | `cash` | `module` | `assignment` | `schedule`  
-**Response JSON:**
-```json
-{ "success": true }
-```
-
----
-
-## 📈 Laporan
-
-### `GET /report/pdf/{class_id}`
-Download laporan keuangan kelas dalam format PDF.
-
-**Middleware:** `auth`  
-**Response:** Binary stream, `Content-Type: application/pdf`
-
----
-
-### `GET /report/excel/{class_id}`
-Download laporan keuangan kelas dalam format CSV.
-
-**Middleware:** `auth`  
-**Kolom CSV:** `ID | Tanggal | Tipe | Jumlah | Nama Mahasiswa | Keterangan`
-
----
-
-### `GET /kh/reports/attendance/pdf`
-Download laporan presensi kelas dalam format PDF.
-
-**Middleware:** `auth` | **Response:** PDF stream
-
----
-
-### `GET /kh/reports/attendance/excel`
-Download laporan presensi kelas dalam format Excel (CSV).
-
-**Middleware:** `auth` | **Response:** CSV stream
-
----
-
-### `GET /kh/reports/cash/pdf`
-Download laporan keuangan kelas dalam format PDF.
-
-**Middleware:** `auth` | **Response:** PDF stream
-
----
-
-### `GET /kh/reports/cash/excel`
-Download laporan keuangan kelas dalam format Excel (CSV).
-
-**Middleware:** `auth` | **Response:** CSV stream
-
----
-
-## 🤖 Engine Khusus
+## 💀 Engine Pengetesan Khusus Simulasi Ops (Tes Stres Limit Berkelanjutan)
 
 ### `GET /simulasi`
-Jalankan simulasi aktivitas kelas otomatis.
-
-**Middleware:** `auth`  
-**Durasi:** ~4 detik (aman dari timeout Vercel)  
-**Response JSON:**
-```json
-{
-  "success": true,
-  "message": "Simulasi selesai dalam rentang < 5 detik",
-  "total_inserted": 6,
-  "environment": "Vercel Optimized"
-}
-```
-
----
+Jalur bypass demo pengetesan mesin awan tiada henti mendemonstrasikan kelincahan kueri kustom (Bukan Model ORM Biasa). Melontarkan 5 paket jadwal ganda secara paralel per detikan nafas mengukur kedigdayaan respons TiDB AWS Cluster.
 
 ### `GET /test-full`
-Jalankan semua uji fungsional dalam satu request.
+Jalur pembuktian (E2E Integration Loop Check). Mencoba menembak, mendeteksi kelambatan tugas buatan, memvalidasi dan memvonis bunuh nyawa ALFA pada subjek kelas, dan mengakhiri sesi dalam sekian waktu rekaman log pelacakan milisecond performa server Vercel Edge Limits.
 
-**Middleware:** `auth`  
-**Response JSON:**
-```json
-{
-  "status": "Testing Finalized",
-  "results": {
-    "upload_tugas": "SUCCESS",
-    "upload_modul": "SUCCESS",
-    "notif_3_alfa": "SUCCESS",
-    "kas_manajemen": "SUCCESS"
-  }
-}
-```
-
----
-
-### `GET /kh/cron/reset-schedule`
-Reset seluruh jadwal kuliah. Dipanggil otomatis via Vercel Cron setiap `23:59 WIB`.
-
-**Middleware:** `role:ketua_kelas`  
-**Jadwal Cron:** `59 16 * * *` (UTC)  
-**Response JSON:**
-```json
-{ "success": true, "message": "Academic schedule reset successfully" }
-```
-
----
-
-## 🔐 Ganti Password
-
-### `POST /kh/password`
-Ganti password akun pengguna yang sedang login.
-
-**Middleware:** `auth`  
-**Body:**
-```json
-{
-  "current_password": "231011403268KK",
-  "new_password": "password_baru_saya",
-  "new_password_confirmation": "password_baru_saya"
-}
-```
-
-**Response JSON:**
-```json
-{ "success": true, "message": "Password berhasil diperbarui." }
-```
-
----
-
-## ⚠️ Error Codes
-
-| HTTP Status | Penyebab Umum |
-|:---:|:---|
-| `401` | Tidak terautentikasi / sesi habis |
-| `403` | Tidak memiliki role yang diperlukan |
-| `404` | Resource tidak ditemukan |
-| `422` | Validasi gagal (data tidak sesuai) |
-| `500` | Server error / exception tidak tertangkap |
-| `504` | Gateway timeout Vercel (request > 10 detik) |
-
----
-
-*Didokumentasikan berdasarkan `routes/web.php` dan implementasi controller. Terakhir diperbarui: **30 Mei 2026** (v2.3.0).*
+*(Pedomani rujukan balasan Kesalahan Tipe 422 Validasi, 403 Perampasan RBAC, dan Kematian 504 Beban Timeout Eksekusi PHP di Rute-Rute Berisko Tinggi Transaksi Besar di atas)*.
+*(Terikat Perjanjian Evolusi Historikal Modifikasi 2024-2026).*
