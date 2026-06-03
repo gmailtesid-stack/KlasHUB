@@ -22,4 +22,8 @@ class AcademicSchedule extends Model
         'delivery_type',
         'is_validated',
     ];
+
+    protected $casts = [
+        'is_validated' => 'boolean',
+    ];
 }
