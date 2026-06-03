@@ -19,12 +19,11 @@ class DashboardController extends Controller
     {
         $student = Auth::user();
 
-        $masterSubjects = \Illuminate\Support\Facades\Cache::remember('master_subjects', 60, function () {
-            return \App\Models\MasterSubject::orderBy('name')->get();
-        });
+        $masterSubjects = \App\Models\MasterSubject::orderBy('name')->get(); // Reverted Cache due to Vercel Read-Only System
 
         // Optimized Attendance Calculation
-        $attendances = ClassAttendance::selectRaw('subject_name, count(*) as total_alfa')
+        $attendances = \Illuminate\Support\Facades\DB::table('class_attendances')
+            ->selectRaw('subject_name, count(*) as total_alfa')
             ->where('student_id', $student->id)
             ->where('status', 'Alfa')
             ->where('is_validated', true)
