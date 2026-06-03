@@ -60,6 +60,7 @@
     @include('partials.loader')
 
     <div x-data="{ 
+        sidebarOpen: true,
         tab: '{{ Auth::user()->role === 'super_admin' ? 'super' : 'akademi' }}', 
         modalKas: false, 
         modalUploadQris: false,
@@ -317,18 +318,32 @@
     }" x-init="init()" @notify-toast.window="notify($event.detail)" class="flex w-full h-full relative">
 
         <!-- Sidebar Desktop -->
-        <aside class="hidden md:flex flex-col w-72 h-full border-r border-zinc-900 bg-zinc-950 shrink-0">
-            <!-- App Brand Header -->
-            <div class="p-6 border-b border-zinc-900 flex items-center gap-3">
-                <div
-                    class="w-9 h-9 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center p-1 overflow-hidden shadow-lg shadow-white/5">
-                    <img src="{{ asset('icon.png') }}" class="w-full h-full object-contain scale-[1.8] origin-center"
-                        alt="KelasHub Logo">
+        <aside
+            class="hidden md:flex flex-col h-full border-r border-zinc-900 bg-zinc-950 shrink-0 transition-all duration-300 overflow-hidden"
+            :class="sidebarOpen ? 'w-72' : 'w-0 border-r-0'">
+            <!-- App Brand Header with Hamburger -->
+            <div class="p-6 border-b border-zinc-900 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-9 h-9 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center p-1 overflow-hidden shadow-lg shadow-white/5">
+                        <img src="{{ asset('icon.png') }}"
+                            class="w-full h-full object-contain scale-[1.8] origin-center" alt="KelasHub Logo">
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-black text-white tracking-widest text-sm uppercase">KelasHub</span>
+                        <span class="text-[8px] text-zinc-500 font-bold tracking-widest uppercase">STEALTH
+                            OPERATIONS</span>
+                    </div>
                 </div>
-                <div class="flex flex-col">
-                    <span class="font-black text-white tracking-widest text-sm uppercase">KelasHub</span>
-                    <span class="text-[8px] text-zinc-500 font-bold tracking-widest uppercase">STEALTH OPERATIONS</span>
-                </div>
+                <!-- Hamburger button inside sidebar header -->
+                <button @click="sidebarOpen = false"
+                    class="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-zinc-800 transition-all"
+                    title="Tutup Sidebar">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
 
             <div class="p-6 border-b border-zinc-900">
@@ -350,7 +365,7 @@
                 </div>
             </div>
 
-            <nav class="flex-1 p-5 space-y-3">
+            <nav class="flex-1 p-5 space-y-3 overflow-y-auto">
                 <form method="GET" action="{{ url()->current() }}" class="mb-4 pb-4 border-b border-zinc-900/50">
                     <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Pilih Arsip
                         Semester</label>
@@ -472,6 +487,20 @@
 
         <!-- Main Content Wrapper -->
         <div class="flex-1 flex flex-col h-full bg-black relative">
+
+            <!-- Desktop Topbar (hamburger to re-open sidebar) -->
+            <div class="hidden md:flex items-center px-6 py-3 border-b border-zinc-900 shrink-0">
+                <button @click="sidebarOpen = !sidebarOpen"
+                    class="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-zinc-800 transition-all mr-4"
+                    title="Toggle Sidebar">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                <span class="text-xs font-bold text-zinc-600 uppercase tracking-widest"
+                    x-text="sidebarOpen ? '' : 'KelasHUB'"></span>
+            </div>
 
             <!-- Mobile Header -->
             <header
@@ -1309,33 +1338,33 @@
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8" x-data="{ 
-                                                                                                        currentAttendance: {},
-                                                                                                        saveAttendance(matkul) {
-                                                                                                            let data = [];
-                                                                                                            semuaMahasiswa.forEach(m => {
-                                                                                                                data.push({
-                                                                                                                    student_id: m.id,
-                                                                                                                    status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
+                                                                                                            currentAttendance: {},
+                                                                                                            saveAttendance(matkul) {
+                                                                                                                let data = [];
+                                                                                                                semuaMahasiswa.forEach(m => {
+                                                                                                                    data.push({
+                                                                                                                        student_id: m.id,
+                                                                                                                        status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
+                                                                                                                    });
                                                                                                                 });
-                                                                                                            });
-                                                                                                            fetch('/kh/attendance', {
-                                                                                                                method: 'POST',
-                                                                                                                headers: {
-                                                                                                                    'Content-Type': 'application/json',
-                                                                                                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
-                                                                                                                },
-                                                                                                                body: JSON.stringify({
-                                                                                                                    subject_name: matkul,
-                                                                                                                    date: new Date().toISOString().split('T')[0],
-                                                                                                                    attendances: data
+                                                                                                                fetch('/kh/attendance', {
+                                                                                                                    method: 'POST',
+                                                                                                                    headers: {
+                                                                                                                        'Content-Type': 'application/json',
+                                                                                                                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                                                                                                                    },
+                                                                                                                    body: JSON.stringify({
+                                                                                                                        subject_name: matkul,
+                                                                                                                        date: new Date().toISOString().split('T')[0],
+                                                                                                                        attendances: data
+                                                                                                                    })
                                                                                                                 })
-                                                                                                            })
-                                                                                                            .then(res => res.json())
-                                                                                                            .then(res => {
-                                                                                                                if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
-                                                                                                            });
-                                                                                                        }
-                                                                                                    }">
+                                                                                                                .then(res => res.json())
+                                                                                                                .then(res => {
+                                                                                                                    if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
+                                                                                                                });
+                                                                                                            }
+                                                                                                        }">
                                 <template x-for="(sks, matkulName) in matkuls_sks" :key="matkulName">
                                     <div
                                         class="bg-zinc-900/50 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col shadow-xl">
@@ -1417,11 +1446,11 @@
                                                             <span
                                                                 class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-tighter inline-block"
                                                                 :class="{
-                                                                                                                                                                                                                      'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
-                                                                                                                                                                                                                      'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
-                                                                                                                                                                                                                      'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
-                                                                                                                                                                                                                      'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
-                                                                                                                                                                                                                  }"
+                                                                                                                                                                                                                              'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
+                                                                                                                                                                                                                              'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
+                                                                                                                                                                                                                              'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
+                                                                                                                                                                                                                              'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
+                                                                                                                                                                                                                          }"
                                                                 x-text="mhs.role.replace('_', ' ')"></span>
                                                         </td>
                                                         <td class="px-4 py-3 text-right">
