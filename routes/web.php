@@ -31,7 +31,12 @@ Route::post('/login', function (Request $request) {
         'password' => ['required'],
     ]);
 
-    if (Auth::attempt($credentials)) {
+    // Dukung login via NIM (angka) ATAU Nama Lengkap
+    if (
+        Auth::attempt(['nim' => $request->name, 'password' => $request->password]) ||
+        Auth::attempt(['name' => $request->name, 'password' => $request->password])
+    ) {
+
         $request->session()->regenerate();
         return redirect()->intended('dashboard');
     }
@@ -49,9 +54,13 @@ Route::post('/logout', function (Request $request) {
 })->name('logout');
 
 Route::post('/kh/api/login', function (Request $request) {
-    if (Auth::attempt($request->only('name', 'password'))) {
+    if (
+        Auth::attempt(['nim' => $request->name, 'password' => $request->password]) ||
+        Auth::attempt(['name' => $request->name, 'password' => $request->password])
+    ) {
+
         $request->session()->regenerate();
-        return response()->json(['message' => 'Login successful']);
+        return response()->json(['message' => 'Login successful', 'user' => Auth::user()]);
     }
     return response()->json(['message' => 'Invalid credentials'], 401);
 })->middleware('throttle:10,1');
