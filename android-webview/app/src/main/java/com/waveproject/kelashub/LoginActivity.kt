@@ -62,7 +62,13 @@ class LoginActivity : AppCompatActivity() {
                     startActivity(intent)
                     finish()
                 } else {
-                    Toast.makeText(this@LoginActivity, "Login Failed: Invalid credentials", Toast.LENGTH_SHORT).show()
+                    val errorBody = response.errorBody()?.string()
+                    val errorMessage = if (response.code() == 401) {
+                        "Login Failed: Invalid credentials"
+                    } else {
+                        "Login Failed: ${response.code()} ${errorBody ?: ""}"
+                    }
+                    Toast.makeText(this@LoginActivity, errorMessage, Toast.LENGTH_LONG).show()
                 }
             }
 

@@ -14,7 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
         $middleware->throttleApi(); // Enable throttle for API if any
         $middleware->validateCsrfTokens(except: [
-            'login'
+            'login',
+            'kh/*'
         ]);
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRoleKelasHub::class,
