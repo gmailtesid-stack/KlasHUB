@@ -16,26 +16,6 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// ⚠️ TEMPORARY: Route untuk inject dummy data (HAPUS SETELAH DIPAKAI!)
-Route::get('/seed-dummy', function () {
-    try {
-        \Illuminate\Support\Facades\Artisan::call('db:seed', [
-            '--class' => 'Database\\Seeders\\DummyClassSeeder',
-            '--force' => true,
-        ]);
-        return response()->json([
-            'success' => true,
-            'message' => 'Dummy data berhasil disuntikkan! 30 mahasiswa + data operasional lengkap.',
-            'login_ketua' => '231011400001 / 231011400001KK',
-            'login_sekretaris' => '231011400002 / 231011400002SK',
-            'login_bendahara' => '231011400003 / 231011400003BD',
-            'login_mahasiswa' => '231011400004 / 231011400004',
-        ]);
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()], 500);
-    }
-});
-
 // Route debug-db dihapus untuk keamanan produksi
 
 Route::get('/login', function () {
