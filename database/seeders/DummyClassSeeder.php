@@ -114,16 +114,18 @@ class DummyClassSeeder extends Seeder
         ];
 
         foreach ($subjects as $sub) {
-            DB::table('master_subjects')->insert([
-                'name' => $sub['name'],
-                'sks' => $sub['sks'],
-                'code' => $sub['code'],
-                'default_lecturer' => $sub['lecturer'],
-                'class_id' => $classId,
-                'semester' => $semester,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ]);
+            DB::table('master_subjects')->updateOrInsert(
+                ['name' => $sub['name']],
+                [
+                    'sks' => $sub['sks'],
+                    'code' => $sub['code'],
+                    'default_lecturer' => $sub['lecturer'],
+                    'class_id' => $classId,
+                    'semester' => $semester,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]
+            );
         }
 
         // ========================================================
