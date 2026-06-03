@@ -17,14 +17,27 @@ class DummyClassSeeder extends Seeder
         // ========================================================
         // 1. BUAT KELAS AKADEMIK
         // ========================================================
-        $classId = DB::table('academic_classes')->insertGetId([
-            'name' => 'Teknik Informatika - TPLE-013',
-            'code' => 'TPLE-013',
-            'academic_year' => '2025/2026',
-            'semester_ke' => $semester,
-            'created_at' => $now,
-            'updated_at' => $now,
-        ]);
+        $existingClass = DB::table('academic_classes')->where('code', 'TPLE-013')->first();
+        if ($existingClass) {
+            $classId = $existingClass->id;
+            // Bersihkan data lama untuk kelas ini agar tidak nyangkut/duplicate NIM
+            DB::table('students')->where('class_id', $classId)->delete();
+            DB::table('academic_schedules')->where('class_id', $classId)->delete();
+            DB::table('assignments')->where('class_id', $classId)->delete();
+            DB::table('master_subjects')->where('class_id', $classId)->delete();
+            DB::table('cash_ledgers')->where('class_id', $classId)->delete();
+            DB::table('class_attendances')->where('class_id', $classId)->delete();
+            DB::table('notifications')->where('class_id', $classId)->delete();
+        } else {
+            $classId = DB::table('academic_classes')->insertGetId([
+                'name' => 'Teknik Informatika - TPLE-013',
+                'code' => 'TPLE-013',
+                'academic_year' => '2025/2026',
+                'semester_ke' => $semester,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
 
         // ========================================================
         // 2. BUAT 30 MAHASISWA (3 Pengurus + 27 Biasa)
