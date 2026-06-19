@@ -3,6 +3,7 @@
     <!-- Base Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="bg_main">#09090B</color>
     
     <!-- Modern Dark Theme Palette -->
     <color name="bg_dark">#09090B</color>     <!-- Zinc 950 -->

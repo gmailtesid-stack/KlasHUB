@@ -17,6 +17,9 @@ import { LogIn } from 'lucide-react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import Constants from 'expo-constants';
 
+// 1. IMPORT LOGIC ONESIGNAL NATIVE
+import { LogLevel, OneSignal } from 'react-native-onesignal';
+
 SplashScreen.preventAutoHideAsync().catch(() => { });
 
 export default function App() {
@@ -24,6 +27,17 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const webViewRef = useRef(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  // 2. INITIALIZE ONESIGNAL SAAT APLIKASI DIHP DIBUKA
+  useEffect(() => {
+    OneSignal.Debug.setLogLevel(LogLevel.Verbose);
+
+    // GANTI string di bawah ini dengan OneSignal APP ID Anda yang valid
+    OneSignal.initialize("MASUKKAN_ONESIGNAL_APP_ID_ANDA");
+
+    // Otomatis minta izin Push Notification di HP
+    OneSignal.Notifications.requestPermission(true);
+  }, []);
 
   useEffect(() => {
     setTimeout(async () => {
@@ -111,8 +125,19 @@ export default function App() {
             scalesPageToFit={true}
             mediaPlaybackRequiresUserAction={false}
             javaScriptCanOpenWindowsAutomatically={true}
-            // Use a standard mobile Chrome user agent to help icons load
             userAgent="Mozilla/5.0 (Linux; Android 13; SM-G981B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36"
+            
+            // 3. JEMBATAN SUNTIK TOKEN KE LOCALSTORAGE WEB
+            injectedJavaScript={`
+              (function() {
+                setTimeout(function() {
+                  if (window.localStorage) {
+                    window.localStorage.setItem('native_onesignal_id', '${OneSignal.User.pushSubscription.id || ""}');
+                  }
+                }, 2000);
+              })();
+              true;
+            `}
           />
           {loading && (
             <View style={styles.loadingOverlay}>
@@ -135,7 +160,7 @@ const styles = StyleSheet.create({
   },
   webViewWrapper: {
     flex: 1,
-    paddingTop: Constants.statusBarHeight, // FIX: Menghindari konten web menabrak status bar/notch
+    paddingTop: Constants.statusBarHeight,
     backgroundColor: '#0d0d13',
   },
   centered: {
