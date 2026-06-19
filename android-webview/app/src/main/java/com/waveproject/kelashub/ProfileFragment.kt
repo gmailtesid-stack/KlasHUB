@@ -39,13 +39,17 @@ class ProfileFragment : Fragment() {
         btnLogout = root.findViewById(R.id.btnLogout)
 
         btnLogout.setOnClickListener {
-            // Bersihkan semua penyimpanan offline (Bypass Reset)
-            requireContext().getSharedPreferences("AuthPrefs", android.content.Context.MODE_PRIVATE).edit().clear().apply()
-            requireContext().getSharedPreferences("CookiePrefs", android.content.Context.MODE_PRIVATE).edit().clear().apply()
-            requireContext().getSharedPreferences("OfflineCache", android.content.Context.MODE_PRIVATE).edit().clear().apply()
-            
-            startActivity(Intent(requireContext(), LoginActivity::class.java))
-            requireActivity().finish()
+            progress.visibility = View.VISIBLE
+            // Call API first to destroy session backend-side
+            ApiClient.apiInterface.logout().enqueue(object : Callback<Void> {
+                override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                    performLocalLogout()
+                }
+
+                override fun onFailure(call: Call<Void>, t: Throwable) {
+                    performLocalLogout() // Perform local logout even if API fails
+                }
+            })
         }
         
         btnAdminPanel.setOnClickListener {
@@ -56,6 +60,15 @@ class ProfileFragment : Fragment() {
 
         fetchData()
         return root
+    }
+
+    private fun performLocalLogout() {
+        requireContext().getSharedPreferences("AuthPrefs", android.content.Context.MODE_PRIVATE).edit().clear().apply()
+        requireContext().getSharedPreferences("CookiePrefs", android.content.Context.MODE_PRIVATE).edit().clear().apply()
+        requireContext().getSharedPreferences("OfflineCache", android.content.Context.MODE_PRIVATE).edit().clear().apply()
+        
+        startActivity(Intent(requireContext(), LoginActivity::class.java))
+        requireActivity().finish()
     }
 
     private fun fetchData() {

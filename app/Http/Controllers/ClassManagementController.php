@@ -37,7 +37,7 @@ class ClassManagementController extends Controller
         ]);
 
         // 2. Create Ketua Kelas
-        $password = $data['ketua_nim'] . 'KK';
+        $password = \Illuminate\Support\Str::random(8);
         Student::create([
             'name' => $data['ketua_name'],
             'nim' => $data['ketua_nim'],
@@ -49,11 +49,12 @@ class ClassManagementController extends Controller
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Kelas ' . $class->name . ' dan Ketua Kelas (' . $data['ketua_name'] . ') berhasil didaftarkan.'
+                'message' => 'Kelas ' . $class->name . ' dan Ketua Kelas (' . $data['ketua_name'] . ') berhasil didaftarkan. Password Ketua: ' . $password,
+                'default_password' => $password
             ]);
         }
 
-        return back()->with('success', 'Kelas dan Ketua Kelas berhasil didaftarkan: ' . $data['ketua_name']);
+        return back()->with('success', 'Kelas dan Ketua Kelas berhasil didaftarkan: ' . $data['ketua_name'] . '. Password Awal: ' . $password);
     }
 
     public function nextSemester()

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/bg_main">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-black"
+        android:text="TAMBAH JADWAL"
+        android:textColor="@color/white"
+        android:textSize="26sp"
+        android:layout_marginBottom="16dp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
+
+            <EditText
+                android:id="@+id/etSubjectName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nama Mata Kuliah"
+                android:textColorHint="@color/text_secondary"
+                android:textColor="@color/text_primary"
+                android:padding="16dp"
+                android:backgroundTint="@color/border"
+                android:layout_marginBottom="12dp" />
+
+            <EditText
+                android:id="@+id/etSubjectCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Kode Mata Kuliah (Opsional)"
+                android:textColorHint="@color/text_secondary"
+                android:textColor="@color/text_primary"
+                android:padding="16dp"
+                android:backgroundTint="@color/border"
+                android:layout_marginBottom="12dp" />
+
+            <EditText
+                android:id="@+id/etLecturerName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nama Dosen Pengampu"
+                android:textColorHint="@color/text_secondary"
+                android:textColor="@color/text_primary"
+                android:padding="16dp"
+                android:backgroundTint="@color/border"
+                android:layout_marginBottom="12dp" />
+
+            <Spinner
+                android:id="@+id/spinnerDay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:backgroundTint="@color/border"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:id="@+id/tvTimeStart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Waktu Mulai: --:--"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:padding="16dp"
+                android:background="@drawable/selector_bg"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:id="@+id/tvTimeEnd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Waktu Selesai: --:--"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:padding="16dp"
+                android:background="@drawable/selector_bg"
+                android:layout_marginBottom="12dp" />
+
+            <EditText
+                android:id="@+id/etRoom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Ruangan Kelas"
+                android:textColorHint="@color/text_secondary"
+                android:textColor="@color/text_primary"
+                android:padding="16dp"
+                android:backgroundTint="@color/border"
+                android:layout_marginBottom="12dp" />
+
+            <EditText
+                android:id="@+id/etClassName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nama Kelas (Opsional)"
+                android:textColorHint="@color/text_secondary"
+                android:textColor="@color/text_primary"
+                android:padding="16dp"
+                android:backgroundTint="@color/border"
+                android:layout_marginBottom="12dp" />
+
+            <EditText
+                android:id="@+id/etDeliveryType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Tipe Pertemuan (Luring/Daring) Opsional"
+                android:textColorHint="@color/text_secondary"
+                android:textColor="@color/text_primary"
+                android:padding="16dp"
+                android:backgroundTint="@color/border"
+                android:layout_marginBottom="24dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSubmit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Simpan Jadwal"
+        app:backgroundTint="@color/primary"
+        android:textColor="@color/white"
+        android:padding="16dp"
+        app:cornerRadius="24dp"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="12dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Kembali"
+        app:backgroundTint="@color/border"
+        android:textColor="@color/text_primary"
+        android:padding="16dp"
+        app:cornerRadius="24dp"
+        android:fontFamily="sans-serif-medium" />
+
+</LinearLayout>

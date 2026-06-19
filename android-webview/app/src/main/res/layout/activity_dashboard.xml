@@ -1,94 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_bg"
-    android:padding="32dp">
+    android:background="@android:color/transparent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="32dp"
+    android:layoutAnimation="@anim/layout_animation_fall_down">
 
-    <FrameLayout
-        android:id="@+id/logoContainer"
-        android:layout_width="170dp"
-        android:layout_height="170dp"
-        android:background="@drawable/rounded_card"
-        android:layout_marginTop="100dp"
-        android:elevation="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        app:cardBackgroundColor="#1AFFFFFF"
+        app:cardCornerRadius="36dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="#33FFFFFF"
+        app:cardElevation="0dp"
+        android:layout_marginBottom="32dp">
 
         <ImageView
-            android:id="@+id/logo"
-            android:layout_width="140dp"
-            android:layout_height="140dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_gravity="center"
-            android:contentDescription="Kelas Hub Logo"
             android:src="@mipmap/ic_launcher" />
-    </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <TextView
-        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:fontFamily="sans-serif-black"
-        android:letterSpacing="0.4"
-        android:text="@string/title_dashboard"
+        android:letterSpacing="0.3"
+        android:text="KELASHUB"
         android:textColor="@color/white"
-        android:textSize="34sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/logoContainer" />
+        android:textSize="36sp"
+        android:textAlignment="center"
+        android:layout_marginBottom="8dp" />
 
     <TextView
-        android:id="@+id/subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:lineHeight="20dp"
-        android:text="@string/subtitle_dashboard"
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title" />
+        android:text="Masa Depan Manajemen Kelas Anda."
+        android:textColor="@color/primary_light"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-medium"
+        android:textAlignment="center"
+        android:layout_marginBottom="60dp"/>
+        
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminateTint="@color/primary"
+        android:layout_marginBottom="24dp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnEnter"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginBottom="40dp"
-        android:layout_marginTop="40dp"
-        android:backgroundTint="#3498db"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:text="@string/btn_login"
+        android:layout_height="wrap_content"
+        android:text="MASUK KE PLATFORM"
+        app:backgroundTint="@color/primary"
         android:textColor="@color/white"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.1"
-        app:cornerRadius="18dp"
-        app:icon="@android:drawable/ic_menu_send"
-        app:iconGravity="textStart"
-        app:layout_constraintBottom_toTopOf="@id/footer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:fontFamily="sans-serif-black"
+        app:cornerRadius="32dp"
+        android:padding="20dp"
+        android:layout_marginBottom="16dp" />
 
     <TextView
-        android:id="@+id/footer"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
-        android:letterSpacing="0.5"
-        android:text="@string/footer_version"
-        android:textColor="#1e293b"
-        android:textSize="9sp"
+        android:text="NATIVE BUILD V1.0.3"
+        android:textColor="@color/text_secondary"
+        android:background="#0AFFFFFF"
+        android:padding="8dp"
+        android:textSize="11sp"
+        android:textAlignment="center"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:letterSpacing="0.4" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
+

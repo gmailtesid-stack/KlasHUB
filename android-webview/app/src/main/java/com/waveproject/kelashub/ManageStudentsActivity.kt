@@ -1,6 +1,5 @@
 package com.waveproject.kelashub
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -8,6 +7,7 @@ import android.widget.PopupMenu
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import retrofit2.Call
@@ -76,7 +76,7 @@ class ManageStudentsActivity : AppCompatActivity() {
         
         val currentIdx = roles.indexOf(student.role).takeIf { it >= 0 } ?: 0
 
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle("Mutasi Role: ${student.name}")
             .setSingleChoiceItems(displayRoles, currentIdx) { dialog, which ->
                 val selectedRole = roles[which]
@@ -88,7 +88,7 @@ class ManageStudentsActivity : AppCompatActivity() {
     }
 
     private fun showDeleteDialog(student: Student) {
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle("Konfirmasi")
             .setMessage("Keluarkan ${student.name} dari kelas?\n(Tindakan ini tidak bisa dibatalkan)")
             .setPositiveButton("Hapus") { _, _ -> deleteStudent(student.id) }

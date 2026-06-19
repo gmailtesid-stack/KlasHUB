@@ -49,8 +49,8 @@ class AcademicMaterialController extends Controller
             $file = $request->file('file');
             $data['title'] = $file->getClientOriginalName();
             $data['mime_type'] = $file->getMimeType();
-            $data['file_content'] = base64_encode(file_get_contents($file->getRealPath()));
-            $data['file_path'] = null;
+            $data['file_path'] = $file->store('modules', 'public');
+            $data['file_content'] = null; // Mencegah payload bengkak di database
             $data['type'] = 'file';
         }
 
@@ -65,21 +65,30 @@ class AcademicMaterialController extends Controller
     public function downloadModule(Request $request, $id)
     {
         $module = LearningModule::findOrFail($id);
-        if (!$module->file_content) {
-            abort(404, 'File tidak tersedia');
+
+        if ($module->file_path) {
+            $path = storage_path('app/public/' . $module->file_path);
+            if (file_exists($path)) {
+                return response()->download($path, $module->title);
+            }
         }
-        $fileContent = base64_decode($module->file_content);
-        $mimeType = $module->mime_type ?? 'application/octet-stream';
 
-        $mimeMap = ['application/pdf' => 'pdf', 'application/msword' => 'doc', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx', 'text/plain' => 'txt'];
-        $ext = $mimeMap[$mimeType] ?? 'bin';
-        $filename = pathinfo($module->title, PATHINFO_FILENAME) . '.' . $ext;
+        if ($module->file_content) {
+            $fileContent = base64_decode($module->file_content);
+            $mimeType = $module->mime_type ?? 'application/octet-stream';
 
-        return response($fileContent, 200, [
-            'Content-Type' => $mimeType,
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-            'Content-Length' => strlen($fileContent),
-        ]);
+            $mimeMap = ['application/pdf' => 'pdf', 'application/msword' => 'doc', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx', 'text/plain' => 'txt'];
+            $ext = $mimeMap[$mimeType] ?? 'bin';
+            $filename = pathinfo($module->title, PATHINFO_FILENAME) . '.' . $ext;
+
+            return response($fileContent, 200, [
+                'Content-Type' => $mimeType,
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                'Content-Length' => strlen($fileContent),
+            ]);
+        }
+
+        abort(404, 'File tidak tersedia');
     }
 
     public function validateAssignment(Request $request)

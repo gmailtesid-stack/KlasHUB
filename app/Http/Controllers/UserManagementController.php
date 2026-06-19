@@ -30,24 +30,16 @@ class UserManagementController extends Controller
             $data['class_id'] = Auth::user()->class_id;
         }
 
-        $code = '';
-        if ($data['role'] === 'ketua_kelas')
-            $code = 'KK';
-        elseif ($data['role'] === 'sekretaris')
-            $code = 'SK';
-        elseif ($data['role'] === 'bendahara')
-            $code = 'BD';
-
-        $password = $data['nim'] . $code;
+        $password = \Illuminate\Support\Str::random(8);
         $data['password'] = bcrypt($password);
 
         $student = Student::create($data);
 
         if ($request->ajax()) {
-            return response()->json(['success' => true, 'student' => $student]);
+            return response()->json(['success' => true, 'student' => $student, 'default_password' => $password]);
         }
 
-        return back()->with('success', 'Mahasiswa berhasil didaftarkan: ' . $student->name);
+        return back()->with('success', 'Mahasiswa berhasil didaftarkan: ' . $student->name . '. Password Awal: ' . $password);
     }
 
     public function deleteStudent($id)
@@ -64,8 +56,8 @@ class UserManagementController extends Controller
             if ($target->class_id !== $user->class_id) {
                 abort(403, 'Akses Ditolak: Mahasiswa ini bukan anggota kelas Anda.');
             }
-            if ($target->role === 'super_admin') {
-                abort(403, 'Akses Ditolak: Anda tidak dapat menghapus Super Admin.');
+            if ($target->role === 'super_admin' || $target->role === 'ketua_kelas') {
+                abort(403, 'Akses Ditolak: Anda tidak dapat menghapus Super Admin atau Ketua Kelas.');
             }
         }
 
@@ -89,22 +81,14 @@ class UserManagementController extends Controller
         }
 
         $role = $request->role;
-        $code = '';
-        if ($role === 'ketua_kelas')
-            $code = 'KK';
-        elseif ($role === 'sekretaris')
-            $code = 'SK';
-        elseif ($role === 'bendahara')
-            $code = 'BD';
-
-        $newPassword = $targetStudent->nim . $code;
+        $newPassword = \Illuminate\Support\Str::random(8);
 
         $targetStudent->update([
             'role' => $role,
             'password' => bcrypt($newPassword)
         ]);
 
-        return response()->json(['success' => true]);
+        return response()->json(['success' => true, 'default_password' => $newPassword]);
     }
 
     public function getProfile()

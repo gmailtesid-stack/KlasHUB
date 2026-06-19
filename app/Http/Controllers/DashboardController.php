@@ -47,32 +47,41 @@ class DashboardController extends Controller
         $isAdmin = in_array($student->role, ['ketua_kelas', 'sekretaris', 'bendahara', 'super_admin']);
 
         // Quick sums remain on first load
-        $saldoKasSaatIni = CashLedger::when(!$isAdmin, function ($q) {
-            return $q->where('is_validated', true);
-        })->where('type', 'income')->sum('amount') - CashLedger::when(!$isAdmin, function ($q) {
-            return $q->where('is_validated', true);
-        })->where('type', 'expense')->sum('amount');
+        $saldoKasSaatIni = CashLedger::where('class_id', $student->class_id)
+            ->when(!$isAdmin, function ($q) {
+                return $q->where('is_validated', true);
+            })->where('type', 'income')->sum('amount')
+            - CashLedger::where('class_id', $student->class_id)
+                ->when(!$isAdmin, function ($q) {
+                    return $q->where('is_validated', true);
+                })->where('type', 'expense')->sum('amount');
 
-        $pemasukanMingguan = CashLedger::when(!$isAdmin, function ($q) {
-            return $q->where('is_validated', true);
-        })->where('type', 'income')->where('transaction_date', '>=', $startOfWeek)->sum('amount');
+        $pemasukanMingguan = CashLedger::where('class_id', $student->class_id)
+            ->when(!$isAdmin, function ($q) {
+                return $q->where('is_validated', true);
+            })->where('type', 'income')->where('transaction_date', '>=', $startOfWeek)->sum('amount');
 
-        $pengeluaranMingguan = CashLedger::when(!$isAdmin, function ($q) {
-            return $q->where('is_validated', true);
-        })->where('type', 'expense')->where('transaction_date', '>=', $startOfWeek)->sum('amount');
+        $pengeluaranMingguan = CashLedger::where('class_id', $student->class_id)
+            ->when(!$isAdmin, function ($q) {
+                return $q->where('is_validated', true);
+            })->where('type', 'expense')->where('transaction_date', '>=', $startOfWeek)->sum('amount');
 
         // Other heavy lists will be loaded via AJAX
-        $schedules = AcademicSchedule::when(!$isAdmin, function ($q) {
-            return $q->where('is_validated', true);
-        })->get();
+        $schedules = AcademicSchedule::where('class_id', $student->class_id)
+            ->when(!$isAdmin, function ($q) {
+                return $q->where('is_validated', true);
+            })->get();
 
         $pendingCount = 0;
         if (in_array($student->role, ['ketua_kelas', 'super_admin'])) {
-            $pendingCount += CashLedger::where('is_validated', false)->count();
-            $pendingCount += Assignment::where('is_validated', false)->count();
-            $pendingCount += LearningModule::where('is_validated', false)->count();
-            $pendingCount += ClassAttendance::where('is_validated', false)->count();
-            $pendingCount += AcademicSchedule::where('is_validated', false)->count();
+            $pendingCount += CashLedger::where('class_id', $student->class_id)->where('is_validated', false)->count();
+            $pendingCount += Assignment::where('class_id', $student->class_id)->where('is_validated', false)->count();
+            $pendingCount += LearningModule::where('class_id', $student->class_id)->where('is_validated', false)->count();
+            $pendingCount += ClassAttendance::where('is_validated', false)
+                ->whereHas('student', function ($query) use ($student) {
+                    $query->where('class_id', $student->class_id);
+                })->count();
+            $pendingCount += AcademicSchedule::where('class_id', $student->class_id)->where('is_validated', false)->count();
         }
 
         $academicClasses = $student->role === 'super_admin' ? \App\Models\AcademicClass::withCount('students')->with('ketuaKelas')->get() : [];

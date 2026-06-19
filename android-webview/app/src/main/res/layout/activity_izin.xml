@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/background"
-    android:padding="20dp">
+    android:padding="24dp">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:layout_marginBottom="16dp">
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Kembali"
-            android:backgroundTint="@color/card_bg"
+            app:backgroundTint="@color/card_bg"
             android:textColor="@color/white"
+            app:cornerRadius="32dp"
             android:layout_marginEnd="16dp"/>
         <TextView
             android:layout_width="wrap_content"
@@ -51,45 +56,63 @@
             android:buttonTint="@color/primary"/>
     </RadioGroup>
 
-    <EditText
-        android:id="@+id/etSubject"
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" app:boxBackgroundColor="#0AFFFFFF"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nama Matkul (Misal: Pemrograman)"
+        android:layout_marginBottom="16dp"
+        app:boxStrokeColor="@color/primary"
+        app:hintTextColor="@color/primary"
         android:textColorHint="@color/text_secondary"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/primary"
-        android:layout_marginBottom="16dp"/>
+        android:hint="Nama Matkul (Misal: Pemrograman)">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etSubject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <EditText
-        android:id="@+id/etDate"
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" app:boxBackgroundColor="#0AFFFFFF"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Tanggal (YYYY-MM-DD)"
+        android:layout_marginBottom="16dp"
+        app:boxStrokeColor="@color/primary"
+        app:hintTextColor="@color/primary"
         android:textColorHint="@color/text_secondary"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/primary"
-        android:layout_marginBottom="16dp"/>
-        
-    <EditText
-        android:id="@+id/etNotes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Alasan (Opsional)"
-        android:textColorHint="@color/text_secondary"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/primary"
-        android:layout_marginBottom="24dp"/>
+        android:hint="Tanggal (YYYY-MM-DD)">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" app:boxBackgroundColor="#0AFFFFFF"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        app:boxStrokeColor="@color/primary"
+        app:hintTextColor="@color/primary"
+        android:textColorHint="@color/text_secondary"
+        android:hint="Alasan (Opsional)">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etNotes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSubmitIzin"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="55dp"
         android:text="KIRIM PENGAJUAN"
-        android:backgroundTint="@color/primary"
+        app:backgroundTint="@color/primary"
         android:textColor="@color/white"
         android:textStyle="bold"
-        android:padding="16dp"/>
+        app:cornerRadius="32dp" />
 
     <ProgressBar
         android:id="@+id/progressIzin"
@@ -99,3 +122,7 @@
         android:layout_marginTop="16dp"
         android:visibility="gone" />
 </LinearLayout>
+</ScrollView>
+
+
+

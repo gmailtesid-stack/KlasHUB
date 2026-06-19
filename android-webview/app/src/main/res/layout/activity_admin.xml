@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background"
-    android:padding="20dp">
+    android:background="@android:color/transparent"
+    android:padding="24dp">
 
     <TextView
         android:layout_width="wrap_content"
@@ -12,123 +13,194 @@
         android:fontFamily="sans-serif-black"
         android:text="PANEL PENGURUS"
         android:textColor="@color/white"
-        android:textSize="24sp"
-        android:layout_marginBottom="8dp" />
+        android:textSize="26sp"
+        android:letterSpacing="0.02"
+        android:layout_marginBottom="6dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Area khusus untuk validasi dan manajemen data."
+        android:text="Area khusus untuk validasi dan manajemen data operasional."
         android:textColor="@color/text_secondary"
-        android:textSize="12sp"
-        android:layout_marginBottom="24dp" />
+        android:textSize="13sp"
+        android:layout_marginBottom="32dp" />
 
-    <Button
-        android:id="@+id/btnNavValidation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Validasi Data (Persetujuan)"
-        android:backgroundTint="@color/card_bg"
-        android:textColor="@color/white"
-        android:padding="16dp"
-        android:gravity="left|center_vertical"
-        android:layout_marginBottom="12dp"/>
-    
-    <Button
-        android:id="@+id/btnNavInputKas"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Input Dana Kas Baru"
-        android:backgroundTint="@color/card_bg"
-        android:textColor="@color/white"
-        android:padding="16dp"
-        android:layout_marginBottom="12dp"/>
-
-    <Button
-        android:id="@+id/btnNavUploadQris"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Upload/Ganti QRIS Kelas (Kas)"
-        android:backgroundTint="@color/card_bg"
-        android:textColor="@color/white"
-        android:padding="16dp"
-        android:gravity="left|center_vertical"
-        android:layout_marginBottom="12dp"
-        android:visibility="gone"/>
-
-    <Button
-        android:id="@+id/btnNavInputSubject"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Data Master: Mata Kuliah &amp; Dosen"
-        android:backgroundTint="@color/danger"
-        android:textColor="@color/white"
-        android:padding="16dp"
-        android:gravity="left|center_vertical"
-        android:layout_marginBottom="12dp"
-        android:visibility="gone"/>
-
-    <Button
-        android:id="@+id/btnNavInputStudent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Data Master: Daftar Mahasiswa Baru"
-        android:backgroundTint="@color/danger"
-        android:textColor="@color/white"
-        android:padding="16dp"
-        android:gravity="left|center_vertical"
-        android:layout_marginBottom="12dp"
-        android:visibility="gone"/>
-
-    <Button
-        android:id="@+id/btnNavManageStudent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Manajemen Anggota Kelas (Mutasi/Hapus)"
-        android:backgroundTint="@color/primary"
-        android:textColor="@color/white"
-        android:padding="16dp"
-        android:gravity="left|center_vertical"
-        android:layout_marginBottom="12dp"
-        android:visibility="gone"/>
-
-    <Button
-        android:id="@+id/btnNavNextSemester"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="PERGANTIAN / NAIK SEMESTER BARU"
-        android:backgroundTint="@color/danger"
-        android:textColor="@color/white"
-        android:padding="16dp"
-        android:textStyle="bold"
-        android:gravity="left|center_vertical"
-        android:layout_marginBottom="12dp"
-        android:visibility="gone"/>
-
-    <Button
-        android:id="@+id/btnNavSaaS"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="👑 DEVELOPER: Registrasi Kelas/Institusi Baru"
-        android:backgroundTint="#3B82F6"
-        android:textColor="#FFFFFF"
-        android:padding="16dp"
-        android:textStyle="bold"
-        android:gravity="left|center_vertical"
-        android:layout_marginBottom="12dp"
-        android:visibility="gone"/>
-
-    <Space
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNavValidation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Validasi Data (Persetujuan)"
+                app:backgroundTint="@color/card_bg"
+                android:textColor="@color/text_primary"
+                android:padding="20dp"
+                android:gravity="left|center_vertical"
+                app:cornerRadius="32dp"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="sans-serif-medium" />
+            
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNavInputKas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Input Dana Kas Baru"
+                app:backgroundTint="@color/card_bg"
+                android:textColor="@color/text_primary"
+                android:padding="20dp"
+                android:gravity="left|center_vertical"
+                app:cornerRadius="32dp"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="sans-serif-medium" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNavInputSchedule"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tambah Jadwal Kuliah"
+                app:backgroundTint="@color/card_bg"
+                android:textColor="@color/text_primary"
+                android:padding="20dp"
+                android:gravity="left|center_vertical"
+                app:cornerRadius="32dp"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="sans-serif-medium"
+                android:visibility="gone"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNavInputAssignment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Entry Tugas Baru"
+                app:backgroundTint="@color/card_bg"
+                android:textColor="@color/text_primary"
+                android:padding="20dp"
+                android:gravity="left|center_vertical"
+                app:cornerRadius="32dp"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="sans-serif-medium"
+                android:visibility="gone"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNavInputModule"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Upload Modul Pembelajaran"
+                app:backgroundTint="@color/card_bg"
+                android:textColor="@color/text_primary"
+                android:padding="20dp"
+                android:gravity="left|center_vertical"
+                app:cornerRadius="32dp"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="sans-serif-medium"
+                android:visibility="gone"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNavUploadQris"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Upload/Ganti QRIS Kelas"
+                app:backgroundTint="@color/card_bg"
+                android:textColor="@color/text_primary"
+                android:padding="20dp"
+                android:gravity="left|center_vertical"
+                app:cornerRadius="32dp"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="sans-serif-medium"
+                android:visibility="gone"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNavInputSubject"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Repositori Mata Kuliah (+ Tambah)"
+                app:backgroundTint="@color/danger"
+                android:textColor="@color/white"
+                android:padding="20dp"
+                android:gravity="left|center_vertical"
+                app:cornerRadius="32dp"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="sans-serif-medium"
+                android:visibility="gone"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNavInputStudent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Master Data: Daftar Mahasiswa"
+                app:backgroundTint="@color/danger"
+                android:textColor="@color/white"
+                android:padding="20dp"
+                android:gravity="left|center_vertical"
+                app:cornerRadius="32dp"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="sans-serif-medium"
+                android:visibility="gone"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNavManageStudent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Anggota Kelas (Mutasi/Hapus)"
+                app:backgroundTint="@color/primary"
+                android:textColor="@color/white"
+                android:padding="20dp"
+                android:gravity="left|center_vertical"
+                app:cornerRadius="32dp"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="sans-serif-medium"
+                android:visibility="gone"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNavNextSemester"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="PERGANTIAN / NAIK SEMESTER"
+                app:backgroundTint="@color/danger_dark"
+                android:textColor="@color/white"
+                android:padding="20dp"
+                android:fontFamily="sans-serif-black"
+                android:gravity="left|center_vertical"
+                app:cornerRadius="32dp"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNavSaaS"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="👑 Registrasi Kelas/Institusi Baru"
+                app:backgroundTint="@color/primary_dark"
+                android:textColor="@color/white"
+                android:padding="20dp"
+                android:fontFamily="sans-serif-black"
+                android:gravity="left|center_vertical"
+                app:cornerRadius="32dp"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone"/>
+        </LinearLayout>
+    </ScrollView>
         
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnBack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Kembali ke Profil"
-        android:backgroundTint="@color/primary"
-        android:textColor="@color/white"
-        android:padding="16dp" />
+        app:backgroundTint="@color/border"
+        android:textColor="@color/text_primary"
+        android:padding="16dp"
+        app:cornerRadius="24dp"
+        android:fontFamily="sans-serif-medium" />
 </LinearLayout>
+
+

@@ -17,6 +17,10 @@
             theme: {
                 extend: {
                     colors: {
+                        brand: {
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                        },
                         zinc: {
                             850: '#1f1f22',
                             900: '#18181b',
@@ -24,7 +28,7 @@
                         }
                     },
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        sans: ['Outfit', 'sans-serif'],
                     }
                 }
             }
@@ -32,9 +36,12 @@
     </script>
     <style>
         body {
-            background-color: #000;
-            color: #fff;
+            background-color: #030303;
+            color: #ffffff;
             -webkit-tap-highlight-color: transparent;
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(45, 212, 191, 0.05), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.05), transparent 25%);
         }
 
         ::-webkit-scrollbar {
@@ -48,15 +55,53 @@
         }
 
         .glass {
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: rgba(9, 9, 11, 0.65) !important;
+            backdrop-filter: blur(24px) !important;
+            -webkit-backdrop-filter: blur(24px) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        /* Elevate all zinc-900 elements (cards, modals) to premium glassmorphism */
+        .bg-zinc-900,
+        .bg-\[\#18181b\] {
+            background: rgba(24, 24, 27, 0.4) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        /* Elevate form inputs */
+        input,
+        select,
+        textarea {
+            background-color: rgba(9, 9, 11, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.06) !important;
+            backdrop-filter: blur(10px) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            box-shadow: 0 0 15px rgba(45, 212, 191, 0.15) !important;
+            border-color: rgba(45, 212, 191, 0.4) !important;
+        }
+
+        /* Modern Button Interactions */
+        button {
+            transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s;
+        }
+
+        button:active {
+            transform: scale(0.96) !important;
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 </head>
 
-<body class="antialiased selection:bg-zinc-800 flex h-screen overflow-hidden text-sm">
+<body class="antialiased selection:bg-brand-500/30 flex h-screen overflow-hidden text-sm relative">
     @include('partials.loader')
 
     <div x-data="{ 
@@ -1338,33 +1383,33 @@
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8" x-data="{ 
-                                                                                                                currentAttendance: {},
-                                                                                                                saveAttendance(matkul) {
-                                                                                                                    let data = [];
-                                                                                                                    semuaMahasiswa.forEach(m => {
-                                                                                                                        data.push({
-                                                                                                                            student_id: m.id,
-                                                                                                                            status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
+                                                                                                                    currentAttendance: {},
+                                                                                                                    saveAttendance(matkul) {
+                                                                                                                        let data = [];
+                                                                                                                        semuaMahasiswa.forEach(m => {
+                                                                                                                            data.push({
+                                                                                                                                student_id: m.id,
+                                                                                                                                status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
+                                                                                                                            });
                                                                                                                         });
-                                                                                                                    });
-                                                                                                                    fetch('/kh/attendance', {
-                                                                                                                        method: 'POST',
-                                                                                                                        headers: {
-                                                                                                                            'Content-Type': 'application/json',
-                                                                                                                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
-                                                                                                                        },
-                                                                                                                        body: JSON.stringify({
-                                                                                                                            subject_name: matkul,
-                                                                                                                            date: new Date().toISOString().split('T')[0],
-                                                                                                                            attendances: data
+                                                                                                                        fetch('/kh/attendance', {
+                                                                                                                            method: 'POST',
+                                                                                                                            headers: {
+                                                                                                                                'Content-Type': 'application/json',
+                                                                                                                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                                                                                                                            },
+                                                                                                                            body: JSON.stringify({
+                                                                                                                                subject_name: matkul,
+                                                                                                                                date: new Date().toISOString().split('T')[0],
+                                                                                                                                attendances: data
+                                                                                                                            })
                                                                                                                         })
-                                                                                                                    })
-                                                                                                                    .then(res => res.json())
-                                                                                                                    .then(res => {
-                                                                                                                        if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
-                                                                                                                    });
-                                                                                                                }
-                                                                                                            }">
+                                                                                                                        .then(res => res.json())
+                                                                                                                        .then(res => {
+                                                                                                                            if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
+                                                                                                                        });
+                                                                                                                    }
+                                                                                                                }">
                                 <template x-for="(sks, matkulName) in matkuls_sks" :key="matkulName">
                                     <div
                                         class="bg-zinc-900/50 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col shadow-xl">
@@ -1446,11 +1491,11 @@
                                                             <span
                                                                 class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-tighter inline-block"
                                                                 :class="{
-                                                                                                                                                                                                                                      'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
-                                                                                                                                                                                                                                      'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
-                                                                                                                                                                                                                                      'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
-                                                                                                                                                                                                                                      'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
-                                                                                                                                                                                                                                  }"
+                                                                                                                                                                                                                                              'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
+                                                                                                                                                                                                                                              'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
+                                                                                                                                                                                                                                              'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
+                                                                                                                                                                                                                                              'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
+                                                                                                                                                                                                                                          }"
                                                                 x-text="mhs.role.replace('_', ' ')"></span>
                                                         </td>
                                                         <td class="px-4 py-3 text-right">

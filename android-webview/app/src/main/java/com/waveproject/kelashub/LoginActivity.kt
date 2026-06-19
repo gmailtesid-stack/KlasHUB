@@ -40,7 +40,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun performLogin() {
         val nim = etNim.text.toString().trim()
-        val password = etPassword.text.toString().trim()
+        val password = etPassword.text.toString()
 
         if (nim.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "NIM and Password required", Toast.LENGTH_SHORT).show()

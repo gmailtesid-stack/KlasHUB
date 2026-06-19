@@ -111,7 +111,14 @@ class AttendanceController extends Controller
         $isAdmin = in_array($student->role, ['ketua_kelas', 'super_admin']);
         $pendingAttendances = [];
         if ($isAdmin) {
-            $pendingAttendances = ClassAttendance::where('is_validated', false)->get();
+            if ($student->role === 'super_admin') {
+                $pendingAttendances = ClassAttendance::where('is_validated', false)->get();
+            } else {
+                $pendingAttendances = ClassAttendance::where('is_validated', false)
+                    ->whereHas('student', function ($query) use ($student) {
+                        $query->where('class_id', $student->class_id);
+                    })->get();
+            }
         }
 
         return response()->json([

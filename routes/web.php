@@ -65,6 +65,13 @@ Route::post('/kh/api/login', function (Request $request) {
     return response()->json(['message' => 'Invalid credentials'], 401);
 })->middleware('throttle:10,1');
 
+Route::post('/kh/api/logout', function (Request $request) {
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+    return response()->json(['message' => 'Logged out successfully']);
+});
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'getStudentDashboard'])->name('dashboard');
     Route::post('/kh/password', [DashboardController::class, 'updatePassword']);

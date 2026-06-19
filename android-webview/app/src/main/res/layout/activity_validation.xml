@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background"
-    android:padding="20dp">
+    android:background="@android:color/transparent"
+    android:padding="24dp">
     
     <LinearLayout
         android:layout_width="match_parent"
@@ -46,8 +46,10 @@
         android:layout_marginTop="50dp"
         android:visibility="gone" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView android:layoutAnimation="@anim/layout_animation_fall_down"
         android:id="@+id/rvValidation"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </LinearLayout>
+
+

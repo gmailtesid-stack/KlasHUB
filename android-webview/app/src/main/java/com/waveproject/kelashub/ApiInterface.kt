@@ -12,6 +12,9 @@ interface ApiInterface {
         @Field("password") password: String
     ): Call<Void>
 
+    @POST("kh/api/logout")
+    fun logout(): Call<Void>
+
     @GET("kh/api/dashboard-data")
     fun getDashboardData(@Query("semester") semester: Int? = null): Call<DashboardDataResponse>
 
@@ -111,4 +114,40 @@ interface ApiInterface {
     @FormUrlEncoded
     @POST("kh/class")
     fun registerClass(@FieldMap body: Map<String, String>): Call<ApiResponse>
+
+    @FormUrlEncoded
+    @POST("kh/schedule")
+    fun storeSchedule(
+        @Field("subject_name") subjectName: String,
+        @Field("subject_code") subjectCode: String?,
+        @Field("lecturer_name") lecturerName: String,
+        @Field("day") day: String,
+        @Field("time_start") timeStart: String,
+        @Field("time_end") timeEnd: String,
+        @Field("room") room: String,
+        @Field("class_name") className: String?,
+        @Field("delivery_type") deliveryType: String?
+    ): Call<Void>
+
+    @FormUrlEncoded
+    @POST("kh/assignment")
+    fun storeAssignment(
+        @Field("subject_name") subjectName: String,
+        @Field("title") title: String,
+        @Field("description") description: String?,
+        @Field("deadline") deadline: String,
+        @Field("material_link") materialLink: String?,
+        @Field("type") type: String,
+        @Field("members") members: String?
+    ): Call<Void>
+
+    @Multipart
+    @POST("kh/module")
+    fun storeModule(
+        @Part("subject_name") subjectName: okhttp3.RequestBody,
+        @Part("type") type: okhttp3.RequestBody,
+        @Part("title") title: okhttp3.RequestBody?,
+        @Part("link_url") linkUrl: okhttp3.RequestBody?,
+        @Part file: okhttp3.MultipartBody.Part?
+    ): Call<Void>
 }

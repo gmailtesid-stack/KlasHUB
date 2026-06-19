@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_bg"
-    android:padding="32dp">
+    android:padding="24dp">
 
     <ImageView
         android:id="@+id/logo"
@@ -32,12 +32,13 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/nimLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" app:boxBackgroundColor="#0AFFFFFF"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        android:hint="NIM / NAMA"
+        android:hint="NIM / NAMA AKTIF"
         android:textColorHint="@color/text_secondary"
+        app:boxCornerRadiusTopStart="24dp" app:boxCornerRadiusTopEnd="24dp" app:boxCornerRadiusBottomStart="24dp" app:boxCornerRadiusBottomEnd="24dp"
         app:boxStrokeColor="@color/primary"
         app:hintTextColor="@color/primary"
         app:layout_constraintTop_toBottomOf="@id/loginTitle">
@@ -51,12 +52,13 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/passwordLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" app:boxBackgroundColor="#0AFFFFFF"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="PASSWORD (NIM+KODE)"
+        android:hint="KODE KEAMANAN (PASSWORD)"
         android:textColorHint="@color/text_secondary"
+        app:boxCornerRadiusTopStart="24dp" app:boxCornerRadiusTopEnd="24dp" app:boxCornerRadiusBottomStart="24dp" app:boxCornerRadiusBottomEnd="24dp"
         app:boxStrokeColor="@color/primary"
         app:hintTextColor="@color/primary"
         app:layout_constraintTop_toBottomOf="@id/nimLayout"
@@ -94,3 +96,5 @@
         app:layout_constraintTop_toBottomOf="@id/btnLogin" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+

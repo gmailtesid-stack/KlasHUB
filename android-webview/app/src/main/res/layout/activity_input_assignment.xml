@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/bg_main">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-black"
+        android:text="TAMBAH TUGAS"
+        android:textColor="@color/white"
+        android:textSize="26sp"
+        android:layout_marginBottom="16dp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
+
+            <EditText
+                android:id="@+id/etSubjectName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nama Mata Kuliah"
+                android:textColorHint="@color/text_secondary"
+                android:textColor="@color/text_primary"
+                android:padding="16dp"
+                android:backgroundTint="@color/border"
+                android:layout_marginBottom="12dp" />
+
+            <EditText
+                android:id="@+id/etTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Judul Tugas"
+                android:textColorHint="@color/text_secondary"
+                android:textColor="@color/text_primary"
+                android:padding="16dp"
+                android:backgroundTint="@color/border"
+                android:layout_marginBottom="12dp" />
+
+            <EditText
+                android:id="@+id/etDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Deskripsi (Opsional)"
+                android:textColorHint="@color/text_secondary"
+                android:textColor="@color/text_primary"
+                android:padding="16dp"
+                android:minLines="3"
+                android:gravity="top|start"
+                android:backgroundTint="@color/border"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:id="@+id/tvDeadline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pilih Deadline (Tgl &amp; Waktu)"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:padding="16dp"
+                android:background="@drawable/selector_bg"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tipe Tugas:"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="8dp" />
+
+            <RadioGroup
+                android:id="@+id/rgType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+                <RadioButton
+                    android:id="@+id/rbIndividu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Individu"
+                    android:textColor="@color/text_primary"
+                    android:checked="true" />
+                <RadioButton
+                    android:id="@+id/rbKelompok"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Kelompok"
+                    android:layout_marginStart="24dp"
+                    android:textColor="@color/text_primary" />
+            </RadioGroup>
+
+            <EditText
+                android:id="@+id/etMembers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nama Anggota Kelompok (Opsional)"
+                android:textColorHint="@color/text_secondary"
+                android:textColor="@color/text_primary"
+                android:padding="16dp"
+                android:visibility="gone"
+                android:backgroundTint="@color/border"
+                android:layout_marginBottom="12dp" />
+
+            <EditText
+                android:id="@+id/etMaterialLink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Link Referensi (Opsional)"
+                android:textColorHint="@color/text_secondary"
+                android:textColor="@color/text_primary"
+                android:padding="16dp"
+                android:backgroundTint="@color/border"
+                android:layout_marginBottom="24dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSubmit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Simpan Tugas"
+        app:backgroundTint="@color/primary"
+        android:textColor="@color/white"
+        android:padding="16dp"
+        app:cornerRadius="24dp"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="12dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Kembali"
+        app:backgroundTint="@color/border"
+        android:textColor="@color/text_primary"
+        android:padding="16dp"
+        app:cornerRadius="24dp"
+        android:fontFamily="sans-serif-medium" />
+
+</LinearLayout>

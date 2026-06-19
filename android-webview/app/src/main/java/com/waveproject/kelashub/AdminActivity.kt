@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class AdminActivity : AppCompatActivity() {
 
@@ -24,6 +25,9 @@ class AdminActivity : AppCompatActivity() {
         val btnNavNextSemester = findViewById<Button>(R.id.btnNavNextSemester)
         val btnNavSaaS = findViewById<Button>(R.id.btnNavSaaS) // New SaaS Button
         val btnNavUploadQris = findViewById<Button>(R.id.btnNavUploadQris)
+        val btnNavInputSchedule = findViewById<Button>(R.id.btnNavInputSchedule)
+        val btnNavInputAssignment = findViewById<Button>(R.id.btnNavInputAssignment)
+        val btnNavInputModule = findViewById<Button>(R.id.btnNavInputModule)
         
         btnNavValidation.visibility = View.GONE
         btnNavInputKas.visibility = View.GONE
@@ -32,6 +36,11 @@ class AdminActivity : AppCompatActivity() {
         btnNavUploadQris.visibility = View.GONE
 
         val role = intent.getStringExtra("USER_ROLE") ?: ""
+        if (role == "ketua_kelas" || role == "sekretaris" || role == "bendahara" || role == "super_admin") {
+            btnNavInputSchedule.visibility = View.VISIBLE
+            btnNavInputAssignment.visibility = View.VISIBLE
+            btnNavInputModule.visibility = View.VISIBLE
+        }
         if (role == "ketua_kelas" || role == "super_admin") {
             btnNavValidation.visibility = View.VISIBLE
             btnNavInputKas.visibility = View.VISIBLE
@@ -42,7 +51,9 @@ class AdminActivity : AppCompatActivity() {
         }
         if (role == "super_admin") {
             btnNavSaaS.visibility = View.VISIBLE
-        } else if (role == "bendahara" || role == "ketua_kelas") {
+        }
+        
+        if (role == "bendahara" || role == "ketua_kelas" || role == "super_admin") {
             btnNavUploadQris.visibility = View.VISIBLE
         }
         if (role == "bendahara") {
@@ -70,7 +81,7 @@ class AdminActivity : AppCompatActivity() {
         }
 
         btnNavNextSemester.setOnClickListener {
-            android.app.AlertDialog.Builder(this)
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
                 .setTitle("Perhatian!")
                 .setMessage("Yakin ingin naik ke semester selanjutnya? Seluruh data Jadwal Harian dan Absensi semester ini akan terarsip, dan halaman utama akan kosong (Semester Baru).")
                 .setPositiveButton("Naik Semester") { _, _ ->
@@ -93,6 +104,18 @@ class AdminActivity : AppCompatActivity() {
 
         btnNavUploadQris.setOnClickListener {
             startActivity(Intent(this, UploadQrisActivity::class.java))
+        }
+
+        btnNavInputSchedule.setOnClickListener {
+            startActivity(Intent(this, InputScheduleActivity::class.java))
+        }
+
+        btnNavInputAssignment.setOnClickListener {
+            startActivity(Intent(this, InputAssignmentActivity::class.java))
+        }
+
+        btnNavInputModule.setOnClickListener {
+            startActivity(Intent(this, InputModuleActivity::class.java))
         }
     }
 }

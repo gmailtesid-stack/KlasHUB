@@ -28,6 +28,8 @@ class DashboardFragment : Fragment() {
     private lateinit var rvModules: RecyclerView
     private lateinit var btnSemesterFilter: Button
     private lateinit var btnPayKas: Button
+    private lateinit var tvEmptyAssignments: TextView
+    private lateinit var tvEmptyModules: TextView
 
     private lateinit var assignmentAdapter: AssignmentAdapter
     private lateinit var moduleAdapter: ModuleAdapter
@@ -52,6 +54,8 @@ class DashboardFragment : Fragment() {
         tvExpense = root.findViewById(R.id.tvExpense)
         rvAssignments = root.findViewById(R.id.rvAssignments)
         rvModules = root.findViewById(R.id.rvModules)
+        tvEmptyAssignments = root.findViewById(R.id.tvEmptyAssignments)
+        tvEmptyModules = root.findViewById(R.id.tvEmptyModules)
 
         rvAssignments.layoutManager = LinearLayoutManager(requireContext())
         assignmentAdapter = AssignmentAdapter(listOf())
@@ -156,5 +160,21 @@ class DashboardFragment : Fragment() {
 
         assignmentAdapter.updateData(data.assignments)
         moduleAdapter.updateData(data.modules)
+
+        if (data.assignments.isEmpty()) {
+            tvEmptyAssignments.visibility = View.VISIBLE
+            rvAssignments.visibility = View.GONE
+        } else {
+            tvEmptyAssignments.visibility = View.GONE
+            rvAssignments.visibility = View.VISIBLE
+        }
+
+        if (data.modules.isEmpty()) {
+            tvEmptyModules.visibility = View.VISIBLE
+            rvModules.visibility = View.GONE
+        } else {
+            tvEmptyModules.visibility = View.GONE
+            rvModules.visibility = View.VISIBLE
+        }
     }
 }

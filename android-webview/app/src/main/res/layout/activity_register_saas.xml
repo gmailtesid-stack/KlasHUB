@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="#121212"
-    android:padding="20dp">
+    android:padding="24dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="👑 SaaS Developer Console"
-        android:textColor="#3B82F6"
+        android:textColor="@color/primary"
         android:textSize="22sp"
         android:textStyle="bold"
         android:layout_marginBottom="4dp"/>
@@ -19,103 +23,97 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Registrasi institusi/kelas baru dan tetapkan Ketua Kelas."
-        android:textColor="#A1A1AA"
+        android:textColor="@color/text_secondary"
         android:textSize="13sp"
         android:layout_marginBottom="24dp"/>
 
-    <!-- Ketua Name -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Nama Lengkap Ketua Kelas"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
-    <EditText
-        android:id="@+id/etKetuaName"
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" app:boxBackgroundColor="#0AFFFFFF"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#000000"
-        android:textColor="#FFFFFF"
-        android:padding="12dp"
-        android:hint="Contoh: Budi Santoso"
-        android:textColorHint="#555555"
-        android:layout_marginBottom="16dp"/>
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:boxStrokeColor="@color/primary"
+        app:hintTextColor="@color/primary"
+        android:textColorHint="@color/text_secondary"
+        android:hint="Nama Lengkap Ketua Kelas">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etKetuaName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Ketua NIM -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="NIM (Nomor Induk Mahasiswa)"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
-    <EditText
-        android:id="@+id/etKetuaNim"
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" app:boxBackgroundColor="#0AFFFFFF"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#000000"
-        android:textColor="#FFFFFF"
-        android:padding="12dp"
-        android:hint="Contoh: 1010101010"
-        android:inputType="number"
-        android:textColorHint="#555555"
-        android:layout_marginBottom="16dp"/>
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:boxStrokeColor="@color/primary"
+        app:hintTextColor="@color/primary"
+        android:textColorHint="@color/text_secondary"
+        android:hint="NIM (Nomor Induk Mahasiswa)">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etKetuaNim"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:textColor="@color/white" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Class Code -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Kode Kelas (Unik)"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
-    <EditText
-        android:id="@+id/etClassCode"
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" app:boxBackgroundColor="#0AFFFFFF"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#000000"
-        android:textColor="#FFFFFF"
-        android:padding="12dp"
-        android:hint="Contoh: 06TPLE015"
-        android:textColorHint="#555555"
-        android:layout_marginBottom="16dp"/>
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:boxStrokeColor="@color/primary"
+        app:hintTextColor="@color/primary"
+        android:textColorHint="@color/text_secondary"
+        android:hint="Kode Kelas (Unik, Misal: 06TPLE015)">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etClassCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white" />
+    </com.google.android.material.textfield.TextInputLayout>
         
-    <!-- Department -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Program Studi"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
-    <EditText
-        android:id="@+id/etDepartment"
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" app:boxBackgroundColor="#0AFFFFFF"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#000000"
-        android:textColor="#FFFFFF"
-        android:padding="12dp"
-        android:hint="Teknik Informatika"
-        android:textColorHint="#555555"
-        android:layout_marginBottom="24dp"/>
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        app:boxStrokeColor="@color/primary"
+        app:hintTextColor="@color/primary"
+        android:textColorHint="@color/text_secondary"
+        android:hint="Program Studi (Teknik Informatika)">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etDepartment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnRegisterSubmit"
         android:layout_width="match_parent"
         android:layout_height="55dp"
-        android:backgroundTint="#3B82F6"
+        app:backgroundTint="@color/primary"
         android:text="AKTIFKAN INSTITUSI BARU"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/white"
         android:textStyle="bold"
+        app:cornerRadius="32dp"
         android:layout_marginBottom="12dp"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnBack"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:backgroundTint="#27272A"
+        android:layout_height="55dp"
+        app:backgroundTint="@color/card_bg"
         android:text="KEMBALI"
-        android:textColor="#FFFFFF" />
+        app:cornerRadius="32dp"
+        android:textColor="@color/white" />
 
 </LinearLayout>
+</ScrollView>
+
+
+

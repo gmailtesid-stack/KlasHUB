@@ -14,7 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.KelasHub"
-        android:usesCleartextTraffic="false"
+        android:usesCleartextTraffic="true"
         android:networkSecurityConfig="@xml/network_security_config">
         
         <activity
@@ -46,6 +46,9 @@
         <activity android:name=".UploadQrisActivity" android:exported="false" android:screenOrientation="portrait" />
         <activity android:name=".PayKasActivity" android:exported="false" android:screenOrientation="portrait" />
         <activity android:name=".ValidationActivity" android:exported="false" android:screenOrientation="portrait" />
+        <activity android:name=".InputScheduleActivity" android:exported="false" android:screenOrientation="portrait" />
+        <activity android:name=".InputAssignmentActivity" android:exported="false" android:screenOrientation="portrait" />
+        <activity android:name=".InputModuleActivity" android:exported="false" android:screenOrientation="portrait" />
             
     </application>
 </manifest>

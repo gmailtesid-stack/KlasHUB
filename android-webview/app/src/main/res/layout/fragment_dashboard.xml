@@ -4,76 +4,93 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@android:color/transparent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="24dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
-            <TextView
+            android:layout_marginBottom="24dp">
+            
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:fontFamily="sans-serif-bold"
-                android:text="Dashboard Utama"
-                android:textColor="@color/white"
-                android:textSize="20sp"/>
-            <Button
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:text="DASHBOARD KELAS"
+                    android:textColor="@color/text_primary"
+                    android:textSize="22sp"
+                    android:letterSpacing="0.02"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Statistik Keuangan &amp; Akademik"
+                    android:textColor="@color/primary_light"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif-medium" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSemesterFilter"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Semester 1 ▼"
-                android:backgroundTint="@color/zinc_800"
-                android:textColor="@color/text_secondary"
-                android:minHeight="0dp"
-                android:padding="12dp"/>
+                android:text="Sem 1 ▼"
+                app:strokeColor="@color/border"
+                android:textColor="@color/text_primary"
+                app:cornerRadius="32dp" />
         </LinearLayout>
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardBackgroundColor="@color/card_bg"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="8dp">
+            app:cardCornerRadius="28dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/border"
+            app:cardElevation="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="24dp">
+                android:padding="28dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="sans-serif-bold"
                     android:text="SALDO KAS KELAS"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp"
-                    android:letterSpacing="0.1" />
+                    android:letterSpacing="0.05" />
 
                 <TextView
                     android:id="@+id/tvSaldo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
                     android:fontFamily="sans-serif-black"
                     android:text="Rp 0"
                     android:textColor="@color/white"
-                    android:textSize="32sp" />
+                    android:textSize="36sp" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginVertical="16dp"
-                    android:background="@color/zinc_800" />
+                    android:layout_marginVertical="20dp"
+                    android:background="@color/border" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -91,7 +108,8 @@
                             android:layout_height="wrap_content"
                             android:text="PEMASUKAN"
                             android:textColor="@color/text_secondary"
-                            android:textSize="10sp" />
+                            android:textSize="11sp"
+                            android:fontFamily="sans-serif-bold" />
 
                         <TextView
                             android:id="@+id/tvIncome"
@@ -99,8 +117,9 @@
                             android:layout_height="wrap_content"
                             android:text="Rp 0"
                             android:textColor="@color/success"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:textSize="16sp"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="sans-serif-black" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -114,7 +133,8 @@
                             android:layout_height="wrap_content"
                             android:text="PENGELUARAN"
                             android:textColor="@color/text_secondary"
-                            android:textSize="10sp" />
+                            android:textSize="11sp"
+                            android:fontFamily="sans-serif-bold" />
 
                         <TextView
                             android:id="@+id/tvExpense"
@@ -122,24 +142,58 @@
                             android:layout_height="wrap_content"
                             android:text="Rp 0"
                             android:textColor="@color/danger"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:textSize="16sp"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="sans-serif-black" />
                     </LinearLayout>
                 </LinearLayout>
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnPayKas"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:text="Bayar Kas Kelas (Upload Bukti)"
-                    android:backgroundTint="#2563EB"
+                    android:layout_marginTop="24dp"
+                    android:text="BAYAR KAS (UPLOAD BUKTI)"
+                    app:backgroundTint="@color/primary"
                     android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:padding="12dp"/>
+                    android:fontFamily="sans-serif-black"
+                    android:padding="16dp"
+                    app:cornerRadius="32dp"
+                    app:elevation="4dp" />
 
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="16dp"
+            android:fontFamily="sans-serif-black"
+            android:text="TUGAS &amp; DEADLINE"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            android:letterSpacing="0.05" />
+
+        <androidx.recyclerview.widget.RecyclerView android:layoutAnimation="@anim/layout_animation_fall_down"
+            android:id="@+id/rvAssignments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            tools:listitem="@layout/item_assignment" />
+            
+        <TextView
+            android:id="@+id/tvEmptyAssignments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="\uD83D\uDCC1 Belum ada tugas / deadline aktif saat ini."
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:background="@color/card_bg"
+            android:visibility="gone"
+            android:padding="24dp"
+            android:gravity="center"
+            app:cornerRadius="32dp"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -147,34 +201,32 @@
             android:layout_marginTop="32dp"
             android:layout_marginBottom="16dp"
             android:fontFamily="sans-serif-black"
-            android:text="TUGAS &amp; DEADLINE"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:letterSpacing="0.05" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvAssignments"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"
-            tools:listitem="@layout/item_assignment" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="16dp"
-            android:fontFamily="sans-serif-black"
             android:text="REPOSITORI MATERI"
-            android:textColor="@color/white"
+            android:textColor="@color/text_primary"
             android:textSize="16sp"
             android:letterSpacing="0.05" />
 
-        <androidx.recyclerview.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView android:layoutAnimation="@anim/layout_animation_fall_down"
             android:id="@+id/rvModules"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false" />
+            
+        <TextView
+            android:id="@+id/tvEmptyModules"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="\uD83D\uDCDA Modul/materi masih kosong di semester ini."
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:background="@color/card_bg"
+            android:visibility="gone"
+            android:padding="24dp"
+            android:gravity="center"
+            app:cornerRadius="32dp"
+            android:layout_marginBottom="32dp"/>
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
+
+
