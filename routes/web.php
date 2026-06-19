@@ -60,7 +60,8 @@ Route::post('/kh/api/login', function (Request $request) {
     ) {
 
         $request->session()->regenerate();
-        return response()->json(['message' => 'Login successful', 'user' => Auth::user()]);
+        $user = Auth::user();
+        return response()->json(['message' => 'Login successful', 'user' => $user->only(['id', 'name', 'nim', 'role', 'class_id'])]);
     }
     return response()->json(['message' => 'Invalid credentials'], 401);
 })->middleware('throttle:10,1');
@@ -121,7 +122,10 @@ Route::middleware(['auth'])->group(function () {
                 }
             }
 
-            \App\Models\AcademicSchedule::truncate();
+            $classId = Auth::check() ? Auth::user()->class_id : null;
+            if ($classId) {
+                \App\Models\AcademicSchedule::where('class_id', $classId)->delete();
+            }
             return response()->json(['success' => true, 'message' => 'Academic schedule reset successfully']);
         });
 

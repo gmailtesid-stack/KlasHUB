@@ -14,6 +14,9 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0"
+
+        buildConfigField "String", "BASE_URL", '"https://klas-hub.vercel.app/"'
+        buildConfigField "String", "ONESIGNAL_APP_ID", '"04a9cff3-874a-4e84-96c0-f79cfa86d255"'
     }
     buildTypes {
         release {
@@ -30,6 +33,7 @@ android {
     }
     buildFeatures {
         compose true
+        buildConfig true
     }
 }
 

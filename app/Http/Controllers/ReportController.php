@@ -15,7 +15,7 @@ class ReportController extends Controller
     public function exportAttendancePdf(Request $request)
     {
         $user = Auth::user();
-        $attendances = ClassAttendance::with('student')->get();
+        $attendances = ClassAttendance::where('class_id', $user->class_id)->with('student')->get();
         $class = $user->academicClass;
 
         $pdf = Pdf::loadView('reports.attendance_pdf', [
@@ -31,7 +31,7 @@ class ReportController extends Controller
     public function exportAttendanceExcel(Request $request)
     {
         $user = Auth::user();
-        $attendances = ClassAttendance::with('student')->get();
+        $attendances = ClassAttendance::where('class_id', $user->class_id)->with('student')->get();
         $class = $user->academicClass;
 
         return Excel::create('Laporan_Absensi_' . ($class->code ?? 'Kelas'), function ($excel) use ($attendances, $class) {
@@ -62,9 +62,9 @@ class ReportController extends Controller
     public function exportCashPdf(Request $request)
     {
         $user = Auth::user();
-        $ledgers = CashLedger::with('student')->orderBy('transaction_date', 'desc')->get();
+        $ledgers = CashLedger::where('class_id', $user->class_id)->with('student')->orderBy('transaction_date', 'desc')->get();
         $class = $user->academicClass;
-        $balance = CashLedger::where('type', 'income')->sum('amount') - CashLedger::where('type', 'expense')->sum('amount');
+        $balance = CashLedger::where('class_id', $user->class_id)->where('type', 'income')->sum('amount') - CashLedger::where('class_id', $user->class_id)->where('type', 'expense')->sum('amount');
 
         $pdf = Pdf::loadView('reports.cash_ledger_pdf', [
             'ledgers' => $ledgers,
@@ -80,7 +80,7 @@ class ReportController extends Controller
     public function exportCashExcel(Request $request)
     {
         $user = Auth::user();
-        $ledgers = CashLedger::with('student')->orderBy('transaction_date', 'desc')->get();
+        $ledgers = CashLedger::where('class_id', $user->class_id)->with('student')->orderBy('transaction_date', 'desc')->get();
         $class = $user->academicClass;
 
         return Excel::create('Laporan_Kas_' . ($class->code ?? 'Kelas'), function ($excel) use ($ledgers, $class) {

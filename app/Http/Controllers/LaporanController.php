@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -11,8 +12,9 @@ class LaporanController extends Controller
     /**
      * Ekspor Laporan Kas dalam format PDF (Formal Minimalis).
      */
-    public function exportPdf($class_id)
+    public function exportPdf($class_id = null)
     {
+        $class_id = Auth::user()->class_id;
         $class = DB::table('academic_classes')->where('id', $class_id)->first();
         if (!$class)
             return abort(404, 'Kelas tidak ditemukan');
@@ -43,8 +45,9 @@ class LaporanController extends Controller
     /**
      * Ekspor Laporan Kas dalam format CSV (RAM Optimized Stream).
      */
-    public function exportExcel($class_id)
+    public function exportExcel($class_id = null)
     {
+        $class_id = Auth::user()->class_id;
         $class = DB::table('academic_classes')->where('id', $class_id)->first();
         if (!$class)
             return abort(404, 'Kelas tidak ditemukan');

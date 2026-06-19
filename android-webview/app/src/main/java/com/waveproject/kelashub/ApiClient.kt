@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 import android.content.Context
 
 object ApiClient {
-    private const val BASE_URL = "https://klas-hub.vercel.app/"
+    private const val BASE_URL = BuildConfig.BASE_URL
     private var retrofit: Retrofit? = null
     private lateinit var cookieJar: CookieJar
 
