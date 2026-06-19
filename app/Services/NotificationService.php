@@ -82,8 +82,9 @@ class NotificationService
      */
     private static function sendExternalPush(array $playerIds, $message)
     {
-        $appId = config('app.onesignal_app_id');
-        $apiKey = config('app.onesignal_rest_api_key');
+        // PERBAIKAN: Mengambil data dari config/services.php
+        $appId = config('services.onesignal.app_id');
+        $apiKey = config('services.onesignal.rest_api_key');
 
         if (!$appId || !$apiKey) {
             Log::warning('OneSignal credentials not set. External push skipped.');
@@ -91,17 +92,18 @@ class NotificationService
         }
 
         try {
-            Http::withHeaders([
+            // PERBAIKAN: Tambah withoutVerifying() untuk amankan request keluar dari Vercel
+            Http::withoutVerifying()->withHeaders([
                 'Authorization' => 'Basic ' . $apiKey,
                 'Content-Type' => 'application/json',
             ])->post('https://onesignal.com/api/v1/notifications', [
-                        'app_id' => $appId,
-                        'include_subscription_ids' => $playerIds,
-                        'contents' => ['en' => $message, 'id' => $message],
-                        'headings' => ['en' => 'Berita KelasHUB', 'id' => 'Berita KelasHUB'],
-                        'small_icon' => 'ic_stat_onesignal_default',
-                        'android_accent_color' => 'FF18181B' // Zinc 900
-                    ]);
+                'app_id' => $appId,
+                'include_subscription_ids' => $playerIds,
+                'contents' => ['en' => $message, 'id' => $message],
+                'headings' => ['en' => 'Berita KelasHUB', 'id' => 'Berita KelasHUB'],
+                'small_icon' => 'ic_stat_onesignal_default',
+                'android_accent_color' => 'FF18181B' // Zinc 900
+            ]);
         } catch (\Exception $e) {
             Log::error('OneSignal Push Error: ' . $e->getMessage());
         }
