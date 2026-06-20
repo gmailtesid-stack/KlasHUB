@@ -102,4 +102,25 @@ class ClassManagementController extends Controller
         $class->save();
         return response()->json(['success' => true]);
     }
+
+    public function deleteClass($id)
+    {
+        if (Auth::user()->role !== 'super_admin') {
+            abort(403, 'Akses Ditolak: Hanya Super Admin');
+        }
+
+        $class = AcademicClass::findOrFail($id);
+
+        // Hapus paksa isi database milik class_id ini (apabila tidak ada constraint On Delete Cascade)
+        \App\Models\Student::where('class_id', $class->id)->delete();
+        \App\Models\Assignment::where('class_id', $class->id)->delete();
+        \App\Models\AcademicSchedule::where('class_id', $class->id)->delete();
+        \App\Models\LearningModule::where('class_id', $class->id)->delete();
+        \App\Models\CashLedger::where('class_id', $class->id)->delete();
+        \App\Models\ClassAttendance::where('class_id', $class->id)->delete();
+
+        $class->delete();
+
+        return response()->json(['success' => true]);
+    }
 }

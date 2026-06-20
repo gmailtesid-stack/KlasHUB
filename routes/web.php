@@ -204,6 +204,7 @@ Route::middleware(['auth'])->group(function () {
         });
 
         Route::post('/kh/class', [ClassManagementController::class, 'storeUnifiedClass']);
+        Route::delete('/kh/class/{id}', [ClassManagementController::class, 'deleteClass']);
         Route::post('/kh/class/next-semester', [ClassManagementController::class, 'nextSemester']);
         Route::post('/kh/student/{id}/role', [UserManagementController::class, 'updateStudentRole']);
     });
