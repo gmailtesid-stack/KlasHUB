@@ -38,14 +38,19 @@ class ScheduleFragment : Fragment() {
         }
         rvSchedule.adapter = adapter
 
-        fetchData()
         return root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchData()
     }
 
     private fun fetchData() {
         progress.visibility = View.VISIBLE
         ApiClient.apiInterface.getSchedule().enqueue(object : Callback<ScheduleResponse> {
             override fun onResponse(call: Call<ScheduleResponse>, response: Response<ScheduleResponse>) {
+                if (!isAdded) return
                 progress.visibility = View.GONE
                 if (response.isSuccessful && response.body() != null) {
                     val data = response.body()!!
@@ -72,6 +77,7 @@ class ScheduleFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<ScheduleResponse>, t: Throwable) {
+                if (!isAdded) return
                 progress.visibility = View.GONE
                 try {
                     val prefs = SecurePrefs.get(requireContext(), "OfflineCache")
@@ -124,6 +130,7 @@ class ScheduleFragment : Fragment() {
         progress.visibility = View.VISIBLE
         ApiClient.apiInterface.deleteSchedule(id).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (!isAdded) return
                 progress.visibility = View.GONE
                 if (response.isSuccessful) {
                     Toast.makeText(requireContext(), "Jadwal Dihapus", Toast.LENGTH_SHORT).show()
@@ -133,6 +140,7 @@ class ScheduleFragment : Fragment() {
                 }
             }
             override fun onFailure(call: Call<Void>, t: Throwable) {
+                if (!isAdded) return
                 progress.visibility = View.GONE
                 Toast.makeText(requireContext(), "Error Network", Toast.LENGTH_SHORT).show()
             }

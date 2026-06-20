@@ -41,14 +41,19 @@ class AttendanceFragment : Fragment() {
         adapter = AttendanceAdapter(listOf())
         rvAttendance.adapter = adapter
 
-        fetchData()
         return root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchData()
     }
 
     private fun fetchData() {
         progress.visibility = View.VISIBLE
         ApiClient.apiInterface.getAttendance().enqueue(object : Callback<AttendanceResponse> {
             override fun onResponse(call: Call<AttendanceResponse>, response: Response<AttendanceResponse>) {
+                if (!isAdded) return
                 progress.visibility = View.GONE
                 if (response.isSuccessful && response.body() != null) {
                     val attendanceList = response.body()!!.myAttendances
@@ -69,6 +74,7 @@ class AttendanceFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<AttendanceResponse>, t: Throwable) {
+                if (!isAdded) return
                 progress.visibility = View.GONE
                 Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }

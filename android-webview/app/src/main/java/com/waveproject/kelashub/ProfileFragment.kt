@@ -58,8 +58,12 @@ class ProfileFragment : Fragment() {
             startActivity(intent)
         }
 
-        fetchData()
         return root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchData()
     }
 
     private fun performLocalLogout() {
@@ -75,6 +79,7 @@ class ProfileFragment : Fragment() {
         progress.visibility = View.VISIBLE
         ApiClient.apiInterface.getProfile().enqueue(object : Callback<ProfileResponse> {
             override fun onResponse(call: Call<ProfileResponse>, response: Response<ProfileResponse>) {
+                if (!isAdded) return
                 progress.visibility = View.GONE
                 if (response.isSuccessful && response.body() != null) {
                     val student = response.body()!!.student
@@ -102,6 +107,7 @@ class ProfileFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<ProfileResponse>, t: Throwable) {
+                if (!isAdded) return
                 progress.visibility = View.GONE
                 Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }

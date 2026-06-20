@@ -45,8 +45,12 @@ class DashboardFragment : Fragment() {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_dashboard, container, false)
         initUI(root)
-        fetchData()
         return root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchData()
     }
 
     private fun initUI(root: View) {
@@ -99,6 +103,7 @@ class DashboardFragment : Fragment() {
 
         ApiClient.apiInterface.getDashboardData(selectedSemester).enqueue(object : Callback<DashboardDataResponse> {
             override fun onResponse(call: Call<DashboardDataResponse>, response: Response<DashboardDataResponse>) {
+                if (!isAdded) return
                 progress?.visibility = View.GONE
                 if (response.isSuccessful) {
                     val data = response.body()
@@ -123,6 +128,7 @@ class DashboardFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<DashboardDataResponse>, t: Throwable) {
+                if (!isAdded) return
                 progress?.visibility = View.GONE
                 try {
                     val prefs = SecurePrefs.get(requireContext(), "OfflineCache")
@@ -221,6 +227,7 @@ class DashboardFragment : Fragment() {
     private fun deleteAssignment(id: Int) {
         ApiClient.apiInterface.deleteAssignment(id).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (!isAdded) return
                 if (response.isSuccessful) {
                     Toast.makeText(requireContext(), "Tugas Dihapus", Toast.LENGTH_SHORT).show()
                     fetchData()
@@ -229,6 +236,7 @@ class DashboardFragment : Fragment() {
                 }
             }
             override fun onFailure(call: Call<Void>, t: Throwable) {
+                if (!isAdded) return
                 Toast.makeText(requireContext(), "Error Network", Toast.LENGTH_SHORT).show()
             }
         })
@@ -266,6 +274,7 @@ class DashboardFragment : Fragment() {
     private fun deleteModule(id: Int) {
         ApiClient.apiInterface.deleteModule(id).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (!isAdded) return
                 if (response.isSuccessful) {
                     Toast.makeText(requireContext(), "Modul Dihapus", Toast.LENGTH_SHORT).show()
                     fetchData()
@@ -274,6 +283,7 @@ class DashboardFragment : Fragment() {
                 }
             }
             override fun onFailure(call: Call<Void>, t: Throwable) {
+                if (!isAdded) return
                 Toast.makeText(requireContext(), "Error Network", Toast.LENGTH_SHORT).show()
             }
         })
