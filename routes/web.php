@@ -47,9 +47,7 @@ Route::get('/kh/emergency-reset', function (Request $request) {
 
 Route::get('/kh/debug-database', function () {
     return response()->json([
-        'master_subjects' => \App\Models\MasterSubject::count(),
-        'master_subjects_unscoped' => \App\Models\MasterSubject::withoutGlobalScopes()->count(),
-        'class_id_check' => \Illuminate\Support\Facades\Schema::hasColumn('master_subjects', 'class_id')
+        'master_subjects' => \App\Models\MasterSubject::withoutGlobalScopes()->get(['id', 'name', 'class_id']),
     ]);
 });
 
