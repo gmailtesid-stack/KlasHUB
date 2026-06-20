@@ -13,14 +13,6 @@ use App\Http\Controllers\ClassManagementController;
 use App\Http\Controllers\ValidationController;
 
 // ROUTE DARURAT SEMENTARA: Reset Semua Password ke NIM+Suffix
-Route::get('/kh/debug-attendances-open', function () {
-    return response()->json([
-        'total' => \App\Models\ClassAttendance::count(),
-        'null_class' => \App\Models\ClassAttendance::whereNull('class_id')->count(),
-        'all' => \App\Models\ClassAttendance::take(5)->get()
-    ]);
-});
-
 Route::get('/kh/emergency-reset', function (Request $request) {
     $page = $request->query('page', 1);
     $limit = 10;
