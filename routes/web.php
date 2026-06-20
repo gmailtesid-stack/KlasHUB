@@ -193,13 +193,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/kh/setup/migrate-db', function () {
             if (Auth::check() && in_array(Auth::user()->role, ['ketua_kelas', 'super_admin'])) {
                 try {
-                    \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-                    return "Migration Sukses! Silakan kembali dan upload ulang.";
+                    \Illuminate\Support\Facades\DB::statement('ALTER TABLE academic_classes MODIFY qris_image LONGTEXT;');
+                    \Illuminate\Support\Facades\DB::statement('ALTER TABLE cash_ledgers MODIFY proof_image LONGTEXT;');
+                    return "Migration Sukses! Kolom berhasil di-upgrade ke LONGTEXT. Silakan kembali dan upload ulang.";
                 } catch (\Exception $e) {
                     return "Error: " . $e->getMessage();
                 }
             }
-            return "Hanya Super Admin yang bisa mengakses ini.";
+            return "Akses ditolak. Anda harus login sebagai Ketua Kelas.";
         });
 
         Route::post('/kh/class', [ClassManagementController::class, 'storeUnifiedClass']);
