@@ -48,23 +48,19 @@ class DashboardController extends Controller
 
         // Quick sums remain on first load
         $saldoKasSaatIni = CashLedger::where('class_id', $student->class_id)
-            ->when(!$isAdmin, function ($q) {
-                return $q->where('is_validated', true);
-            })->where('type', 'income')->sum('amount')
+            ->where('is_validated', true)
+            ->where('type', 'income')->sum('amount')
             - CashLedger::where('class_id', $student->class_id)
-                ->when(!$isAdmin, function ($q) {
-                    return $q->where('is_validated', true);
-                })->where('type', 'expense')->sum('amount');
+                ->where('is_validated', true)
+                ->where('type', 'expense')->sum('amount');
 
         $pemasukanMingguan = CashLedger::where('class_id', $student->class_id)
-            ->when(!$isAdmin, function ($q) {
-                return $q->where('is_validated', true);
-            })->where('type', 'income')->where('transaction_date', '>=', $startOfWeek)->sum('amount');
+            ->where('is_validated', true)
+            ->where('type', 'income')->where('transaction_date', '>=', $startOfWeek)->sum('amount');
 
         $pengeluaranMingguan = CashLedger::where('class_id', $student->class_id)
-            ->when(!$isAdmin, function ($q) {
-                return $q->where('is_validated', true);
-            })->where('type', 'expense')->where('transaction_date', '>=', $startOfWeek)->sum('amount');
+            ->where('is_validated', true)
+            ->where('type', 'expense')->where('transaction_date', '>=', $startOfWeek)->sum('amount');
 
         // Other heavy lists will be loaded via AJAX
         $schedules = AcademicSchedule::where('class_id', $student->class_id)
@@ -122,7 +118,7 @@ class DashboardController extends Controller
         return response()->json([
             'student' => $student,
             'class_semester' => $class ? ((int) $class->semester_ke) : 1,
-            'qris_image' => $class ? $class->qris_image : null,
+            'qris_image' => $class && $class->qris_image ? asset('storage/' . $class->qris_image) : null,
             'semua_mahasiswa' => Student::where('class_id', $student->class_id)->orderBy('name', 'asc')->get(),
             'semua_tugas' => Assignment::where('class_id', $student->class_id)
                 ->when(!$isAdmin, function ($q) {

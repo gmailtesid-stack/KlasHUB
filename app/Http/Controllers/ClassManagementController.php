@@ -85,7 +85,7 @@ class ClassManagementController extends Controller
             $path = $request->file('qris_image')->store('qris', 'public');
             $class->qris_image = $path;
             $class->save();
-            return response()->json(['success' => true, 'path' => $path]);
+            return response()->json(['success' => true, 'image_url' => asset('storage/' . $path)]);
         }
 
         return response()->json(['success' => false, 'message' => 'Gagal mengunggah file.']);
