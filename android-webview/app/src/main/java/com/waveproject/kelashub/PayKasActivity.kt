@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Base64
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -62,10 +63,15 @@ class PayKasActivity : AppCompatActivity() {
             val fullUrl = if (qrisUrl.startsWith("http") || qrisUrl.startsWith("data:image")) qrisUrl else "${BuildConfig.BASE_URL}storage/$qrisUrl"
             thread {
                 try {
-                    val url = URL(fullUrl)
-                    val bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream())
-                    runOnUiThread {
-                        ivQris.setImageBitmap(bmp)
+                    if (fullUrl.startsWith("data:image")) {
+                        val base64Image = fullUrl.substringAfter(",")
+                        val decodedBytes = Base64.decode(base64Image, Base64.DEFAULT)
+                        val bmp = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                        runOnUiThread { ivQris.setImageBitmap(bmp) }
+                    } else {
+                        val url = URL(fullUrl)
+                        val bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream())
+                        runOnUiThread { ivQris.setImageBitmap(bmp) }
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
