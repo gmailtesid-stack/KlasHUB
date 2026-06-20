@@ -140,7 +140,7 @@ class AcademicController extends Controller
     public function getSchedule()
     {
         $student = Auth::user();
-        $isAdmin = in_array($student->role, ['ketua_kelas', 'super_admin']);
+        $isAdmin = in_array($student->role, ['ketua_kelas', 'sekretaris', 'bendahara', 'super_admin']);
 
         $schedules = AcademicSchedule::when(!$isAdmin, function ($q) {
             return $q->where('is_validated', true);

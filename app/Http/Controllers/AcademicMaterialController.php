@@ -48,6 +48,7 @@ class AcademicMaterialController extends Controller
             'members' => 'nullable|string',
         ]);
 
+        $data['is_validated'] = in_array(Auth::user()->role, ['ketua_kelas', 'super_admin']) ? true : $assignment->is_validated;
         $assignment->update($data);
         return response()->json(['success' => true, 'assignment' => $assignment]);
     }
@@ -74,8 +75,8 @@ class AcademicMaterialController extends Controller
             $file = $request->file('file');
             $data['title'] = $file->getClientOriginalName();
             $data['mime_type'] = $file->getMimeType();
-            $data['file_path'] = $file->store('modules', 'public');
-            $data['file_content'] = null; // Mencegah payload bengkak di database
+            $data['file_path'] = null;
+            $data['file_content'] = base64_encode(file_get_contents($file->getRealPath()));
             $data['type'] = 'file';
         }
 
@@ -102,10 +103,12 @@ class AcademicMaterialController extends Controller
             $file = $request->file('file');
             $data['title'] = $file->getClientOriginalName();
             $data['mime_type'] = $file->getMimeType();
-            $data['file_path'] = $file->store('modules', 'public');
-            $data['file_content'] = null;
+            $data['file_path'] = null;
+            $data['file_content'] = base64_encode(file_get_contents($file->getRealPath()));
             $data['type'] = 'file';
         }
+
+        $data['is_validated'] = in_array(Auth::user()->role, ['ketua_kelas', 'super_admin']) ? true : $module->is_validated;
         $module->update($data);
         return response()->json(['success' => true, 'module' => $module]);
     }

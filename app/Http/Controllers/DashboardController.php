@@ -112,6 +112,9 @@ class DashboardController extends Controller
             'class_semester' => $class ? ((int) $class->semester_ke) : 1,
             'qris_image' => $class && $class->qris_image ? (str_starts_with($class->qris_image, 'data:image') ? $class->qris_image : asset('storage/' . $class->qris_image)) : null,
             'semua_mahasiswa' => Student::orderBy('name', 'asc')->get(),
+            'jadwal_harian' => AcademicSchedule::when(!$isAdmin, function ($q) {
+                return $q->where('is_validated', true);
+            })->get(),
             'semua_tugas' => Assignment::when(!$isAdmin, function ($q) {
                 return $q->where('is_validated', true);
             })->orderBy('deadline', 'asc')->get(),
