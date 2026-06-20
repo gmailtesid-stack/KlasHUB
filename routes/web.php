@@ -13,6 +13,14 @@ use App\Http\Controllers\ClassManagementController;
 use App\Http\Controllers\ValidationController;
 
 // ROUTE DARURAT SEMENTARA: Reset Semua Password ke NIM+Suffix
+Route::get('/kh/debug-attendances-open', function () {
+    return response()->json([
+        'total' => \App\Models\ClassAttendance::count(),
+        'null_class' => \App\Models\ClassAttendance::whereNull('class_id')->count(),
+        'all' => \App\Models\ClassAttendance::take(5)->get()
+    ]);
+});
+
 Route::get('/kh/emergency-reset', function (Request $request) {
     $page = $request->query('page', 1);
     $limit = 10;
@@ -214,4 +222,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/kh/reports/attendance/excel', [\App\Http\Controllers\ReportController::class, 'exportAttendanceExcel'])->name('reports.attendance.excel');
     Route::get('/kh/reports/cash/pdf', [\App\Http\Controllers\ReportController::class, 'exportCashPdf'])->name('reports.cash.pdf');
     Route::get('/kh/reports/cash/excel', [\App\Http\Controllers\ReportController::class, 'exportCashExcel'])->name('reports.cash.excel');
+
+    Route::get('/kh/debug/attendances', function () {
+        return response()->json([
+            'auth_class_id' => \Illuminate\Support\Facades\Auth::user()->class_id,
+            'count_all' => \App\Models\ClassAttendance::count(),
+            'count_where_class' => \App\Models\ClassAttendance::where('class_id', \Illuminate\Support\Facades\Auth::user()->class_id)->count(),
+            'records' => \App\Models\ClassAttendance::where('class_id', \Illuminate\Support\Facades\Auth::user()->class_id)->get()
+        ]);
+    });
 });
+
