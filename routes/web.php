@@ -166,8 +166,21 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Routes khusus Ketua Kelas
+    Route::get('/kh/debug', function () {
+        return response()->json([
+            'master_subjects' => \App\Models\MasterSubject::count(),
+            'students' => \App\Models\Student::count()
+        ]);
+    });
+
     Route::middleware(['role:ketua_kelas'])->group(function () {
         Route::post('/kh/validate', [ValidationController::class, 'validateData']);
+
+        Route::get('/debug-blade', function () {
+            $student = \App\Models\Student::where('role', 'bendahara')->first();
+            Auth::login($student);
+            return app()->call([\App\Http\Controllers\DashboardController::class, 'getStudentDashboard']);
+        });
 
         // Vercel Cron Bypass logic using CRON_SECRET
         Route::get('/kh/cron/reset-schedule', function (Request $request) {
