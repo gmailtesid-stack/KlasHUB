@@ -21,18 +21,18 @@ class MainApplication : Application() {
 
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityPaused(activity: Activity) {
-                getSharedPreferences("AuthPrefs", Context.MODE_PRIVATE)
+                SecurePrefs.get(this, "AuthPrefs")
                     .edit()
                     .putLong("last_access_time", System.currentTimeMillis())
                     .apply()
             }
 
             override fun onActivityResumed(activity: Activity) {
-                val prefs = getSharedPreferences("AuthPrefs", Context.MODE_PRIVATE)
+                val prefs = SecurePrefs.get(this, "AuthPrefs")
                 val lastAccess = prefs.getLong("last_access_time", System.currentTimeMillis())
                 if (System.currentTimeMillis() - lastAccess > 30 * 60 * 1000 && prefs.getBoolean("is_logged_in", false)) {
                     prefs.edit().putBoolean("is_logged_in", false).apply()
-                    getSharedPreferences("CookiePrefs", Context.MODE_PRIVATE).edit().clear().apply()
+                    SecurePrefs.get(this, "CookiePrefs").edit().clear().apply()
 
                     if (activity !is LoginActivity) {
                         val intent = Intent(this@MainApplication, LoginActivity::class.java)

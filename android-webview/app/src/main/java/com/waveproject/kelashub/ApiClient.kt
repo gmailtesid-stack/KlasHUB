@@ -17,7 +17,7 @@ object ApiClient {
 
     fun init(context: Context) {
         cookieJar = object : CookieJar {
-            private val prefs = context.getSharedPreferences("CookiePrefs", Context.MODE_PRIVATE)
+            private val prefs = SecurePrefs.get(context, "CookiePrefs")
 
             override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
                 val editor = prefs.edit()
@@ -41,11 +41,22 @@ object ApiClient {
             val okHttpClient = OkHttpClient.Builder()
                 .cookieJar(cookieJar)
                 .addInterceptor { chain ->
-                    val request = chain.request().newBuilder()
+                    val requestUrl = chain.request().url
+                    val cookies = cookieJar.loadForRequest(requestUrl)
+                    val xsrfCookie = cookies.find { it.name == "XSRF-TOKEN" }?.value
+
+                    var requestBuilder = chain.request().newBuilder()
                         .addHeader("Accept", "application/json")
                         .addHeader("X-Requested-With", "XMLHttpRequest")
-                        .build()
-                    chain.proceed(request)
+
+                    if (xsrfCookie != null) {
+                        try {
+                            requestBuilder = requestBuilder.addHeader("X-XSRF-TOKEN", java.net.URLDecoder.decode(xsrfCookie, "UTF-8"))
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                    chain.proceed(requestBuilder.build())
                 }
                 .addInterceptor(logging)
                 .connectTimeout(30, TimeUnit.SECONDS)

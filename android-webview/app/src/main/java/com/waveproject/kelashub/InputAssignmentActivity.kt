@@ -38,6 +38,11 @@ class InputAssignmentActivity : AppCompatActivity() {
         val etMembers = findViewById<EditText>(R.id.etMembers)
         val etMaterialLink = findViewById<EditText>(R.id.etMaterialLink)
         val btnSubmit = findViewById<Button>(R.id.btnSubmit)
+        
+        val assignmentId = intent.getIntExtra("ASSIGNMENT_ID", -1)
+        if (assignmentId != -1) {
+            btnSubmit.text = "Update Tugas"
+        }
 
         rgType.setOnCheckedChangeListener { _, checkedId ->
             if (checkedId == R.id.rbKelompok) {
@@ -95,26 +100,34 @@ class InputAssignmentActivity : AppCompatActivity() {
                 members = "Akan ditentukan"
             }
 
-            ApiClient.apiInterface.storeAssignment(
-                subjectName, title, description, selectedDateTime, materialLink, type, members
-            ).enqueue(object : Callback<Void> {
+            val callback = object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     if (response.isSuccessful) {
-                        Toast.makeText(this@InputAssignmentActivity, "Tugas berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@InputAssignmentActivity, if (assignmentId != -1) "Tugas berhasil diupdate!" else "Tugas berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
                         finish()
                     } else {
-                        Toast.makeText(this@InputAssignmentActivity, "Gagal menambahkan tugas", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@InputAssignmentActivity, "Gagal memproses", Toast.LENGTH_SHORT).show()
                         btnSubmit.isEnabled = true
-                        btnSubmit.text = "Simpan Tugas"
+                        btnSubmit.text = if (assignmentId != -1) "Update Tugas" else "Simpan Tugas"
                     }
                 }
 
                 override fun onFailure(call: Call<Void>, t: Throwable) {
                     Toast.makeText(this@InputAssignmentActivity, "Kesalahan jaringan", Toast.LENGTH_SHORT).show()
                     btnSubmit.isEnabled = true
-                    btnSubmit.text = "Simpan Tugas"
+                    btnSubmit.text = if (assignmentId != -1) "Update Tugas" else "Simpan Tugas"
                 }
-            })
+            }
+
+            if (assignmentId != -1) {
+                ApiClient.apiInterface.updateAssignment(
+                    assignmentId, subjectName, title, description, selectedDateTime, materialLink, type, members
+                ).enqueue(callback)
+            } else {
+                ApiClient.apiInterface.storeAssignment(
+                    subjectName, title, description, selectedDateTime, materialLink, type, members
+                ).enqueue(callback)
+            }
         }
     }
 }

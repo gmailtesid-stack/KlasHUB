@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -32,7 +33,9 @@ class ScheduleFragment : Fragment() {
         tvEmptySchedule = root.findViewById(R.id.tvEmptySchedule)
 
         rvSchedule.layoutManager = LinearLayoutManager(requireContext())
-        adapter = ScheduleAdapter(listOf())
+        adapter = ScheduleAdapter(listOf()) { schedule, view ->
+            showOptionsMenu(schedule, view)
+        }
         rvSchedule.adapter = adapter
 
         fetchData()
@@ -47,7 +50,7 @@ class ScheduleFragment : Fragment() {
                 if (response.isSuccessful && response.body() != null) {
                     val data = response.body()!!
                     try {
-                        val prefs = requireContext().getSharedPreferences("OfflineCache", android.content.Context.MODE_PRIVATE)
+                        val prefs = SecurePrefs.get(requireContext(), "OfflineCache")
                         val json = com.google.gson.Gson().toJson(data)
                         prefs.edit().putString("schedule_data", json).apply()
                     } catch (e: Exception) {}
@@ -71,7 +74,7 @@ class ScheduleFragment : Fragment() {
             override fun onFailure(call: Call<ScheduleResponse>, t: Throwable) {
                 progress.visibility = View.GONE
                 try {
-                    val prefs = requireContext().getSharedPreferences("OfflineCache", android.content.Context.MODE_PRIVATE)
+                    val prefs = SecurePrefs.get(requireContext(), "OfflineCache")
                     val json = prefs.getString("schedule_data", null)
                     if (json != null) {
                         val data = com.google.gson.Gson().fromJson(json, ScheduleResponse::class.java)
@@ -90,6 +93,43 @@ class ScheduleFragment : Fragment() {
                 } catch (e: Exception) {
                     Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
+            }
+        })
+    }
+
+    private fun showOptionsMenu(schedule: ScheduleData, view: View) {
+        val popup = PopupMenu(requireContext(), view)
+        popup.menu.add(0, 1, 0, "Ubah Jadwal")
+        popup.menu.add(0, 2, 0, "Hapus Jadwal (Hanya Admin)")
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                1 -> {
+                    val intent = Intent(requireContext(), InputScheduleActivity::class.java)
+                    intent.putExtra("SCHEDULE_ID", schedule.id)
+                    startActivity(intent)
+                }
+                2 -> deleteSchedule(schedule.id)
+            }
+            true
+        }
+        popup.show()
+    }
+
+    private fun deleteSchedule(id: Int) {
+        progress.visibility = View.VISIBLE
+        ApiClient.apiInterface.deleteSchedule(id).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                progress.visibility = View.GONE
+                if (response.isSuccessful) {
+                    Toast.makeText(requireContext(), "Jadwal Dihapus", Toast.LENGTH_SHORT).show()
+                    fetchData()
+                } else {
+                    Toast.makeText(requireContext(), "Gagal: Akses Ditolak", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                progress.visibility = View.GONE
+                Toast.makeText(requireContext(), "Error Network", Toast.LENGTH_SHORT).show()
             }
         })
     }

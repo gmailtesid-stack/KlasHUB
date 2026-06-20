@@ -37,6 +37,21 @@ class AcademicController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function updateMasterSubject(Request $request, $id)
+    {
+        $this->authorizeKetuaKelas();
+        $subject = MasterSubject::findOrFail($id);
+        $data = $request->validate([
+            'name' => 'required|string|unique:master_subjects,name,' . $id,
+            'sks' => 'required|integer',
+            'code' => 'required|string',
+            'default_lecturer' => 'nullable|string'
+        ]);
+
+        $subject->update($data);
+        return response()->json(['success' => true, 'subject' => $subject]);
+    }
+
     public function storeSchedule(Request $request)
     {
         $this->authorizeAdmin();
@@ -58,6 +73,33 @@ class AcademicController extends Controller
         NotificationService::notifyClass(Auth::user()->class_id, "📅 Jadwal kuliah baru telah diterbitkan: " . $schedule->subject_name . " hari " . $schedule->day);
 
         return response()->json(['success' => true, 'schedule' => $schedule]);
+    }
+
+    public function updateSchedule(Request $request, $id)
+    {
+        $this->authorizeAdmin();
+        $schedule = AcademicSchedule::findOrFail($id);
+        $data = $request->validate([
+            'subject_name' => 'required|string',
+            'subject_code' => 'nullable|string',
+            'lecturer_name' => 'required|string',
+            'day' => 'required|string',
+            'time_start' => 'required',
+            'time_end' => 'required',
+            'room' => 'required|string',
+            'class_name' => 'nullable|string',
+            'delivery_type' => 'nullable|string',
+        ]);
+
+        $schedule->update($data);
+        return response()->json(['success' => true, 'schedule' => $schedule]);
+    }
+
+    public function deleteSchedule($id)
+    {
+        $this->authorizeAdmin();
+        AcademicSchedule::destroy($id);
+        return response()->json(['success' => true]);
     }
 
     public function toggleDeliveryType(Request $request)

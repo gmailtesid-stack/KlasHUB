@@ -63,7 +63,7 @@ class DashboardViewModel : ViewModel() {
                     if (data != null) {
                         context?.let { ctx ->
                             try {
-                                val prefs = ctx.getSharedPreferences("OfflineCache", Context.MODE_PRIVATE)
+                                val prefs = SecurePrefs.get(ctx, "OfflineCache")
                                 val json = com.google.gson.Gson().toJson(data)
                                 val cacheKey = if (selectedSemester != null) "dashboard_data_$selectedSemester" else "dashboard_data_active"
                                 prefs.edit().putString(cacheKey, json).apply()
@@ -85,7 +85,7 @@ class DashboardViewModel : ViewModel() {
             override fun onFailure(call: Call<DashboardDataResponse>, t: Throwable) {
                 if (context != null) {
                     try {
-                        val prefs = context.getSharedPreferences("OfflineCache", Context.MODE_PRIVATE)
+                        val prefs = SecurePrefs.get(context, "OfflineCache")
                         val cacheKey = if (selectedSemester != null) "dashboard_data_$selectedSemester" else "dashboard_data_active"
                         val json = prefs.getString(cacheKey, null)
                         if (json != null) {

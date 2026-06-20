@@ -82,6 +82,19 @@ interface ApiInterface {
     ): Call<Void>
 
     @FormUrlEncoded
+    @PUT("kh/master-subject/{id}")
+    fun updateMasterSubject(
+        @Path("id") id: Int,
+        @Field("name") name: String,
+        @Field("sks") sks: Int,
+        @Field("code") code: String,
+        @Field("default_lecturer") defaultLecturer: String?
+    ): Call<Void>
+
+    @DELETE("kh/subject/{id}")
+    fun deleteMasterSubject(@Path("id") id: Int): Call<Void>
+
+    @FormUrlEncoded
     @POST("kh/student")
     fun addStudent(
         @Field("nim") nim: String,
@@ -91,6 +104,14 @@ interface ApiInterface {
 
     @GET("kh/api/students")
     fun getAllStudents(): Call<StudentsListResponse>
+
+    @FormUrlEncoded
+    @PUT("kh/student/{id}")
+    fun updateStudent(
+        @Path("id") id: Int,
+        @Field("nim") nim: String,
+        @Field("name") name: String
+    ): Call<Void>
 
     @DELETE("kh/student/{id}")
     fun deleteStudent(@Path("id") id: Int): Call<Void>
@@ -130,6 +151,24 @@ interface ApiInterface {
     ): Call<Void>
 
     @FormUrlEncoded
+    @PUT("kh/schedule/{id}")
+    fun updateSchedule(
+        @Path("id") id: Int,
+        @Field("subject_name") subjectName: String,
+        @Field("subject_code") subjectCode: String?,
+        @Field("lecturer_name") lecturerName: String,
+        @Field("day") day: String,
+        @Field("time_start") timeStart: String,
+        @Field("time_end") timeEnd: String,
+        @Field("room") room: String,
+        @Field("class_name") className: String?,
+        @Field("delivery_type") deliveryType: String?
+    ): Call<Void>
+
+    @DELETE("kh/schedule/{id}")
+    fun deleteSchedule(@Path("id") id: Int): Call<Void>
+
+    @FormUrlEncoded
     @POST("kh/assignment")
     fun storeAssignment(
         @Field("subject_name") subjectName: String,
@@ -141,6 +180,22 @@ interface ApiInterface {
         @Field("members") members: String?
     ): Call<Void>
 
+    @FormUrlEncoded
+    @PUT("kh/assignment/{id}")
+    fun updateAssignment(
+        @Path("id") id: Int,
+        @Field("subject_name") subjectName: String,
+        @Field("title") title: String,
+        @Field("description") description: String?,
+        @Field("deadline") deadline: String,
+        @Field("material_link") materialLink: String?,
+        @Field("type") type: String,
+        @Field("members") members: String?
+    ): Call<Void>
+
+    @DELETE("kh/assignment/{id}")
+    fun deleteAssignment(@Path("id") id: Int): Call<Void>
+
     @Multipart
     @POST("kh/module")
     fun storeModule(
@@ -150,4 +205,17 @@ interface ApiInterface {
         @Part("link_url") linkUrl: okhttp3.RequestBody?,
         @Part file: okhttp3.MultipartBody.Part?
     ): Call<Void>
+
+    @FormUrlEncoded
+    @PUT("kh/module/{id}")
+    fun updateModuleLink(
+        @Path("id") id: Int,
+        @Field("subject_name") subjectName: String,
+        @Field("type") type: String,
+        @Field("title") title: String?,
+        @Field("link_url") linkUrl: String?
+    ): Call<Void>
+
+    @DELETE("kh/module/{id}")
+    fun deleteModule(@Path("id") id: Int): Call<Void>
 }

@@ -42,6 +42,20 @@ class UserManagementController extends Controller
         return back()->with('success', 'Mahasiswa berhasil didaftarkan: ' . $student->name . '. Password Awal: ' . $password);
     }
 
+    public function updateStudent(Request $request, $id)
+    {
+        $this->authorizeKetuaKelas();
+        $student = Student::findOrFail($id);
+
+        $data = $request->validate([
+            'nim' => 'required|string|unique:students,nim,' . $id,
+            'name' => 'required|string'
+        ]);
+
+        $student->update($data);
+        return response()->json(['success' => true, 'student' => $student]);
+    }
+
     public function deleteStudent($id)
     {
         $this->authorizeKetuaKelas();

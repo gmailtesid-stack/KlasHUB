@@ -6,7 +6,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class ScheduleAdapter(private var list: List<ScheduleData>) : RecyclerView.Adapter<ScheduleAdapter.VH>() {
+class ScheduleAdapter(
+    private var list: List<ScheduleData>,
+    private val onLongClick: ((ScheduleData, View) -> Unit)? = null
+) : RecyclerView.Adapter<ScheduleAdapter.VH>() {
     class VH(v: View) : RecyclerView.ViewHolder(v) {
         val tvSubject: TextView = v.findViewById(R.id.tvSubject)
         val tvLecturer: TextView = v.findViewById(R.id.tvLecturer)
@@ -29,7 +32,13 @@ class ScheduleAdapter(private var list: List<ScheduleData>) : RecyclerView.Adapt
         val end = item.timeEnd?.take(5) ?: "00:00"
         holder.tvTime.text = "$start - $end"
         
+        
         holder.tvRoom.text = "Ruang ${item.room ?: "-"}"
+
+        holder.itemView.setOnLongClickListener {
+            onLongClick?.invoke(item, it)
+            true
+        }
     }
 
     override fun getItemCount() = list.size

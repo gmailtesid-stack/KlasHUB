@@ -19,12 +19,12 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        val prefs = getSharedPreferences("AuthPrefs", MODE_PRIVATE)
+        val prefs = SecurePrefs.get(this, "AuthPrefs")
         val lastAccess = prefs.getLong("last_access_time", System.currentTimeMillis())
         
         if (System.currentTimeMillis() - lastAccess > 30 * 60 * 1000) {
             prefs.edit().putBoolean("is_logged_in", false).apply()
-            getSharedPreferences("CookiePrefs", MODE_PRIVATE).edit().clear().apply()
+            SecurePrefs.get(this, "CookiePrefs").edit().clear().apply()
             Toast.makeText(this, "Sesi Anda telah habis (30 menit).", Toast.LENGTH_SHORT).show()
         }
 
@@ -63,7 +63,7 @@ class LoginActivity : AppCompatActivity() {
                 progress.visibility = View.GONE
                 btnLogin.isEnabled = true
                 if (response.isSuccessful) {
-                    val prefs = getSharedPreferences("AuthPrefs", MODE_PRIVATE)
+                    val prefs = SecurePrefs.get(this, "AuthPrefs")
                     prefs.edit().putBoolean("is_logged_in", true).apply()
                     
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)

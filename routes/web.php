@@ -100,6 +100,21 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/kh/module/{id}/download', [AcademicMaterialController::class, 'downloadModule']);
         Route::post('/kh/cash', [FinanceController::class, 'storeCashLedger']);
         Route::post('/kh/student', [UserManagementController::class, 'storeStudent']);
+        // CRUD Academic
+        Route::put('/kh/master-subject/{id}', [AcademicController::class, 'updateMasterSubject']);
+        Route::put('/kh/schedule/{id}', [AcademicController::class, 'updateSchedule']);
+        Route::delete('/kh/schedule/{id}', [AcademicController::class, 'deleteSchedule']);
+
+        // CRUD Material
+        Route::put('/kh/assignment/{id}', [AcademicMaterialController::class, 'updateAssignment']);
+        Route::delete('/kh/assignment/{id}', [AcademicMaterialController::class, 'deleteAssignment']);
+
+        Route::put('/kh/module/{id}', [AcademicMaterialController::class, 'updateModule']);
+        Route::delete('/kh/module/{id}', [AcademicMaterialController::class, 'deleteModule']);
+
+        // CRUD Student (Name & NIM edits)
+        Route::put('/kh/student/{id}', [UserManagementController::class, 'updateStudent']);
+
         Route::delete('/kh/subject/{id}', [AcademicController::class, 'deleteSubject']);
         Route::delete('/kh/student/{id}', [UserManagementController::class, 'deleteStudent']);
     });

@@ -6,8 +6,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class AssignmentAdapter(private var assignments: List<Assignment>) :
-    RecyclerView.Adapter<AssignmentAdapter.ViewHolder>() {
+class AssignmentAdapter(
+    private var assignments: List<Assignment>,
+    private val onLongClick: ((Assignment, View) -> Unit)? = null
+) : RecyclerView.Adapter<AssignmentAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvSubject: TextView = view.findViewById(R.id.tvSubject)
@@ -28,6 +30,11 @@ class AssignmentAdapter(private var assignments: List<Assignment>) :
         holder.tvTitle.text = assignment.title
         holder.tvDeadline.text = "Deadline: ${assignment.deadline}"
         holder.tvType.text = assignment.type.uppercase()
+
+        holder.itemView.setOnLongClickListener {
+            onLongClick?.invoke(assignment, it)
+            true
+        }
     }
 
     override fun getItemCount() = assignments.size

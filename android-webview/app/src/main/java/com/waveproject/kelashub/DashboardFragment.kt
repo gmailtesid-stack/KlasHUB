@@ -58,11 +58,15 @@ class DashboardFragment : Fragment() {
         tvEmptyModules = root.findViewById(R.id.tvEmptyModules)
 
         rvAssignments.layoutManager = LinearLayoutManager(requireContext())
-        assignmentAdapter = AssignmentAdapter(listOf())
+        assignmentAdapter = AssignmentAdapter(listOf()) { assignment, view ->
+            showOptionsMenuAssignment(assignment, view)
+        }
         rvAssignments.adapter = assignmentAdapter
 
         rvModules.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        moduleAdapter = ModuleAdapter(listOf())
+        moduleAdapter = ModuleAdapter(listOf()) { module, view ->
+            showOptionsMenuModule(module, view)
+        }
         rvModules.adapter = moduleAdapter
         
         btnPayKas = root.findViewById(R.id.btnPayKas)
@@ -99,7 +103,7 @@ class DashboardFragment : Fragment() {
                     val data = response.body()
                     if (data != null) {
                         try {
-                            val prefs = requireContext().getSharedPreferences("OfflineCache", android.content.Context.MODE_PRIVATE)
+                            val prefs = SecurePrefs.get(requireContext(), "OfflineCache")
                             val json = com.google.gson.Gson().toJson(data)
                             val cacheKey = if (selectedSemester != null) "dashboard_data_$selectedSemester" else "dashboard_data_active"
                             prefs.edit().putString(cacheKey, json).apply()
@@ -120,7 +124,7 @@ class DashboardFragment : Fragment() {
             override fun onFailure(call: Call<DashboardDataResponse>, t: Throwable) {
                 progress?.visibility = View.GONE
                 try {
-                    val prefs = requireContext().getSharedPreferences("OfflineCache", android.content.Context.MODE_PRIVATE)
+                    val prefs = SecurePrefs.get(requireContext(), "OfflineCache")
                     val cacheKey = if (selectedSemester != null) "dashboard_data_$selectedSemester" else "dashboard_data_active"
                     val json = prefs.getString(cacheKey, null)
                     if (json != null) {
@@ -176,5 +180,73 @@ class DashboardFragment : Fragment() {
             tvEmptyModules.visibility = View.GONE
             rvModules.visibility = View.VISIBLE
         }
+    }
+
+    private fun showOptionsMenuAssignment(assignment: Assignment, view: View) {
+        val popup = PopupMenu(requireContext(), view)
+        popup.menu.add(0, 1, 0, "Ubah Tugas")
+        popup.menu.add(0, 2, 0, "Hapus Tugas")
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                1 -> {
+                    val intent = Intent(requireContext(), InputAssignmentActivity::class.java)
+                    intent.putExtra("ASSIGNMENT_ID", assignment.id)
+                    startActivity(intent)
+                }
+                2 -> deleteAssignment(assignment.id)
+            }
+            true
+        }
+        popup.show()
+    }
+
+    private fun deleteAssignment(id: Int) {
+        ApiClient.apiInterface.deleteAssignment(id).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(requireContext(), "Tugas Dihapus", Toast.LENGTH_SHORT).show()
+                    fetchData()
+                } else {
+                    Toast.makeText(requireContext(), "Gagal: Akses Ditolak", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Toast.makeText(requireContext(), "Error Network", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun showOptionsMenuModule(module: Module, view: View) {
+        val popup = PopupMenu(requireContext(), view)
+        if (module.type == "link") popup.menu.add(0, 1, 0, "Ubah Referensi")
+        popup.menu.add(0, 2, 0, "Hapus Modul")
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                1 -> {
+                    val intent = Intent(requireContext(), InputModuleActivity::class.java)
+                    intent.putExtra("MODULE_ID", module.id)
+                    startActivity(intent)
+                }
+                2 -> deleteModule(module.id)
+            }
+            true
+        }
+        popup.show()
+    }
+
+    private fun deleteModule(id: Int) {
+        ApiClient.apiInterface.deleteModule(id).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(requireContext(), "Modul Dihapus", Toast.LENGTH_SHORT).show()
+                    fetchData()
+                } else {
+                    Toast.makeText(requireContext(), "Gagal: Akses Ditolak", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Toast.makeText(requireContext(), "Error Network", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }

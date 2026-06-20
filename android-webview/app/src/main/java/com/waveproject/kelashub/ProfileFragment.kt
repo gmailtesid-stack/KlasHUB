@@ -63,9 +63,9 @@ class ProfileFragment : Fragment() {
     }
 
     private fun performLocalLogout() {
-        requireContext().getSharedPreferences("AuthPrefs", android.content.Context.MODE_PRIVATE).edit().clear().apply()
-        requireContext().getSharedPreferences("CookiePrefs", android.content.Context.MODE_PRIVATE).edit().clear().apply()
-        requireContext().getSharedPreferences("OfflineCache", android.content.Context.MODE_PRIVATE).edit().clear().apply()
+        SecurePrefs.get(requireContext(), "AuthPrefs").edit().clear().apply()
+        SecurePrefs.get(requireContext(), "CookiePrefs").edit().clear().apply()
+        SecurePrefs.get(requireContext(), "OfflineCache").edit().clear().apply()
         
         startActivity(Intent(requireContext(), LoginActivity::class.java))
         requireActivity().finish()

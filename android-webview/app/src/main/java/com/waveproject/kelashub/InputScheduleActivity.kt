@@ -37,6 +37,11 @@ class InputScheduleActivity : AppCompatActivity() {
         val etDeliveryType = findViewById<EditText>(R.id.etDeliveryType)
         val btnSubmit = findViewById<Button>(R.id.btnSubmit)
 
+        val scheduleId = intent.getIntExtra("SCHEDULE_ID", -1)
+        if (scheduleId != -1) {
+            btnSubmit.text = "Update Jadwal"
+        }
+
         val days = arrayOf("Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, days)
         spinnerDay.adapter = adapter
@@ -75,26 +80,34 @@ class InputScheduleActivity : AppCompatActivity() {
             val className = etClassName.text.toString().trim().ifEmpty { null }
             val deliveryType = etDeliveryType.text.toString().trim().ifEmpty { null }
 
-            ApiClient.apiInterface.storeSchedule(
-                subjectName, subjectCode, lecturerName, day, timeStartParam, timeEndParam, room, className, deliveryType
-            ).enqueue(object : Callback<Void> {
+            val callback = object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     if (response.isSuccessful) {
-                        Toast.makeText(this@InputScheduleActivity, "Jadwal berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@InputScheduleActivity, if (scheduleId != -1) "Jadwal berhasil diupdate!" else "Jadwal berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
                         finish()
                     } else {
-                        Toast.makeText(this@InputScheduleActivity, "Gagal menambahkan jadwal", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@InputScheduleActivity, "Gagal memproses", Toast.LENGTH_SHORT).show()
                         btnSubmit.isEnabled = true
-                        btnSubmit.text = "Simpan Jadwal"
+                        btnSubmit.text = if (scheduleId != -1) "Update Jadwal" else "Simpan Jadwal"
                     }
                 }
 
                 override fun onFailure(call: Call<Void>, t: Throwable) {
                     Toast.makeText(this@InputScheduleActivity, "Kesalahan jaringan", Toast.LENGTH_SHORT).show()
                     btnSubmit.isEnabled = true
-                    btnSubmit.text = "Simpan Jadwal"
+                    btnSubmit.text = if (scheduleId != -1) "Update Jadwal" else "Simpan Jadwal"
                 }
-            })
+            }
+
+            if (scheduleId != -1) {
+                ApiClient.apiInterface.updateSchedule(
+                    scheduleId, subjectName, subjectCode, lecturerName, day, timeStartParam, timeEndParam, room, className, deliveryType
+                ).enqueue(callback)
+            } else {
+                ApiClient.apiInterface.storeSchedule(
+                    subjectName, subjectCode, lecturerName, day, timeStartParam, timeEndParam, room, className, deliveryType
+                ).enqueue(callback)
+            }
         }
     }
 

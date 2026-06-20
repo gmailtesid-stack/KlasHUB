@@ -6,8 +6,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class ModuleAdapter(private var modules: List<Module>) :
-    RecyclerView.Adapter<ModuleAdapter.ViewHolder>() {
+class ModuleAdapter(
+    private var modules: List<Module>,
+    private val onLongClick: ((Module, View) -> Unit)? = null
+) : RecyclerView.Adapter<ModuleAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvSubject: TextView = view.findViewById(R.id.tvSubject)
@@ -24,6 +26,11 @@ class ModuleAdapter(private var modules: List<Module>) :
         val module = modules[position]
         holder.tvSubject.text = module.subject_name
         holder.tvTitle.text = module.title
+
+        holder.itemView.setOnLongClickListener {
+            onLongClick?.invoke(module, it)
+            true
+        }
     }
 
     override fun getItemCount() = modules.size

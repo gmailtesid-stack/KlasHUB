@@ -34,6 +34,31 @@ class AcademicMaterialController extends Controller
         return response()->json(['success' => true, 'assignment' => $assignment]);
     }
 
+    public function updateAssignment(Request $request, $id)
+    {
+        $this->authorizeAdmin();
+        $assignment = Assignment::findOrFail($id);
+        $data = $request->validate([
+            'subject_name' => 'required|string',
+            'title' => 'required|string',
+            'description' => 'nullable|string',
+            'deadline' => 'required|date',
+            'material_link' => 'nullable|string',
+            'type' => 'required|in:individual,kelompok',
+            'members' => 'nullable|string',
+        ]);
+
+        $assignment->update($data);
+        return response()->json(['success' => true, 'assignment' => $assignment]);
+    }
+
+    public function deleteAssignment($id)
+    {
+        $this->authorizeAdmin();
+        Assignment::destroy($id);
+        return response()->json(['success' => true]);
+    }
+
     public function storeModule(Request $request)
     {
         $this->authorizeAdmin();
@@ -60,6 +85,36 @@ class AcademicMaterialController extends Controller
         NotificationService::notifyClass(Auth::user()->class_id, "📚 Modul pembelajaran baru telah diunggah: " . $module->title);
 
         return response()->json(['success' => true, 'module' => $module]);
+    }
+
+    public function updateModule(Request $request, $id)
+    {
+        $this->authorizeAdmin();
+        $module = LearningModule::findOrFail($id);
+        $data = $request->validate([
+            'subject_name' => 'required|string',
+            'type' => 'required|in:file,link',
+            'title' => 'required_if:type,link',
+            'link_url' => 'required_if:type,link',
+        ]);
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $data['title'] = $file->getClientOriginalName();
+            $data['mime_type'] = $file->getMimeType();
+            $data['file_path'] = $file->store('modules', 'public');
+            $data['file_content'] = null;
+            $data['type'] = 'file';
+        }
+        $module->update($data);
+        return response()->json(['success' => true, 'module' => $module]);
+    }
+
+    public function deleteModule($id)
+    {
+        $this->authorizeAdmin();
+        LearningModule::destroy($id);
+        return response()->json(['success' => true]);
     }
 
     public function downloadModule(Request $request, $id)
