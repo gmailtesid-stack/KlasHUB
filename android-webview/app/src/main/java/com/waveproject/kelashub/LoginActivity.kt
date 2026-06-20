@@ -20,6 +20,14 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         
         val prefs = getSharedPreferences("AuthPrefs", MODE_PRIVATE)
+        val lastAccess = prefs.getLong("last_access_time", System.currentTimeMillis())
+        
+        if (System.currentTimeMillis() - lastAccess > 30 * 60 * 1000) {
+            prefs.edit().putBoolean("is_logged_in", false).apply()
+            getSharedPreferences("CookiePrefs", MODE_PRIVATE).edit().clear().apply()
+            Toast.makeText(this, "Sesi Anda telah habis (30 menit).", Toast.LENGTH_SHORT).show()
+        }
+
         if (prefs.getBoolean("is_logged_in", false)) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
