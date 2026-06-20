@@ -190,6 +190,18 @@ Route::middleware(['auth'])->group(function () {
         });
 
         // Super Admin Management
+        Route::get('/kh/setup/migrate-db', function () {
+            if (Auth::check() && in_array(Auth::user()->role, ['ketua_kelas', 'super_admin'])) {
+                try {
+                    \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+                    return "Migration Sukses! Silakan kembali dan upload ulang.";
+                } catch (\Exception $e) {
+                    return "Error: " . $e->getMessage();
+                }
+            }
+            return "Hanya Super Admin yang bisa mengakses ini.";
+        });
+
         Route::post('/kh/class', [ClassManagementController::class, 'storeUnifiedClass']);
         Route::post('/kh/class/next-semester', [ClassManagementController::class, 'nextSemester']);
         Route::post('/kh/student/{id}/role', [UserManagementController::class, 'updateStudentRole']);
