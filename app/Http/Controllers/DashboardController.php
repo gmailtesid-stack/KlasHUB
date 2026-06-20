@@ -47,37 +47,29 @@ class DashboardController extends Controller
         $isAdmin = in_array($student->role, ['ketua_kelas', 'sekretaris', 'bendahara', 'super_admin']);
 
         // Quick sums remain on first load
-        $saldoKasSaatIni = CashLedger::where('class_id', $student->class_id)
-            ->where('is_validated', true)
+        $saldoKasSaatIni = CashLedger::where('is_validated', true)
             ->where('type', 'income')->sum('amount')
-            - CashLedger::where('class_id', $student->class_id)
-                ->where('is_validated', true)
+            - CashLedger::where('is_validated', true)
                 ->where('type', 'expense')->sum('amount');
 
-        $pemasukanMingguan = CashLedger::where('class_id', $student->class_id)
-            ->where('is_validated', true)
+        $pemasukanMingguan = CashLedger::where('is_validated', true)
             ->where('type', 'income')->where('transaction_date', '>=', $startOfWeek)->sum('amount');
 
-        $pengeluaranMingguan = CashLedger::where('class_id', $student->class_id)
-            ->where('is_validated', true)
+        $pengeluaranMingguan = CashLedger::where('is_validated', true)
             ->where('type', 'expense')->where('transaction_date', '>=', $startOfWeek)->sum('amount');
 
         // Other heavy lists will be loaded via AJAX
-        $schedules = AcademicSchedule::where('class_id', $student->class_id)
-            ->when(!$isAdmin, function ($q) {
-                return $q->where('is_validated', true);
-            })->get();
+        $schedules = AcademicSchedule::when(!$isAdmin, function ($q) {
+            return $q->where('is_validated', true);
+        })->get();
 
         $pendingCount = 0;
         if (in_array($student->role, ['ketua_kelas', 'super_admin'])) {
-            $pendingCount += CashLedger::where('class_id', $student->class_id)->where('is_validated', false)->count();
-            $pendingCount += Assignment::where('class_id', $student->class_id)->where('is_validated', false)->count();
-            $pendingCount += LearningModule::where('class_id', $student->class_id)->where('is_validated', false)->count();
-            $pendingCount += ClassAttendance::where('is_validated', false)
-                ->whereHas('student', function ($query) use ($student) {
-                    $query->where('class_id', $student->class_id);
-                })->count();
-            $pendingCount += AcademicSchedule::where('class_id', $student->class_id)->where('is_validated', false)->count();
+            $pendingCount += CashLedger::where('is_validated', false)->count();
+            $pendingCount += Assignment::where('is_validated', false)->count();
+            $pendingCount += LearningModule::where('is_validated', false)->count();
+            $pendingCount += ClassAttendance::where('is_validated', false)->count();
+            $pendingCount += AcademicSchedule::where('is_validated', false)->count();
         }
 
         $academicClasses = $student->role === 'super_admin' ? \App\Models\AcademicClass::withCount('students')->with('ketuaKelas')->get() : [];
@@ -119,17 +111,14 @@ class DashboardController extends Controller
             'student' => $student,
             'class_semester' => $class ? ((int) $class->semester_ke) : 1,
             'qris_image' => $class && $class->qris_image ? (str_starts_with($class->qris_image, 'data:image') ? $class->qris_image : asset('storage/' . $class->qris_image)) : null,
-            'semua_mahasiswa' => Student::where('class_id', $student->class_id)->orderBy('name', 'asc')->get(),
-            'semua_tugas' => Assignment::where('class_id', $student->class_id)
-                ->when(!$isAdmin, function ($q) {
-                    return $q->where('is_validated', true);
-                })->orderBy('deadline', 'asc')->get(),
-            'semua_modul' => LearningModule::where('class_id', $student->class_id)
-                ->when(!$isAdmin, function ($q) {
-                    return $q->where('is_validated', true);
-                })->latest()->get(),
+            'semua_mahasiswa' => Student::orderBy('name', 'asc')->get(),
+            'semua_tugas' => Assignment::when(!$isAdmin, function ($q) {
+                return $q->where('is_validated', true);
+            })->orderBy('deadline', 'asc')->get(),
+            'semua_modul' => LearningModule::when(!$isAdmin, function ($q) {
+                return $q->where('is_validated', true);
+            })->latest()->get(),
             'transaksi_kas' => CashLedger::with('student')
-                ->where('class_id', $student->class_id)
                 ->latest()->get()->map(function ($ledger) {
                     if ($ledger->proof_image && !str_starts_with($ledger->proof_image, 'data:image')) {
                         $ledger->proof_image = asset('storage/' . $ledger->proof_image);

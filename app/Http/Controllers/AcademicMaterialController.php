@@ -54,7 +54,7 @@ class AcademicMaterialController extends Controller
 
     public function deleteAssignment($id)
     {
-        $this->authorizeAdmin();
+        $this->authorizeKetuaKelas();
         Assignment::destroy($id);
         return response()->json(['success' => true]);
     }
@@ -112,7 +112,7 @@ class AcademicMaterialController extends Controller
 
     public function deleteModule($id)
     {
-        $this->authorizeAdmin();
+        $this->authorizeKetuaKelas();
         LearningModule::destroy($id);
         return response()->json(['success' => true]);
     }

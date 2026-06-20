@@ -13,7 +13,7 @@ class UserManagementController extends Controller
 
     public function storeStudent(Request $request)
     {
-        $this->authorizeAdmin();
+        $this->authorizeKetuaKelas();
         $data = $request->validate([
             'nim' => 'required|string|unique:students,nim',
             'name' => 'required|string',
@@ -51,7 +51,7 @@ class UserManagementController extends Controller
 
     public function updateStudent(Request $request, $id)
     {
-        $this->authorizeAdmin();
+        $this->authorizeKetuaKelas();
         $student = Student::findOrFail($id);
 
         $data = $request->validate([
@@ -65,7 +65,7 @@ class UserManagementController extends Controller
 
     public function deleteStudent($id)
     {
-        $this->authorizeAdmin();
+        $this->authorizeKetuaKelas();
         $user = Auth::user();
         if ($user->id == $id) {
             return response()->json(['success' => false, 'message' => 'Anda tidak bisa menghapus diri sendiri!'], 400);
@@ -127,7 +127,7 @@ class UserManagementController extends Controller
 
     public function getAllStudents()
     {
-        $this->authorizeAdmin();
+        $this->authorizeKetuaKelas();
         $user = Auth::user();
 
         $query = Student::orderBy('name', 'asc');

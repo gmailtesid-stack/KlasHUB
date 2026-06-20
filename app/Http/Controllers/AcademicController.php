@@ -54,7 +54,7 @@ class AcademicController extends Controller
 
     public function storeSchedule(Request $request)
     {
-        $this->authorizeAdmin();
+        $this->authorizeKetuaKelas();
         $data = $request->validate([
             'subject_name' => 'required|string',
             'subject_code' => 'nullable|string',
@@ -77,7 +77,7 @@ class AcademicController extends Controller
 
     public function updateSchedule(Request $request, $id)
     {
-        $this->authorizeAdmin();
+        $this->authorizeKetuaKelas();
         $schedule = AcademicSchedule::findOrFail($id);
         $data = $request->validate([
             'subject_name' => 'required|string',
@@ -97,14 +97,14 @@ class AcademicController extends Controller
 
     public function deleteSchedule($id)
     {
-        $this->authorizeAdmin();
+        $this->authorizeKetuaKelas();
         AcademicSchedule::destroy($id);
         return response()->json(['success' => true]);
     }
 
     public function toggleDeliveryType(Request $request)
     {
-        $this->authorizeAdmin();
+        $this->authorizeKetuaKelas();
         $request->validate([
             'subject_name' => 'required|string',
             'delivery_type' => 'required|string|in:offline,online'
