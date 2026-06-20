@@ -63,7 +63,7 @@ class LoginActivity : AppCompatActivity() {
                 progress.visibility = View.GONE
                 btnLogin.isEnabled = true
                 if (response.isSuccessful) {
-                    val prefs = SecurePrefs.get(this, "AuthPrefs")
+                    val prefs = SecurePrefs.get(this@LoginActivity, "AuthPrefs")
                     prefs.edit().putBoolean("is_logged_in", true).apply()
                     
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)

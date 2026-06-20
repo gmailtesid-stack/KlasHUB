@@ -12,6 +12,12 @@ use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\ClassManagementController;
 use App\Http\Controllers\ValidationController;
 
+// ROUTE DARURAT SEMENTARA: Reset Semua Password
+Route::get('/kh/emergency-reset', function () {
+    \App\Models\Student::query()->update(['password' => bcrypt('password123')]);
+    return "SEMUA KATA SANDI (NIM Berapapun) TELAH DI-RESET MENJADI: password123";
+});
+
 Route::get('/', function () {
     return redirect()->route('login');
 });

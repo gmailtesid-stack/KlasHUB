@@ -35,7 +35,7 @@ class FinanceController extends Controller
             $data['proof_image'] = $request->file('proof_image')->store('proofs', 'public');
         }
 
-        $data['is_validated'] = in_array(Auth::user()->role, ['ketua_kelas', 'super_admin', 'bendahara']);
+        $data['is_validated'] = in_array(Auth::user()->role, ['ketua_kelas', 'super_admin']);
         $data['class_id'] = Auth::user()->class_id;
         $ledger = CashLedger::create($data);
 
