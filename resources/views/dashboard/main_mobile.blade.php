@@ -358,9 +358,7 @@
                 .catch(err => {
                     console.error('Failed to load dashboard data:', err);
                     this.loadingHeavyData = false;
-                });
-        }
-    }" x-init="init()" @notify-toast.window="notify($event.detail)" class="flex w-full h-full relative">
+    }" x-init="init()" @notify-toast.window="notify($event.detail)" class="flex-1 flex min-w-0 w-full h-full relative">
 
         <!-- Sidebar Desktop -->
         <aside
@@ -531,7 +529,7 @@
         </aside>
 
         <!-- Main Content Wrapper -->
-        <div class="flex-1 flex flex-col h-full bg-black relative">
+        <div class="flex-1 flex flex-col h-full min-w-0 bg-black relative">
 
             <!-- Desktop Topbar (hamburger to re-open sidebar) -->
             <div class="hidden md:flex items-center px-6 py-3 border-b border-zinc-900 shrink-0">
@@ -1383,33 +1381,33 @@
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8" x-data="{ 
-                                                                                                                    currentAttendance: {},
-                                                                                                                    saveAttendance(matkul) {
-                                                                                                                        let data = [];
-                                                                                                                        semuaMahasiswa.forEach(m => {
-                                                                                                                            data.push({
-                                                                                                                                student_id: m.id,
-                                                                                                                                status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
+                                                                                                                        currentAttendance: {},
+                                                                                                                        saveAttendance(matkul) {
+                                                                                                                            let data = [];
+                                                                                                                            semuaMahasiswa.forEach(m => {
+                                                                                                                                data.push({
+                                                                                                                                    student_id: m.id,
+                                                                                                                                    status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
+                                                                                                                                });
                                                                                                                             });
-                                                                                                                        });
-                                                                                                                        fetch('/kh/attendance', {
-                                                                                                                            method: 'POST',
-                                                                                                                            headers: {
-                                                                                                                                'Content-Type': 'application/json',
-                                                                                                                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
-                                                                                                                            },
-                                                                                                                            body: JSON.stringify({
-                                                                                                                                subject_name: matkul,
-                                                                                                                                date: new Date().toISOString().split('T')[0],
-                                                                                                                                attendances: data
+                                                                                                                            fetch('/kh/attendance', {
+                                                                                                                                method: 'POST',
+                                                                                                                                headers: {
+                                                                                                                                    'Content-Type': 'application/json',
+                                                                                                                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                                                                                                                                },
+                                                                                                                                body: JSON.stringify({
+                                                                                                                                    subject_name: matkul,
+                                                                                                                                    date: new Date().toISOString().split('T')[0],
+                                                                                                                                    attendances: data
+                                                                                                                                })
                                                                                                                             })
-                                                                                                                        })
-                                                                                                                        .then(res => res.json())
-                                                                                                                        .then(res => {
-                                                                                                                            if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
-                                                                                                                        });
-                                                                                                                    }
-                                                                                                                }">
+                                                                                                                            .then(res => res.json())
+                                                                                                                            .then(res => {
+                                                                                                                                if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
+                                                                                                                            });
+                                                                                                                        }
+                                                                                                                    }">
                                 <template x-for="(sks, matkulName) in matkuls_sks" :key="matkulName">
                                     <div
                                         class="bg-zinc-900/50 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col shadow-xl">
@@ -1491,11 +1489,11 @@
                                                             <span
                                                                 class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-tighter inline-block"
                                                                 :class="{
-                                                                                                                                                                                                                                              'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
-                                                                                                                                                                                                                                              'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
-                                                                                                                                                                                                                                              'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
-                                                                                                                                                                                                                                              'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
-                                                                                                                                                                                                                                          }"
+                                                                                                                                                                                                                                                      'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
+                                                                                                                                                                                                                                                      'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
+                                                                                                                                                                                                                                                      'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
+                                                                                                                                                                                                                                                      'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
+                                                                                                                                                                                                                                                  }"
                                                                 x-text="mhs.role.replace('_', ' ')"></span>
                                                         </td>
                                                         <td class="px-4 py-3 text-right">
