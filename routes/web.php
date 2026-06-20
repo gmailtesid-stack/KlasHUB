@@ -201,7 +201,7 @@ Route::middleware(['auth'])->group(function () {
         });
 
         // Vercel Cron Bypass logic using CRON_SECRET
-        Route::get('/kh/cron/reset-schedule', function (Request $request) {
+        Route::get('/kh/cron/reset-schedule', functio (Request $request) {
             $authHeader = $request->header('Authorization');
             $cronSecret = config('app.cron_secret') ?? '';
 
