@@ -76,7 +76,8 @@ class ValidationController extends Controller
         foreach (CashLedger::where('is_validated', false)->when(!$isSuper, function ($q) use ($classId) {
             return $q->where('class_id', $classId);
         })->get() as $item) {
-            $pending->push(['id' => $item->id, 'type' => 'cash', 'title' => 'Uang Kas: Rp. ' . $item->amount, 'description' => $item->description, 'proof_image' => $item->proof_image]);
+            $proof = $item->proof_image ? (str_starts_with($item->proof_image, 'data:image') ? $item->proof_image : asset('storage/' . $item->proof_image)) : null;
+            $pending->push(['id' => $item->id, 'type' => 'cash', 'title' => 'Uang Kas: Rp. ' . $item->amount, 'description' => $item->description, 'proof_image' => $proof]);
         }
 
         foreach (ClassAttendance::with('student')->where('is_validated', false)->when(!$isSuper, function ($q) use ($classId) {

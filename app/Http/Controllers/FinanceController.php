@@ -32,7 +32,9 @@ class FinanceController extends Controller
         }
 
         if ($request->hasFile('proof_image')) {
-            $data['proof_image'] = $request->file('proof_image')->store('proofs', 'public');
+            $file = $request->file('proof_image');
+            $fileData = file_get_contents($file->getRealPath());
+            $data['proof_image'] = 'data:image/' . $file->extension() . ';base64,' . base64_encode($fileData);
         }
 
         $data['is_validated'] = in_array(Auth::user()->role, ['ketua_kelas', 'super_admin']);

@@ -82,10 +82,13 @@ class ClassManagementController extends Controller
         $class = AcademicClass::findOrFail(Auth::user()->class_id);
 
         if ($request->hasFile('qris_image')) {
-            $path = $request->file('qris_image')->store('qris', 'public');
-            $class->qris_image = $path;
+            $file = $request->file('qris_image');
+            $fileData = file_get_contents($file->getRealPath());
+            $base64 = 'data:image/' . $file->extension() . ';base64,' . base64_encode($fileData);
+
+            $class->qris_image = $base64;
             $class->save();
-            return response()->json(['success' => true, 'image_url' => asset('storage/' . $path)]);
+            return response()->json(['success' => true, 'image_url' => $base64]);
         }
 
         return response()->json(['success' => false, 'message' => 'Gagal mengunggah file.']);
