@@ -59,7 +59,7 @@ class PayKasActivity : AppCompatActivity() {
 
         val qrisUrl = intent.getStringExtra("QRIS_URL")
         if (!qrisUrl.isNullOrEmpty()) {
-            val fullUrl = "${BuildConfig.BASE_URL}storage/$qrisUrl"
+            val fullUrl = if (qrisUrl.startsWith("http") || qrisUrl.startsWith("data:image")) qrisUrl else "${BuildConfig.BASE_URL}storage/$qrisUrl"
             thread {
                 try {
                     val url = URL(fullUrl)

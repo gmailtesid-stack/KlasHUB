@@ -5,6 +5,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -38,7 +40,20 @@ class InputModuleActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btnBack).setOnClickListener { finish() }
 
-        val etSubjectName = findViewById<EditText>(R.id.etSubjectName)
+        val etSubjectName = findViewById<AutoCompleteTextView>(R.id.etSubjectName)
+        
+        ApiClient.apiInterface.getSubjects().enqueue(object : Callback<List<MasterSubject>> {
+            override fun onResponse(call: Call<List<MasterSubject>>, response: Response<List<MasterSubject>>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val subjects = response.body()!!
+                    val subjectNames = subjects.map { it.name }
+                    val adapter = ArrayAdapter(this@InputModuleActivity, android.R.layout.simple_dropdown_item_1line, subjectNames)
+                    etSubjectName.setAdapter(adapter)
+                }
+            }
+            override fun onFailure(call: Call<List<MasterSubject>>, t: Throwable) {
+            }
+        })
         val rgType = findViewById<RadioGroup>(R.id.rgType)
         val rbFile = findViewById<RadioButton>(R.id.rbFile)
         val containerLink = findViewById<LinearLayout>(R.id.containerLink)

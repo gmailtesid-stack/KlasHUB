@@ -2,6 +2,7 @@ package com.waveproject.kelashub
 
 import android.os.Bundle
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
@@ -26,9 +27,31 @@ class InputScheduleActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btnBack).setOnClickListener { finish() }
 
-        val etSubjectName = findViewById<EditText>(R.id.etSubjectName)
+        val etSubjectName = findViewById<AutoCompleteTextView>(R.id.etSubjectName)
         val etSubjectCode = findViewById<EditText>(R.id.etSubjectCode)
         val etLecturerName = findViewById<EditText>(R.id.etLecturerName)
+        
+        ApiClient.apiInterface.getSubjects().enqueue(object : Callback<List<MasterSubject>> {
+            override fun onResponse(call: Call<List<MasterSubject>>, response: Response<List<MasterSubject>>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val subjects = response.body()!!
+                    val subjectNames = subjects.map { it.name }
+                    val adapter = ArrayAdapter(this@InputScheduleActivity, android.R.layout.simple_dropdown_item_1line, subjectNames)
+                    etSubjectName.setAdapter(adapter)
+
+                    etSubjectName.setOnItemClickListener { parent, view, position, id ->
+                        val selectedName = parent.getItemAtPosition(position) as String
+                        val selectedSubject = subjects.find { it.name == selectedName }
+                        if (selectedSubject?.defaultLecturer != null) {
+                            etLecturerName.setText(selectedSubject.defaultLecturer)
+                        }
+                    }
+                }
+            }
+            override fun onFailure(call: Call<List<MasterSubject>>, t: Throwable) {
+                // Ignore API failure gracefully
+            }
+        })
         val spinnerDay = findViewById<Spinner>(R.id.spinnerDay)
         val tvTimeStart = findViewById<TextView>(R.id.tvTimeStart)
         val tvTimeEnd = findViewById<TextView>(R.id.tvTimeEnd)

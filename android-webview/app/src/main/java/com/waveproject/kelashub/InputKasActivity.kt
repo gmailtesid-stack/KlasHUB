@@ -7,6 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import com.google.android.material.datepicker.MaterialDatePicker
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class InputKasActivity : AppCompatActivity() {
 
@@ -22,6 +26,22 @@ class InputKasActivity : AppCompatActivity() {
         val rbIncome = findViewById<RadioButton>(R.id.rbIncome)
         val btnSubmit = findViewById<Button>(R.id.btnSubmit)
         val progress = findViewById<ProgressBar>(R.id.progressInput)
+
+        etDate.isFocusable = false
+        etDate.isClickable = true
+        etDate.setOnClickListener {
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Pilih Tanggal Transaksi")
+                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .build()
+
+            datePicker.addOnPositiveButtonClickListener { selection ->
+                val date = Date(selection)
+                val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                etDate.setText(format.format(date))
+            }
+            datePicker.show(supportFragmentManager, "KAS_DATE_PICKER")
+        }
 
         btnSubmit.setOnClickListener {
             btnSubmit.isEnabled = false

@@ -2,6 +2,8 @@ package com.waveproject.kelashub
 
 import android.os.Bundle
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.RadioButton
@@ -29,7 +31,20 @@ class InputAssignmentActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btnBack).setOnClickListener { finish() }
 
-        val etSubjectName = findViewById<EditText>(R.id.etSubjectName)
+        val etSubjectName = findViewById<AutoCompleteTextView>(R.id.etSubjectName)
+        
+        ApiClient.apiInterface.getSubjects().enqueue(object : Callback<List<MasterSubject>> {
+            override fun onResponse(call: Call<List<MasterSubject>>, response: Response<List<MasterSubject>>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val subjects = response.body()!!
+                    val subjectNames = subjects.map { it.name }
+                    val adapter = ArrayAdapter(this@InputAssignmentActivity, android.R.layout.simple_dropdown_item_1line, subjectNames)
+                    etSubjectName.setAdapter(adapter)
+                }
+            }
+            override fun onFailure(call: Call<List<MasterSubject>>, t: Throwable) {
+            }
+        })
         val etTitle = findViewById<EditText>(R.id.etTitle)
         val etDescription = findViewById<EditText>(R.id.etDescription)
         val tvDeadline = findViewById<TextView>(R.id.tvDeadline)

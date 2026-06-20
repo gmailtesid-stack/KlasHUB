@@ -18,6 +18,9 @@ interface ApiInterface {
     @GET("kh/api/dashboard-data")
     fun getDashboardData(@Query("semester") semester: Int? = null): Call<DashboardDataResponse>
 
+    @GET("kh/api/subjects")
+    fun getSubjects(): Call<List<MasterSubject>>
+
     @FormUrlEncoded
     @POST("kh/device-token")
     fun updateDeviceToken(

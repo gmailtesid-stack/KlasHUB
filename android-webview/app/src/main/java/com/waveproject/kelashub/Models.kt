@@ -2,6 +2,13 @@ package com.waveproject.kelashub
 
 import com.google.gson.annotations.SerializedName
 
+data class MasterSubject(
+    val id: Int,
+    val name: String,
+    val code: String?,
+    @SerializedName("default_lecturer") val defaultLecturer: String?
+)
+
 data class ApiResponse(
     val success: Boolean,
     val message: String?,

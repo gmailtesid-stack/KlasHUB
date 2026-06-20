@@ -145,6 +145,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/kh/api/students', [UserManagementController::class, 'getAllStudents']);
     Route::get('/kh/api/pending-validations', [ValidationController::class, 'getPendingValidations']);
     Route::get('/kh/api/dashboard-data', [DashboardController::class, 'getDashboardData']);
+    Route::get('/kh/api/subjects', function () {
+        return response()->json(\App\Models\MasterSubject::orderBy('name')->get(['id', 'name', 'default_lecturer', 'code']));
+    });
     Route::post('/kh/cash', [FinanceController::class, 'storeCashLedger']);
 
 
