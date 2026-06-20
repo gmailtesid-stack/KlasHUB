@@ -5,7 +5,8 @@ import com.google.gson.annotations.SerializedName
 data class ApiResponse(
     val success: Boolean,
     val message: String?,
-    val image_url: String? = null
+    val image_url: String? = null,
+    @SerializedName("default_password") val defaultPassword: String? = null
 )
 
 data class LoginResponse(

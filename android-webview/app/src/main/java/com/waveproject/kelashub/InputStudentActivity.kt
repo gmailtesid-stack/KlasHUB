@@ -42,11 +42,12 @@ class InputStudentActivity : AppCompatActivity() {
             progress.visibility = View.VISIBLE
             btnSubmit.isEnabled = false
 
-            ApiClient.apiInterface.addStudent(nim, name, role).enqueue(object : Callback<Void> {
-                override fun onResponse(call: Call<Void>, response: Response<Void>) {
+            ApiClient.apiInterface.addStudent(nim, name, role).enqueue(object : Callback<ApiResponse> {
+                override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
                     progress.visibility = View.GONE
-                    if (response.isSuccessful) {
-                        Toast.makeText(this@InputStudentActivity, "Data berhasil ditambah", Toast.LENGTH_SHORT).show()
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        val genPass = response.body()?.defaultPassword ?: "12345678"
+                        Toast.makeText(this@InputStudentActivity, "Ditambahkan! Sandi awal: $genPass", Toast.LENGTH_LONG).show()
                         finish()
                     } else {
                         btnSubmit.isEnabled = true
@@ -55,7 +56,7 @@ class InputStudentActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onFailure(call: Call<Void>, t: Throwable) {
+                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
                     progress.visibility = View.GONE
                     btnSubmit.isEnabled = true
                     Toast.makeText(this@InputStudentActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()

@@ -100,7 +100,7 @@ interface ApiInterface {
         @Field("nim") nim: String,
         @Field("name") name: String,
         @Field("role") role: String
-    ): Call<Void>
+    ): Call<ApiResponse>
 
     @GET("kh/api/students")
     fun getAllStudents(): Call<StudentsListResponse>
