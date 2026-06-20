@@ -85,6 +85,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/kh/api/students', [UserManagementController::class, 'getAllStudents']);
     Route::get('/kh/api/pending-validations', [ValidationController::class, 'getPendingValidations']);
     Route::get('/kh/api/dashboard-data', [DashboardController::class, 'getDashboardData']);
+    Route::post('/kh/cash', [FinanceController::class, 'storeCashLedger']);
 
 
 
@@ -97,7 +98,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/kh/assignment', [AcademicMaterialController::class, 'storeAssignment']);
         Route::post('/kh/module', [AcademicMaterialController::class, 'storeModule']);
         Route::get('/kh/module/{id}/download', [AcademicMaterialController::class, 'downloadModule']);
-        Route::post('/kh/cash', [FinanceController::class, 'storeCashLedger']);
         Route::post('/kh/student', [UserManagementController::class, 'storeStudent']);
         // CRUD Academic
         Route::put('/kh/master-subject/{id}', [AcademicController::class, 'updateMasterSubject']);

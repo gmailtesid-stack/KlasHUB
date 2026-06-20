@@ -14,7 +14,6 @@ class FinanceController extends Controller
 
     public function storeCashLedger(Request $request)
     {
-        $this->authorizeAdmin();
         $data = $request->validate([
             'student_id' => 'nullable|exists:students,id',
             'type' => 'required|in:income,expense',
@@ -23,6 +22,14 @@ class FinanceController extends Controller
             'transaction_date' => 'required|date',
             'proof_image' => 'nullable|image|mimes:jpeg,png,jpg|max:3048'
         ]);
+
+        $user = Auth::user();
+        if (!in_array($user->role, ['ketua_kelas', 'super_admin', 'bendahara'])) {
+            if ($request->type !== 'income') {
+                abort(403, 'Akses Ditolak: Mahasiswa hanya diizinkan untuk menyetor kas (pemasukan).');
+            }
+            $data['student_id'] = $user->id; // Force attach current student ID securely
+        }
 
         if ($request->hasFile('proof_image')) {
             $data['proof_image'] = $request->file('proof_image')->store('proofs', 'public');
