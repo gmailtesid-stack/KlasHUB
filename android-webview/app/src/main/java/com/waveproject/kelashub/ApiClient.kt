@@ -20,9 +20,19 @@ object ApiClient {
             private val prefs = SecurePrefs.get(context, "CookiePrefs")
 
             override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
+                if (cookies.isEmpty()) return
+                
+                val existingStrings = prefs.getStringSet(url.host, emptySet())
+                val existingCookies = existingStrings?.mapNotNull { Cookie.parse(url, it) }
+                    ?.filter { it.expiresAt > System.currentTimeMillis() }
+                    ?.associateBy { it.name }?.toMutableMap() ?: mutableMapOf()
+
+                for (c in cookies) {
+                    existingCookies[c.name] = c
+                }
+
                 val editor = prefs.edit()
-                val cookieStrings = cookies.map { it.toString() }.toSet()
-                editor.putStringSet(url.host, cookieStrings)
+                editor.putStringSet(url.host, existingCookies.values.map { it.toString() }.toSet())
                 editor.apply()
             }
 

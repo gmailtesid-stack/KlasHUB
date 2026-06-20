@@ -50,7 +50,8 @@ class InputStudentActivity : AppCompatActivity() {
                         finish()
                     } else {
                         btnSubmit.isEnabled = true
-                        Toast.makeText(this@InputStudentActivity, "Gagal didaftarkan", Toast.LENGTH_SHORT).show()
+                        val errMsg = "Gagal didaftarkan (Code: " + response.code() + ")"
+                        Toast.makeText(this@InputStudentActivity, errMsg, Toast.LENGTH_LONG).show()
                     }
                 }
 
