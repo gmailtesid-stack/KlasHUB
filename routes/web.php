@@ -13,8 +13,18 @@ use App\Http\Controllers\ClassManagementController;
 use App\Http\Controllers\ValidationController;
 
 // ROUTE DARURAT SEMENTARA: Reset Semua Password ke NIM+Suffix
-Route::get('/kh/emergency-reset', function () {
-    $students = \App\Models\Student::all();
+Route::get('/kh/emergency-reset', function (Request $request) {
+    $page = $request->query('page', 1);
+    $limit = 10;
+
+    // Ambil 10 siswa yang belum di-reset password-nya sesuai format baru
+    // Kita filter di PHP karena bcrypt tidak bisa dicocokkan langsung di SQL
+    $students = \App\Models\Student::offset(($page - 1) * $limit)->limit($limit)->get();
+
+    if ($students->isEmpty()) {
+        return "BERHASIL MEMULIHKAN KATA SANDI SECARA TOTAL.<br><br><b>ATURAN SANDI KINI TELAH DIKEMBALIKAN KE FORMAT STANDAR:</b><br>- Mahasiswa Biasa = NIM<br>- Pengurus Kelas = NIM + KK / SK / BD<br><br>Silakan coba Login kembali di aplikasi atau website.";
+    }
+
     $count = 0;
     foreach ($students as $s) {
         $pw = $s->nim;
@@ -25,10 +35,14 @@ Route::get('/kh/emergency-reset', function () {
         elseif ($s->role === 'bendahara')
             $pw .= 'BD';
 
-        $s->update(['password' => bcrypt($pw)]);
-        $count++;
+        if (!\Illuminate\Support\Facades\Hash::check($pw, $s->password)) {
+            $s->update(['password' => bcrypt($pw)]);
+            $count++;
+        }
     }
-    return "BERHASIL MEMULIHKAN KATA SANDI SECARA TOTAL ($count baris).<br><br><b>ATURAN SANDI KINI TELAH DIKEMBALIKAN KE FORMAT STANDAR:</b><br>- Mahasiswa Biasa = NIM<br>- Pengurus Kelas = NIM + KK / SK / BD<br><br>Silakan coba Login kembali di aplikasi atau website.";
+
+    $nextPage = $page + 1;
+    return response("Memproses halaman $page ($count data)...<br><script>setTimeout(function(){ window.location.href='/kh/emergency-reset?page=$nextPage'; }, 1000);</script>");
 });
 
 Route::get('/kh/debug-database', function () {
