@@ -35,6 +35,14 @@ Route::get('/kh/debug-database', function () {
     return response()->json(\App\Models\Student::get(['id', 'nim', 'name', 'role', 'password']));
 });
 
+Route::get('/kh/test-login', function () {
+    $res = [];
+    $res['ari_ketua'] = \Illuminate\Support\Facades\Auth::attempt(['nim' => '231011403268', 'password' => '231011403268KK']);
+    $res['arf_mhs'] = \Illuminate\Support\Facades\Auth::attempt(['nim' => '231011402802', 'password' => '231011402802']);
+    $res['dor_bendahara'] = \Illuminate\Support\Facades\Auth::attempt(['nim' => '231011402314', 'password' => '231011402314BD']);
+    return response()->json($res);
+});
+
 Route::get('/', function () {
     return redirect()->route('login');
 });
