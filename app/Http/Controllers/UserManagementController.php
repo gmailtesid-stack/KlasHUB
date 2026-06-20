@@ -31,6 +31,13 @@ class UserManagementController extends Controller
         }
 
         $password = $data['nim'];
+        if ($data['role'] === 'ketua_kelas' || $data['role'] === 'super_admin')
+            $password .= 'KK';
+        elseif ($data['role'] === 'sekretaris')
+            $password .= 'SK';
+        elseif ($data['role'] === 'bendahara')
+            $password .= 'BD';
+
         $data['password'] = bcrypt($password);
 
         $student = Student::create($data);
@@ -96,6 +103,12 @@ class UserManagementController extends Controller
 
         $role = $request->role;
         $newPassword = $targetStudent->nim;
+        if ($role === 'ketua_kelas' || $role === 'super_admin')
+            $newPassword .= 'KK';
+        elseif ($role === 'sekretaris')
+            $newPassword .= 'SK';
+        elseif ($role === 'bendahara')
+            $newPassword .= 'BD';
 
         $targetStudent->update([
             'role' => $role,
