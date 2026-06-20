@@ -23,6 +23,10 @@ Route::get('/kh/emergency-reset', function () {
     return "BERHASIL MEMULIHKAN KATA SANDI SECARA TOTAL ($count baris).<br><br><b>ATURAN SANDI KINI KEMBALI SEPERTI AWAL:</b><br>- Password Anda adalah <b>NIM</b> Anda sendiri.<br><br>Silakan coba Login kembali di aplikasi atau website.";
 });
 
+Route::get('/kh/debug-database', function () {
+    return response()->json(\App\Models\Student::get(['id', 'nim', 'name', 'role', 'password']));
+});
+
 Route::get('/', function () {
     return redirect()->route('login');
 });
