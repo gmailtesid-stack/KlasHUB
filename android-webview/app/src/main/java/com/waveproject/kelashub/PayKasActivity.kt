@@ -59,7 +59,7 @@ class PayKasActivity : AppCompatActivity() {
 
         val qrisUrl = intent.getStringExtra("QRIS_URL")
         if (!qrisUrl.isNullOrEmpty()) {
-            val fullUrl = "https://klas-hub.vercel.app/storage/$qrisUrl"
+            val fullUrl = "${BuildConfig.BASE_URL}storage/$qrisUrl"
             thread {
                 try {
                     val url = URL(fullUrl)

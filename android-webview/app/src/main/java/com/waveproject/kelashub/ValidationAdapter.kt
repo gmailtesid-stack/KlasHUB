@@ -32,7 +32,7 @@ class ValidationAdapter(
 
         if (item.proofImage != null) {
             holder.ivProofPreview.visibility = View.VISIBLE
-            val urlStr = "https://klas-hub.vercel.app/storage/" + item.proofImage
+            val urlStr = BuildConfig.BASE_URL + "storage/" + item.proofImage
             Thread {
                 try {
                     val url = java.net.URL(urlStr)
