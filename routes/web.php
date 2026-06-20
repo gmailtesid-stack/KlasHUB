@@ -46,7 +46,11 @@ Route::get('/kh/emergency-reset', function (Request $request) {
 });
 
 Route::get('/kh/debug-database', function () {
-    return response()->json(\App\Models\Student::get(['id', 'nim', 'name', 'role', 'password']));
+    return response()->json([
+        'master_subjects' => \App\Models\MasterSubject::count(),
+        'master_subjects_unscoped' => \App\Models\MasterSubject::withoutGlobalScopes()->count(),
+        'class_id_check' => \Illuminate\Support\Facades\Schema::hasColumn('master_subjects', 'class_id')
+    ]);
 });
 
 Route::get('/kh/test-login', function () {
