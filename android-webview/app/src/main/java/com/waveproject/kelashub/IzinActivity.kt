@@ -33,7 +33,7 @@ class IzinActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val statusVal = if (rbIzin.isChecked) "Izin" else "Sakit"
+            val statusVal = if (rbIzin.isChecked) "izin" else "sakit"
 
             progress.visibility = View.VISIBLE
             btnSubmit.isEnabled = false

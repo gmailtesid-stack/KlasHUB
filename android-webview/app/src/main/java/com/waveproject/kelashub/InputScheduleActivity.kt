@@ -60,7 +60,7 @@ class InputScheduleActivity : AppCompatActivity() {
         btnSubmit.setOnClickListener {
             val subjectName = etSubjectName.text.toString().trim()
             val lecturerName = etLecturerName.text.toString().trim()
-            val day = spinnerDay.selectedItem.toString()
+            val day = spinnerDay.selectedItem.toString().lowercase()
             val room = etRoom.text.toString().trim()
             
             if (subjectName.isEmpty() || lecturerName.isEmpty() || timeStartParam.isEmpty() || timeEndParam.isEmpty() || room.isEmpty()) {

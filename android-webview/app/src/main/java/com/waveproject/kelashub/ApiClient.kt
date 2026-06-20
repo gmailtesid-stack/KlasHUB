@@ -40,6 +40,13 @@ object ApiClient {
 
             val okHttpClient = OkHttpClient.Builder()
                 .cookieJar(cookieJar)
+                .addInterceptor { chain ->
+                    val request = chain.request().newBuilder()
+                        .addHeader("Accept", "application/json")
+                        .addHeader("X-Requested-With", "XMLHttpRequest")
+                        .build()
+                    chain.proceed(request)
+                }
                 .addInterceptor(logging)
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)

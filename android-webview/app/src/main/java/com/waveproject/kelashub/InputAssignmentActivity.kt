@@ -77,7 +77,7 @@ class InputAssignmentActivity : AppCompatActivity() {
         btnSubmit.setOnClickListener {
             val subjectName = etSubjectName.text.toString().trim()
             val title = etTitle.text.toString().trim()
-            val type = if (rbIndividu.isChecked) "Individu" else "Kelompok"
+            val type = if (rbIndividu.isChecked) "individual" else "kelompok"
             
             if (subjectName.isEmpty() || title.isEmpty() || selectedDateTime.isEmpty()) {
                 Toast.makeText(this, "Mohon isi Nama MK, Judul, dan Deadline", Toast.LENGTH_SHORT).show()

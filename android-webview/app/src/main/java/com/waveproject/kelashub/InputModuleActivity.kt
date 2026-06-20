@@ -66,17 +66,17 @@ class InputModuleActivity : AppCompatActivity() {
 
         btnSubmit.setOnClickListener {
             val subjectName = etSubjectName.text.toString().trim()
-            val type = if (rbFile.isChecked) "File" else "Link"
+            val type = if (rbFile.isChecked) "file" else "link"
 
             if (subjectName.isEmpty()) {
                 Toast.makeText(this, "Mohon isi Nama Mata Kuliah", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (type == "File" && selectedFileUri == null) {
+            if (type == "file" && selectedFileUri == null) {
                 Toast.makeText(this, "Mohon pilih file untuk diupload", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
-            } else if (type == "Link" && (etTitle.text.toString().isEmpty() || etLinkUrl.text.toString().isEmpty())) {
+            } else if (type == "link" && (etTitle.text.toString().isEmpty() || etLinkUrl.text.toString().isEmpty())) {
                 Toast.makeText(this, "Mohon isi Judul dan URL Link", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
