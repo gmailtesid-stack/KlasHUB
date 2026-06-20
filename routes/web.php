@@ -12,23 +12,15 @@ use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\ClassManagementController;
 use App\Http\Controllers\ValidationController;
 
-// ROUTE DARURAT SEMENTARA: Reset Semua Password ke Aturan NIM+Suffix
+// ROUTE DARURAT SEMENTARA: Reset Semua Password ke NIM
 Route::get('/kh/emergency-reset', function () {
     $students = \App\Models\Student::all();
     $count = 0;
     foreach ($students as $s) {
-        $pw = $s->nim;
-        if ($s->role === 'ketua_kelas' || $s->role === 'super_admin')
-            $pw .= 'KK';
-        elseif ($s->role === 'sekretaris')
-            $pw .= 'SK';
-        elseif ($s->role === 'bendahara')
-            $pw .= 'BD';
-
-        $s->update(['password' => bcrypt($pw)]);
+        $s->update(['password' => bcrypt($s->nim)]);
         $count++;
     }
-    return "BERHASIL MEMULIHKAN KATA SANDI SECARA TOTAL ($count baris).<br><br><b>ATURAN SANDI KINI KEMBALI SEPERTI SEMULA:</b><br>- Mahasiswa Biasa = NIM Anda<br>- Pengurus Kelas = NIM + KK / SK / BD<br><br>Silakan coba Login kembali di aplikasi atau website dengan aturan lama Anda.";
+    return "BERHASIL MEMULIHKAN KATA SANDI SECARA TOTAL ($count baris).<br><br><b>ATURAN SANDI KINI KEMBALI SEPERTI AWAL:</b><br>- Password Anda adalah <b>NIM</b> Anda sendiri.<br><br>Silakan coba Login kembali di aplikasi atau website.";
 });
 
 Route::get('/', function () {
