@@ -157,6 +157,35 @@
         toastMessage: '',
         showToast: false,
         modalPassword: false,
+        modalEditJabatan: false,
+        editJabatanTarget: null,
+        editJabatanRole: '',
+        openEditJabatan(mhs) {
+            this.editJabatanTarget = mhs;
+            this.editJabatanRole = mhs.role;
+            this.modalEditJabatan = true;
+        },
+        submitEditJabatan() {
+            if (!this.editJabatanRole || this.editJabatanRole === this.editJabatanTarget.role) {
+                this.modalEditJabatan = false;
+                return;
+            }
+            fetch('/kh/student/' + this.editJabatanTarget.id + '/role', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                },
+                body: JSON.stringify({ role: this.editJabatanRole })
+            }).then(res => res.json()).then(res => {
+                if(res.success) {
+                    alert('Berhasil ubah jabatan!\n\nPassword login baru untuk ' + this.editJabatanTarget.name + ' sekarang menjadi: ' + res.default_password);
+                    location.reload();
+                } else {
+                    alert('Gagal merubah data!');
+                }
+            }).catch(e => alert('Terjadi kesalahan koneksi.'));
+        },
         taskType: 'individual',
         trxType: 'income',
         matkuls: [
@@ -803,26 +832,26 @@
                                                     </td>
                                                     <td class="px-6 py-4 text-right">
                                                         <button @click="
-                                                                                                                    confirmData = {
-                                                                                                                        title: 'Hapus Kelas {{ $cls->code }}?',
-                                                                                                                        message: 'Semua mahasiswa, tugas, jadwal, dan kas akan terhapus PERMANEN. Anda yakin?',
-                                                                                                                        action: () => {
-                                                                                                                            modalConfirm = false;
-                                                                                                                            fetch('/kh/class/{{ $cls->id }}', {
-                                                                                                                                method: 'DELETE',
-                                                                                                                                headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content') }
-                                                                                                                            }).then(r=>r.json()).then(d=>{
-                                                                                                                                if(d.success) {
-                                                                                                                                    notify('Kelas {{ $cls->code }} berhasil dihapus!');
-                                                                                                                                    setTimeout(() => location.reload(), 1000);
-                                                                                                                                } else {
-                                                                                                                                    notify('Gagal menghapus kelas.');
+                                                                                                                            confirmData = {
+                                                                                                                                title: 'Hapus Kelas {{ $cls->code }}?',
+                                                                                                                                message: 'Semua mahasiswa, tugas, jadwal, dan kas akan terhapus PERMANEN. Anda yakin?',
+                                                                                                                                action: () => {
+                                                                                                                                    modalConfirm = false;
+                                                                                                                                    fetch('/kh/class/{{ $cls->id }}', {
+                                                                                                                                        method: 'DELETE',
+                                                                                                                                        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content') }
+                                                                                                                                    }).then(r=>r.json()).then(d=>{
+                                                                                                                                        if(d.success) {
+                                                                                                                                            notify('Kelas {{ $cls->code }} berhasil dihapus!');
+                                                                                                                                            setTimeout(() => location.reload(), 1000);
+                                                                                                                                        } else {
+                                                                                                                                            notify('Gagal menghapus kelas.');
+                                                                                                                                        }
+                                                                                                                                    });
                                                                                                                                 }
-                                                                                                                            });
-                                                                                                                        }
-                                                                                                                    };
-                                                                                                                    modalConfirm = true;
-                                                                                                                "
+                                                                                                                            };
+                                                                                                                            modalConfirm = true;
+                                                                                                                        "
                                                             class="text-red-500 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 rounded-lg border border-red-500/20 transition text-xs font-bold">HAPUS</button>
                                                     </td>
                                                 </tr>
@@ -1449,9 +1478,9 @@
                                         Tambah Mahasiswa
                                     </button>
                                     <button @click="
-                                                        Object.keys(matkuls_sks).forEach(matkul => saveAttendance(matkul));
-                                                        notify('Memproses seluruh data absensi hari ini ke database...');
-                                                        "
+                                                            Object.keys(matkuls_sks).forEach(matkul => saveAttendance(matkul));
+                                                            notify('Memproses seluruh data absensi hari ini ke database...');
+                                                            "
                                         class="w-full sm:w-auto bg-red-600 hover:bg-red-500 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition shadow-lg shadow-red-500/20 flex items-center justify-center gap-2">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -1464,33 +1493,33 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8"
                                 x-data="{ 
-                                                                                                                                                                    currentAttendance: {},
-                                                                                                                                                                    saveAttendance(matkul) {
-                                                                                                                                                                        let data = [];
-                                                                                                                                                                        semuaMahasiswa.forEach(m => {
-                                                                                                                                                                            data.push({
-                                                                                                                                                                                student_id: m.id,
-                                                                                                                                                                                status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
+                                                                                                                                                                        currentAttendance: {},
+                                                                                                                                                                        saveAttendance(matkul) {
+                                                                                                                                                                            let data = [];
+                                                                                                                                                                            semuaMahasiswa.forEach(m => {
+                                                                                                                                                                                data.push({
+                                                                                                                                                                                    student_id: m.id,
+                                                                                                                                                                                    status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
+                                                                                                                                                                                });
                                                                                                                                                                             });
-                                                                                                                                                                        });
-                                                                                                                                                                        fetch('/kh/attendance', {
-                                                                                                                                                                            method: 'POST',
-                                                                                                                                                                            headers: {
-                                                                                                                                                                                'Content-Type': 'application/json',
-                                                                                                                                                                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
-                                                                                                                                                                            },
-                                                                                                                                                                            body: JSON.stringify({
-                                                                                                                                                                                subject_name: matkul,
-                                                                                                                                                                                date: new Date().toISOString().split('T')[0],
-                                                                                                                                                                                attendances: data
+                                                                                                                                                                            fetch('/kh/attendance', {
+                                                                                                                                                                                method: 'POST',
+                                                                                                                                                                                headers: {
+                                                                                                                                                                                    'Content-Type': 'application/json',
+                                                                                                                                                                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                                                                                                                                                                                },
+                                                                                                                                                                                body: JSON.stringify({
+                                                                                                                                                                                    subject_name: matkul,
+                                                                                                                                                                                    date: new Date().toISOString().split('T')[0],
+                                                                                                                                                                                    attendances: data
+                                                                                                                                                                                })
                                                                                                                                                                             })
-                                                                                                                                                                        })
-                                                                                                                                                                        .then(res => res.json())
-                                                                                                                                                                        .then(res => {
-                                                                                                                                                                            if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
-                                                                                                                                                                        });
-                                                                                                                                                                    }
-                                                                                                                                                                }">
+                                                                                                                                                                            .then(res => res.json())
+                                                                                                                                                                            .then(res => {
+                                                                                                                                                                                if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
+                                                                                                                                                                            });
+                                                                                                                                                                        }
+                                                                                                                                                                    }">
                                 <template x-for="(sks, matkulName) in matkuls_sks" :key="matkulName">
                                     <div
                                         class="bg-zinc-900/50 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col shadow-xl">
@@ -1572,11 +1601,11 @@
                                                             <span
                                                                 class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-tighter inline-block"
                                                                 :class="{
-                                                                                                                                                                                                                                                                                                                                              'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
-                                                                                                                                                                                                                                                                                                                                              'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
-                                                                                                                                                                                                                                                                                                                                              'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
-                                                                                                                                                                                                                                                                                                                                              'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
-                                                                                                                                                                                                                                                                                                                                          }"
+                                                                                                                                                                                                                                                                                                                                                      'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
+                                                                                                                                                                                                                                                                                                                                                      'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
+                                                                                                                                                                                                                                                                                                                                                      'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
+                                                                                                                                                                                                                                                                                                                                                      'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
+                                                                                                                                                                                                                                                                                                                                                  }"
                                                                 x-text="mhs.role.replace('_', ' ')"></span>
                                                         </td>
                                                         <td class="px-4 py-3 text-right">
@@ -2793,6 +2822,74 @@
                         "
                             class="flex-1 bg-blue-600 text-white py-3 rounded-xl text-sm font-bold hover:bg-blue-500 transition shadow-lg">Simpan</button>
                     </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Edit Jabatan -->
+        <div x-show="modalEditJabatan" x-transition.opacity
+            class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            style="display: none;">
+            <div @click.away="modalEditJabatan = false" x-show="modalEditJabatan"
+                x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                class="bg-zinc-900 border border-zinc-800 rounded-3xl w-full max-w-sm p-6 space-y-5 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="text-lg font-bold text-white mb-1">Ubah Jabatan Pengurus</h3>
+                        <p class="text-xs text-zinc-500">Data mahasiswa: <span class="font-bold text-zinc-300"
+                                x-text="editJabatanTarget ? editJabatanTarget.name : ''"></span></p>
+                    </div>
+                    <button @click="modalEditJabatan = false"
+                        class="text-zinc-500 hover:text-white bg-black p-2 rounded-full border border-zinc-800 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <form @submit.prevent="submitEditJabatan()" class="space-y-4">
+                    <div class="relative">
+                        <label class="block text-xs font-bold text-zinc-400 uppercase tracking-widest mb-2">Pilih
+                            Jabatan <span class="text-blue-400">*</span></label>
+                        <select x-model="editJabatanRole" required
+                            class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition appearance-none">
+                            <option value="mahasiswa">Mahasiswa Biasa</option>
+                            <option value="ketua_kelas">Ketua Kelas</option>
+                            <option value="sekretaris">Sekretaris</option>
+                            <option value="bendahara">Bendahara</option>
+                        </select>
+                        <div
+                            class="pointer-events-none absolute inset-y-0 right-0 pt-[28px] flex items-center px-4 text-zinc-500">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 flex gap-3">
+                        <div class="text-blue-400 shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-[10px] text-zinc-300 leading-relaxed">
+                            <strong class="text-blue-400 block mb-0.5">PENTING: BACA TERLEBIH DAHULU</strong>
+                            Mengubah jabatan akan mereset password mahasiswa. Jabatan pengurus menjadi <span
+                                class="font-mono text-blue-300">NIM + InisialJabatan (KK/SK/BD)</span>, mahasiswa biasa
+                            menjadi hanya <span class="font-mono text-zinc-300">NIM</span> Anda wajib langsung
+                            memberitahu anggota yang bersangkutan.
+                        </p>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-blue-600 text-white py-3.5 rounded-2xl text-sm font-bold hover:bg-blue-500 transition shadow-lg shadow-blue-600/20">
+                        Simpan Perubahan
+                    </button>
                 </form>
             </div>
         </div>
