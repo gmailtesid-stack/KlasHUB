@@ -97,13 +97,14 @@ class NotificationService
                 'Authorization' => 'Basic ' . $apiKey,
                 'Content-Type' => 'application/json',
             ])->post('https://onesignal.com/api/v1/notifications', [
-                'app_id' => $appId,
-                'include_subscription_ids' => $playerIds,
-                'contents' => ['en' => $message, 'id' => $message],
-                'headings' => ['en' => 'Berita KelasHUB', 'id' => 'Berita KelasHUB'],
-                'small_icon' => 'ic_stat_onesignal_default',
-                'android_accent_color' => 'FF18181B' // Zinc 900
-            ]);
+                        'app_id' => $appId,
+                        'target_channel' => 'push',
+                        'include_subscription_ids' => $playerIds,
+                        'contents' => ['en' => $message, 'id' => $message],
+                        'headings' => ['en' => 'Berita KelasHUB', 'id' => 'Berita KelasHUB'],
+                        'small_icon' => 'ic_stat_onesignal_default',
+                        'android_accent_color' => 'FF18181B' // Zinc 900
+                    ]);
         } catch (\Exception $e) {
             Log::error('OneSignal Push Error: ' . $e->getMessage());
         }
