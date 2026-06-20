@@ -47,10 +47,11 @@
         
         <ImageView
             android:id="@+id/btnOptions"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@android:drawable/ic_menu_more"
-            android:padding="24dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_menu_edit"
+            android:padding="12dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             app:tint="@color/text_secondary" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
