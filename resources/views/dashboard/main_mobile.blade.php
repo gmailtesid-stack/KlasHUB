@@ -13,6 +13,35 @@
         window.notify = function (msg) {
             window.dispatchEvent(new CustomEvent('notify-toast', { detail: msg }));
         };
+        window.compressImage = function(file, maxWidth = 800, quality = 0.6) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = event => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        canvas.toBlob((blob) => {
+                            resolve(new File([blob], file.name, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            }));
+                        }, 'image/jpeg', quality);
+                    };
+                };
+            });
+        };
         tailwind.config = {
             theme: {
                 extend: {
@@ -1396,33 +1425,33 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8"
                                 x-data="{ 
-                                                                                                                                    currentAttendance: {},
-                                                                                                                                    saveAttendance(matkul) {
-                                                                                                                                        let data = [];
-                                                                                                                                        semuaMahasiswa.forEach(m => {
-                                                                                                                                            data.push({
-                                                                                                                                                student_id: m.id,
-                                                                                                                                                status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
+                                                                                                                                        currentAttendance: {},
+                                                                                                                                        saveAttendance(matkul) {
+                                                                                                                                            let data = [];
+                                                                                                                                            semuaMahasiswa.forEach(m => {
+                                                                                                                                                data.push({
+                                                                                                                                                    student_id: m.id,
+                                                                                                                                                    status: this.currentAttendance[matkul + '_' + m.id] ? 'Hadir' : 'Alfa'
+                                                                                                                                                });
                                                                                                                                             });
-                                                                                                                                        });
-                                                                                                                                        fetch('/kh/attendance', {
-                                                                                                                                            method: 'POST',
-                                                                                                                                            headers: {
-                                                                                                                                                'Content-Type': 'application/json',
-                                                                                                                                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
-                                                                                                                                            },
-                                                                                                                                            body: JSON.stringify({
-                                                                                                                                                subject_name: matkul,
-                                                                                                                                                date: new Date().toISOString().split('T')[0],
-                                                                                                                                                attendances: data
+                                                                                                                                            fetch('/kh/attendance', {
+                                                                                                                                                method: 'POST',
+                                                                                                                                                headers: {
+                                                                                                                                                    'Content-Type': 'application/json',
+                                                                                                                                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                                                                                                                                                },
+                                                                                                                                                body: JSON.stringify({
+                                                                                                                                                    subject_name: matkul,
+                                                                                                                                                    date: new Date().toISOString().split('T')[0],
+                                                                                                                                                    attendances: data
+                                                                                                                                                })
                                                                                                                                             })
-                                                                                                                                        })
-                                                                                                                                        .then(res => res.json())
-                                                                                                                                        .then(res => {
-                                                                                                                                            if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
-                                                                                                                                        });
-                                                                                                                                    }
-                                                                                                                                }">
+                                                                                                                                            .then(res => res.json())
+                                                                                                                                            .then(res => {
+                                                                                                                                                if(res.success) notify('Absensi ' + matkul + ' berhasil disimpan!');
+                                                                                                                                            });
+                                                                                                                                        }
+                                                                                                                                    }">
                                 <template x-for="(sks, matkulName) in matkuls_sks" :key="matkulName">
                                     <div
                                         class="bg-zinc-900/50 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col shadow-xl">
@@ -1504,11 +1533,11 @@
                                                             <span
                                                                 class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-tighter inline-block"
                                                                 :class="{
-                                                                                                                                                                                                                                                                              'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
-                                                                                                                                                                                                                                                                              'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
-                                                                                                                                                                                                                                                                              'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
-                                                                                                                                                                                                                                                                              'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
-                                                                                                                                                                                                                                                                          }"
+                                                                                                                                                                                                                                                                                      'bg-red-500/10 text-red-400 border border-red-500/20': mhs.role === 'ketua_kelas',
+                                                                                                                                                                                                                                                                                      'bg-blue-500/10 text-blue-400 border border-blue-500/20': mhs.role === 'sekretaris',
+                                                                                                                                                                                                                                                                                      'bg-amber-500/10 text-amber-400 border border-amber-500/20': mhs.role === 'bendahara',
+                                                                                                                                                                                                                                                                                      'bg-zinc-800 text-zinc-500': mhs.role === 'mahasiswa'
+                                                                                                                                                                                                                                                                                  }"
                                                                 x-text="mhs.role.replace('_', ' ')"></span>
                                                         </td>
                                                         <td class="px-4 py-3 text-right">
@@ -2864,25 +2893,47 @@
                             if(submitting) return;
                             if(!qrisFileName) return notify('Lengkapi file QRIS!');
                             submitting = true;
-                            let fd = new FormData();
-                            fd.append('qris_image', document.getElementById('upQrisFile').files[0]);
-                            fetch('/kh/upload-qris', {
-                                method: 'POST',
-                                headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content') },
-                                body: fd
-                            }).then(f=>f.json()).then(res=>{
-                                if(res.success){
-                                    notify('QRIS Berhasil Di-Upload!');
-                                    qrisImage = res.image_url;
-                                    modalUploadQris = false;
-                                } else {
-                                    notify('Gagal mengupload QRIS!');
-                                }
-                                submitting = false;
+                            window.compressImage(document.getElementById('upQrisFile').files[0], 600, 0.7).then(compressedFile => {
+                                let fd = new FormData();
+                                fd.append('qris_image', compressedFile);
+                                fetch('/kh/upload-qris', {
+                                    method: 'POST',
+                                    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content') },
+                                    body: fd
+                                }).then(f=>f.json()).then(res=>{
+                                    if(res.success){
+                                        notify('QRIS Berhasil Di-Upload!');
+                                        qrisImage = res.image_url;
+                                        modalUploadQris = false;
+                                        qrisFileName = '';
+                                    } else {
+                                        notify('Gagal mengupload QRIS!');
+                                    }
+                                    submitting = false;
+                                }).catch(()=>{ notify('Error jaringan'); submitting = false; });
                             });
                         " class="flex-1 bg-emerald-600 text-white py-3 rounded-xl text-sm font-bold hover:bg-emerald-500 transition shadow-lg shadow-emerald-500/20"
                             x-text="submitting?'Mengunggah...':'Upload'"></button>
                     </div>
+                    <template x-if="qrisImage">
+                        <button type="button" :disabled="submitting" @click="
+                            if(!confirm('Yakin ingin hapus QRIS?')) return;
+                            submitting = true;
+                            fetch('/kh/qris', {
+                                method: 'DELETE',
+                                headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content') }
+                            }).then(r=>r.json()).then(d=>{
+                                if(d.success) {
+                                    qrisImage = '';
+                                    notify('QRIS berhasil dihapus');
+                                    modalUploadQris = false;
+                                }
+                                submitting = false;
+                            }).catch(()=> { submitting = false; });
+                        "
+                            class="w-full bg-red-900/50 text-red-400 py-3 rounded-xl text-sm font-bold border border-red-900 mt-2 hover:bg-red-800 transition">Hapus
+                            Informasi QRIS</button>
+                    </template>
                 </form>
             </div>
         </div>
@@ -2968,30 +3019,32 @@
                                 fd2.append('amount', pkAmount);
                                 fd2.append('description', pkDesc);
                                 fd2.append('transaction_date', new Date().toISOString().split('T')[0]);
-                                fd2.append('proof_image', document.getElementById('pkFile').files[0]);
-                                fetch('/kh/cash', {
-                                    method: 'POST',
-                                    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content') },
-                                    body: fd2
-                                }).then(f=>f.json()).then(res=>{
-                                    if(res.success){
-                                        notify('Pembayaran terkirim! Menunggu validasi admin.');
-                                        semuaTransaksi.unshift({
-                                            type: 'income',
-                                            amount: parseInt(pkAmount),
-                                            desc: pkDesc,
-                                            student: res.ledger?.student ? res.ledger.student.name : 'Anda',
-                                            date: new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'}),
-                                            isValidated: false,
-                                            proof_image: res.ledger?.proof_image
-                                        });
-                                        modalPayKas = false;
-                                        pkAmount = ''; pkDesc = ''; pkFileName = '';
-                                    } else {
-                                        notify('Gagal menyimpan transaksi: ' + res.message);
-                                    }
-                                    submitting = false;
-                                }).catch(e => { notify('Terjadi kesalahan!'); submitting = false; });
+                                window.compressImage(document.getElementById('pkFile').files[0], 800, 0.6).then(compressedFile => {
+                                    fd2.append('proof_image', compressedFile);
+                                    fetch('/kh/cash', {
+                                        method: 'POST',
+                                        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content') },
+                                        body: fd2
+                                    }).then(f=>f.json()).then(res=>{
+                                        if(res.success){
+                                            notify('Pembayaran terkirim! Menunggu validasi admin.');
+                                            semuaTransaksi.unshift({
+                                                type: 'income',
+                                                amount: parseInt(pkAmount),
+                                                desc: pkDesc,
+                                                student: res.ledger?.student ? res.ledger.student.name : 'Anda',
+                                                date: new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'}),
+                                                isValidated: false,
+                                                proof_image: res.ledger?.proof_image
+                                            });
+                                            modalPayKas = false;
+                                            pkAmount = ''; pkDesc = ''; pkFileName = '';
+                                        } else {
+                                            notify('Gagal menyimpan transaksi: ' + res.message);
+                                        }
+                                        submitting = false;
+                                    }).catch(e => { notify('Terjadi kesalahan!'); submitting = false; });
+                                });
                             " :disabled="submitting"
                                 class="w-full bg-emerald-600 text-white py-3.5 rounded-xl text-sm font-bold hover:bg-emerald-500 transition shadow-lg shadow-emerald-500/20 flex justify-center items-center">
                                 <span

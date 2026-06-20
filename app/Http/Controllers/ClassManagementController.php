@@ -93,4 +93,13 @@ class ClassManagementController extends Controller
 
         return response()->json(['success' => false, 'message' => 'Gagal mengunggah file.']);
     }
+
+    public function deleteQris()
+    {
+        $this->authorizeAdmin();
+        $class = AcademicClass::findOrFail(Auth::user()->class_id);
+        $class->qris_image = null;
+        $class->save();
+        return response()->json(['success' => true]);
+    }
 }
