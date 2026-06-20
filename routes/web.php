@@ -12,10 +12,23 @@ use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\ClassManagementController;
 use App\Http\Controllers\ValidationController;
 
-// ROUTE DARURAT SEMENTARA: Reset Semua Password
+// ROUTE DARURAT SEMENTARA: Reset Semua Password ke Aturan NIM+Suffix
 Route::get('/kh/emergency-reset', function () {
-    \App\Models\Student::query()->update(['password' => bcrypt('password123')]);
-    return "SEMUA KATA SANDI (NIM Berapapun) TELAH DI-RESET MENJADI: password123";
+    $students = \App\Models\Student::all();
+    $count = 0;
+    foreach ($students as $s) {
+        $pw = $s->nim;
+        if ($s->role === 'ketua_kelas' || $s->role === 'super_admin')
+            $pw .= 'KK';
+        elseif ($s->role === 'sekretaris')
+            $pw .= 'SK';
+        elseif ($s->role === 'bendahara')
+            $pw .= 'BD';
+
+        $s->update(['password' => bcrypt($pw)]);
+        $count++;
+    }
+    return "BERHASIL MEMULIHKAN KATA SANDI SECARA TOTAL ($count baris).<br><br><b>ATURAN SANDI KINI KEMBALI SEPERTI SEMULA:</b><br>- Mahasiswa Biasa = NIM Anda<br>- Pengurus Kelas = NIM + KK / SK / BD<br><br>Silakan coba Login kembali di aplikasi atau website dengan aturan lama Anda.";
 });
 
 Route::get('/', function () {
