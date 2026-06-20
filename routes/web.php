@@ -159,6 +159,7 @@ Route::middleware(['auth'])->group(function () {
 
         // CRUD Student (Name & NIM edits)
         Route::put('/kh/student/{id}', [UserManagementController::class, 'updateStudent']);
+        Route::put('/kh/student/{id}/role', [UserManagementController::class, 'updateStudentRole']);
 
         Route::delete('/kh/subject/{id}', [AcademicController::class, 'deleteSubject']);
         Route::delete('/kh/student/{id}', [UserManagementController::class, 'deleteStudent']);
