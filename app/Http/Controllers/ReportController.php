@@ -7,7 +7,6 @@ use App\Models\CashLedger;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
@@ -34,29 +33,32 @@ class ReportController extends Controller
         $attendances = ClassAttendance::where('class_id', $user->class_id)->with('student')->get();
         $class = $user->academicClass;
 
-        return Excel::create('Laporan_Absensi_' . ($class->code ?? 'Kelas'), function ($excel) use ($attendances, $class) {
-            $excel->sheet('Absensi', function ($sheet) use ($attendances, $class) {
-                $data = [];
-                $data[] = ['LAPORAN ABSENSI KELAS ' . ($class->name ?? '')];
-                $data[] = ['Kode Kelas: ' . ($class->code ?? '')];
-                $data[] = ['Tanggal Cetak: ' . date('d-m-Y')];
-                $data[] = [];
-                $data[] = ['No', 'NIM', 'Nama Mahasiswa', 'Mata Kuliah', 'Tanggal', 'Status'];
+        $fileName = 'Laporan-Absensi-' . ($class->code ?? 'Kelas') . '-' . date('Ymd') . '.csv';
+        $headers = [
+            "Content-type" => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        ];
 
-                foreach ($attendances as $index => $att) {
-                    $data[] = [
-                        $index + 1,
-                        $att->student->nim ?? '-',
-                        $att->student->name ?? '-',
-                        $att->subject_name,
-                        $att->attendance_date,
-                        $att->status
-                    ];
-                }
+        $callback = function () use ($attendances) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['No', 'NIM', 'Nama Mahasiswa', 'Mata Kuliah', 'Tanggal', 'Status']);
+            foreach ($attendances as $index => $att) {
+                fputcsv($file, [
+                    $index + 1,
+                    $att->student->nim ?? '-',
+                    $att->student->name ?? '-',
+                    $att->subject_name,
+                    $att->attendance_date,
+                    $att->status
+                ]);
+            }
+            fclose($file);
+        };
 
-                $sheet->fromArray($data, null, 'A1', false, false);
-            });
-        })->download('xlsx');
+        return response()->stream($callback, 200, $headers);
     }
 
     public function exportCashPdf(Request $request)
@@ -83,28 +85,31 @@ class ReportController extends Controller
         $ledgers = CashLedger::where('class_id', $user->class_id)->with('student')->orderBy('transaction_date', 'desc')->get();
         $class = $user->academicClass;
 
-        return Excel::create('Laporan_Kas_' . ($class->code ?? 'Kelas'), function ($excel) use ($ledgers, $class) {
-            $excel->sheet('Kas Kelas', function ($sheet) use ($ledgers, $class) {
-                $data = [];
-                $data[] = ['LAPORAN KAS KELAS ' . ($class->name ?? '')];
-                $data[] = ['Kode Kelas: ' . ($class->code ?? '')];
-                $data[] = ['Tanggal Cetak: ' . date('d-m-Y')];
-                $data[] = [];
-                $data[] = ['No', 'Tanggal', 'Nama Mahasiswa', 'Tipe', 'Jumlah', 'Keterangan'];
+        $fileName = 'Laporan-Kas-' . ($class->code ?? 'Kelas') . '-' . date('Ymd') . '.csv';
+        $headers = [
+            "Content-type" => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        ];
 
-                foreach ($ledgers as $index => $l) {
-                    $data[] = [
-                        $index + 1,
-                        $l->transaction_date,
-                        $l->student->name ?? 'Admin',
-                        $l->type == 'income' ? 'Pemasukan' : 'Pengeluaran',
-                        $l->amount,
-                        $l->description
-                    ];
-                }
+        $callback = function () use ($ledgers) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['No', 'Tanggal', 'Nama Mahasiswa', 'Tipe', 'Jumlah', 'Keterangan']);
+            foreach ($ledgers as $index => $l) {
+                fputcsv($file, [
+                    $index + 1,
+                    $l->transaction_date,
+                    $l->student->name ?? 'Admin',
+                    $l->type == 'income' ? 'Pemasukan' : 'Pengeluaran',
+                    $l->amount,
+                    $l->description
+                ]);
+            }
+            fclose($file);
+        };
 
-                $sheet->fromArray($data, null, 'A1', false, false);
-            });
-        })->download('xlsx');
+        return response()->stream($callback, 200, $headers);
     }
 }

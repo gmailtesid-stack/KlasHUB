@@ -86,8 +86,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/kh/api/pending-validations', [ValidationController::class, 'getPendingValidations']);
     Route::get('/kh/api/dashboard-data', [DashboardController::class, 'getDashboardData']);
 
-    Route::get('/report/pdf/{class_id}', [App\Http\Controllers\LaporanController::class, 'exportPdf']);
-    Route::get('/report/excel/{class_id}', [App\Http\Controllers\LaporanController::class, 'exportExcel']);
+
 
     // Routes khusus Pengurus (Ketua Kelas, Sekretaris, Bendahara)
     Route::middleware(['role:ketua_kelas,sekretaris,bendahara'])->group(function () {
