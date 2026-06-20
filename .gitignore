@@ -35,5 +35,6 @@ Thumbs.db
 /android-webview/*/build/
 /android-webview/build/
 /android-webview/local.properties
+/android-webview/app/*.keystore
 
 

@@ -98,6 +98,11 @@ class ScheduleFragment : Fragment() {
     }
 
     private fun showOptionsMenu(schedule: ScheduleData, view: View) {
+        val prefs = SecurePrefs.get(requireContext(), "AuthPrefs")
+        val role = prefs.getString("currentUserRole", "") ?: ""
+        
+        if (role != "ketua_kelas" && role != "super_admin") return
+
         val popup = PopupMenu(requireContext(), view)
         popup.menu.add(0, 1, 0, "Ubah Jadwal")
         popup.menu.add(0, 2, 0, "Hapus Jadwal (Hanya Admin)")

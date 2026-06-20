@@ -85,6 +85,11 @@ class ProfileFragment : Fragment() {
                         tvInitials.text = student.name.take(1).uppercase()
                     }
                     currentUserRole = student.role
+                    try {
+                        val authPrefs = SecurePrefs.get(requireContext(), "AuthPrefs")
+                        authPrefs.edit().putString("currentUserRole", currentUserRole).apply()
+                    } catch (e: Exception) {}
+                    
                     if (student.role != "mahasiswa") {
                         btnAdminPanel.visibility = View.VISIBLE
                     }

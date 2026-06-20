@@ -37,7 +37,6 @@ class AdminActivity : AppCompatActivity() {
 
         val role = intent.getStringExtra("USER_ROLE") ?: ""
         if (role == "ketua_kelas" || role == "sekretaris" || role == "bendahara" || role == "super_admin") {
-            btnNavInputSchedule.visibility = View.VISIBLE
             btnNavInputAssignment.visibility = View.VISIBLE
             btnNavInputModule.visibility = View.VISIBLE
         }
@@ -48,6 +47,7 @@ class AdminActivity : AppCompatActivity() {
             btnNavInputStudent.visibility = View.VISIBLE
             btnNavManageStudent.visibility = View.VISIBLE
             btnNavNextSemester.visibility = View.VISIBLE
+            btnNavInputSchedule.visibility = View.VISIBLE
         }
         if (role == "super_admin") {
             btnNavSaaS.visibility = View.VISIBLE

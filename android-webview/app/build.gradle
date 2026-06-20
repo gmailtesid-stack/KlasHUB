@@ -18,11 +18,21 @@ android {
         buildConfigField "String", "BASE_URL", '"https://klas-hub.vercel.app/"'
         buildConfigField "String", "ONESIGNAL_APP_ID", '"04a9cff3-874a-4e84-96c0-f79cfa86d255"'
     }
+    signingConfigs {
+        release {
+            storeFile file('kelashub_release.keystore')
+            storePassword 'android'
+            keyAlias 'kelashub'
+            keyPassword 'android'
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {

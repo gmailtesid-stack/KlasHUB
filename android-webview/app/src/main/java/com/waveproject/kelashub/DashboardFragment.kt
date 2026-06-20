@@ -37,6 +37,7 @@ class DashboardFragment : Fragment() {
     private var currentMaxSemester: Int = 1
     private var selectedSemester: Int? = null
     private var currentQrisImage: String? = null
+    private var currentUserRole: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -149,6 +150,12 @@ class DashboardFragment : Fragment() {
             btnSemesterFilter.text = "Semester ${data.classSemester} ▼"
         }
         
+        currentUserRole = data.student.role
+        try {
+            val authPrefs = SecurePrefs.get(requireContext(), "AuthPrefs")
+            authPrefs.edit().putString("currentUserRole", currentUserRole).apply()
+        } catch (e: Exception) {}
+        
         var income = 0.0
         var expense = 0.0
         data.cashTransactions.forEach {
@@ -183,9 +190,20 @@ class DashboardFragment : Fragment() {
     }
 
     private fun showOptionsMenuAssignment(assignment: Assignment, view: View) {
+        val prefs = SecurePrefs.get(requireContext(), "AuthPrefs")
+        val role = prefs.getString("currentUserRole", "") ?: ""
+        if (role == "mahasiswa" || role.isEmpty()) return
+
         val popup = PopupMenu(requireContext(), view)
-        popup.menu.add(0, 1, 0, "Ubah Tugas")
-        popup.menu.add(0, 2, 0, "Hapus Tugas")
+        
+        if (role == "ketua_kelas" || role == "sekretaris" || role == "bendahara" || role == "super_admin") {
+            popup.menu.add(0, 1, 0, "Ubah Tugas")
+        }
+        
+        if (role == "ketua_kelas" || role == "super_admin") {
+            popup.menu.add(0, 2, 0, "Hapus Tugas")
+        }
+        
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 1 -> {
@@ -217,9 +235,20 @@ class DashboardFragment : Fragment() {
     }
 
     private fun showOptionsMenuModule(module: Module, view: View) {
+        val prefs = SecurePrefs.get(requireContext(), "AuthPrefs")
+        val role = prefs.getString("currentUserRole", "") ?: ""
+        if (role == "mahasiswa" || role.isEmpty()) return
+
         val popup = PopupMenu(requireContext(), view)
-        if (module.type == "link") popup.menu.add(0, 1, 0, "Ubah Referensi")
-        popup.menu.add(0, 2, 0, "Hapus Modul")
+        
+        if (role == "ketua_kelas" || role == "sekretaris" || role == "bendahara" || role == "super_admin") {
+            if (module.type == "link") popup.menu.add(0, 1, 0, "Ubah Referensi")
+        }
+        
+        if (role == "ketua_kelas" || role == "super_admin") {
+            popup.menu.add(0, 2, 0, "Hapus Modul")
+        }
+        
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 1 -> {
