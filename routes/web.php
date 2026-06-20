@@ -51,6 +51,19 @@ Route::get('/kh/debug-database', function () {
     ]);
 });
 
+// Fix: assign correct class_id untuk master_subjects yg null. GET /kh/fix-master-subjects?class_id=1
+Route::get('/kh/fix-master-subjects', function (\Illuminate\Http\Request $request) {
+    $classId = $request->query('class_id');
+    if (!$classId) {
+        // Tampilkan kelas yg tersedia
+        return response()->json(\Illuminate\Support\Facades\DB::table('academic_classes')->get(['id', 'name']));
+    }
+    $updated = \Illuminate\Support\Facades\DB::table('master_subjects')
+        ->whereNull('class_id')
+        ->update(['class_id' => $classId]);
+    return response()->json(['updated' => $updated, 'class_id' => $classId, 'msg' => 'OK']);
+});
+
 Route::get('/kh/test-login', function () {
     $res = [];
     $res['ari_ketua'] = \Illuminate\Support\Facades\Auth::attempt(['nim' => '231011403268', 'password' => '231011403268KK']);
