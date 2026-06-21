@@ -51,7 +51,18 @@ class InputStudentActivity : AppCompatActivity() {
                         finish()
                     } else {
                         btnSubmit.isEnabled = true
-                        val errMsg = "Gagal didaftarkan (Code: " + response.code() + ")"
+                        var errMsg = "Gagal didaftarkan"
+                        try {
+                            val errorString = response.errorBody()?.string()
+                            if (errorString != null) {
+                                val jsonObject = org.json.JSONObject(errorString)
+                                if (jsonObject.has("message")) {
+                                    errMsg = jsonObject.getString("message")
+                                }
+                            }
+                        } catch (e: Exception) {
+                            errMsg += " (Code: ${response.code()})"
+                        }
                         Toast.makeText(this@InputStudentActivity, errMsg, Toast.LENGTH_LONG).show()
                     }
                 }
