@@ -149,7 +149,7 @@ Route::middleware(['auth'])->group(function () {
         return response()->json(\App\Models\MasterSubject::orderBy('name')->get(['id', 'name', 'default_lecturer', 'code']));
     });
     Route::post('/kh/cash', [FinanceController::class, 'storeCashLedger']);
-
+    Route::get('/kh/module/{id}/download', [AcademicMaterialController::class, 'downloadModule']);
 
 
     // Routes khusus Pengurus (Ketua Kelas, Sekretaris, Bendahara)
@@ -161,7 +161,6 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/kh/qris', [ClassManagementController::class, 'deleteQris']);
         Route::post('/kh/assignment', [AcademicMaterialController::class, 'storeAssignment']);
         Route::post('/kh/module', [AcademicMaterialController::class, 'storeModule']);
-        Route::get('/kh/module/{id}/download', [AcademicMaterialController::class, 'downloadModule']);
         Route::post('/kh/student', [UserManagementController::class, 'storeStudent']);
         // CRUD Academic
         Route::put('/kh/master-subject/{id}', [AcademicController::class, 'updateMasterSubject']);
