@@ -106,7 +106,7 @@ class InputModuleActivity : AppCompatActivity() {
 
             var filePart: MultipartBody.Part? = null
 
-            if (type == "File" && selectedFileUri != null) {
+            if (type == "file" && selectedFileUri != null) {
                 val tempFile = getFileFromUri(selectedFileUri!!)
                 if (tempFile != null) {
                     val reqFile = tempFile.asRequestBody("application/octet-stream".toMediaTypeOrNull())
@@ -121,7 +121,9 @@ class InputModuleActivity : AppCompatActivity() {
                             Toast.makeText(this@InputModuleActivity, "Modul berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
                             finish()
                         } else {
-                            Toast.makeText(this@InputModuleActivity, "Gagal menambahkan modul", Toast.LENGTH_SHORT).show()
+                            val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                            android.util.Log.e("InputModule", "Upload failed: $errorBody")
+                            Toast.makeText(this@InputModuleActivity, "Gagal menambahkan modul: ${response.code()}", Toast.LENGTH_LONG).show()
                             btnSubmit.isEnabled = true
                             btnSubmit.text = "Simpan Modul"
                         }
